@@ -1,6 +1,6 @@
 # Migratiestatus — JouwGezinsleven naar Astro + Sanity
 
-Stand: 28 september 2026 (na ontvangst ZIP)
+Stand: 10 oktober 2026 (code op GitHub, CI groen)
 
 ## Bron
 
@@ -53,13 +53,17 @@ Overgenomen zonder herschrijven. Bron toevoegen of aanpassen vóór livegang:
 - [ ] Privacyverklaring, contact, over en disclaimer als `page` in Sanity en koppelen in `siteSettings` (footerkolommen verschijnen dan vanzelf).
 - [ ] Claims hierboven controleren.
 - [ ] `cd studio && npx sanity login && npm run schema:deploy && npm run deploy`.
-- [ ] GitHub-repo, secrets (`FTP_*`) en environments staging/production.
-- [ ] Staging-deploy met `PUBLIC_NOINDEX_SITE=1`, controle op echte Apache (.htaccess, CSP, headers).
+- [x] GitHub-repo `jeffreysnijder1988-lang/jouwgezinsleven` aangemaakt; `main` gepusht. Publish-runs 1 en 2 (push) groen: typecheck, fixture-tests, productiebuild, QA en deploy-poort. Deploy overgeslagen omdat `AUTO_DEPLOY_TARGET` niet gezet is.
+- [x] Actions op Node 24-versies (checkout@v5, setup-node@v5, upload-artifact@v6, download-artifact@v7).
+- [ ] Environments `staging` en `production` aanmaken, met per environment de secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PATH` en `DEPLOY_PASSWORD` óf `DEPLOY_SSH_KEY` (+ `DEPLOY_KNOWN_HOSTS` bij sftp).
+- [ ] Repo-variabelen: `DEPLOY_PROTOCOL` (`sftp` of `ftps`), optioneel `DEPLOY_PORT`, `STAGING_URL`, `PRODUCTION_URL`. `AUTO_DEPLOY_TARGET` pas zetten na een geslaagde handmatige staging-deploy.
+- [ ] Staging-deploy via Actions → Publish → Run workflow, target `staging` (`PUBLIC_NOINDEX_SITE=1` gaat automatisch). Controle op echte Apache (.htaccess, CSP, headers).
+- [ ] Na 19 oktober 2026 (`ubuntu-latest` → Ubuntu 26): eerste deploy-run controleren op de `lftp`-installatie.
 - [ ] Na livegang: sitemap indienen in Search Console en 404's volgen.
 
 ## Daarna: geautomatiseerde publicatie
 
-- Sanity-webhook bij publish → GitHub `repository_dispatch` (`sanity-publish`). De workflow bouwt al; deploy pas met `AUTO_DEPLOY_ON_PUBLISH=true`.
+- Sanity-webhook bij publish → GitHub `repository_dispatch` (`sanity-publish`). De workflow bouwt al; deployt pas als repo-variabele `AUTO_DEPLOY_TARGET` op `staging` of `production` staat (default `none`).
 - De AI-pipeline schrijft alleen drafts (`origin: ai-assisted`, `reviewStatus: needs_review`).
 - Eerste artikelen: de 36 titels van de oude hubs zijn een bruikbare contentplanning (zoekintentie per pijler), maar vragen nieuwe, echte content.
 - `AUTOMATION_AND_PUBLISHING.md` uitwerken.
