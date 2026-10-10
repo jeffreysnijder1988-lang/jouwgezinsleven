@@ -128,8 +128,8 @@ jobs:
       SANITY_DATASET: production
       SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}   # optioneel: alleen nodig als de dataset private wordt
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -166,7 +166,7 @@ jobs:
           ALLOW_CONTENT_DROP: ${{ inputs.allow_content_drop && '1' || '' }}
         run: node scripts/verify-dist.mjs dist
       - name: Release bewaren (voor deploy en rollback)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: site-${{ needs.plan.outputs.target }}
           path: dist
@@ -205,20 +205,20 @@ jobs:
       DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
       DEPLOY_SITE_URL: ${{ needs.plan.outputs.site_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: scripts
       - name: lftp installeren
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp >/dev/null
       - name: Release ophalen (deze run)
         if: needs.plan.outputs.rollback == ''
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: site-${{ needs.plan.outputs.target }}
           path: release
       - name: Release ophalen (rollback)
         if: needs.plan.outputs.rollback != ''
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: site-${{ needs.plan.outputs.target }}
           path: release
@@ -231,7 +231,7 @@ jobs:
       - name: Snapshot van live bestanden die gewijzigd/verwijderd worden
         run: DIST_DIR=release scripts/deploy.sh snapshot snapshot
       - name: Snapshot bewaren
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pre-deploy-snapshot-${{ needs.plan.outputs.target }}
           path: snapshot
