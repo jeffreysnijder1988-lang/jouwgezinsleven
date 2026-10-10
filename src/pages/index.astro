@@ -1,0 +1,83 @@
+---
+/**
+ * Homepage — opbouw van de bestaande site; inhoud uit Sanity (homePage, siteSettings, lifeStage, article).
+ * Secties met artikelen verschijnen alleen als er echte gepubliceerde artikelen zijn.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/content/Hero.astro';
+import ContentSection from '@/components/content/ContentSection.astro';
+import CategoryCard from '@/components/cards/CategoryCard.astro';
+import ArticleCard from '@/components/cards/ArticleCard.astro';
+import CardGrid from '@/components/cards/CardGrid.astro';
+import RecentList from '@/components/content/RecentList.astro';
+import FeatureBlock from '@/components/content/FeatureBlock.astro';
+import CTA from '@/components/content/CTA.astro';
+import Button from '@/components/ui/Button.astro';
+import { getHomePage, getSiteSettings, getLifeStages, getLatestArticles, getAllRoutes, pillarPath } from '@/lib/content';
+import { buildMeta } from '@/lib/seo/meta';
+import { formatAgeRange } from '@/lib/helpers/format';
+import { PHASE_TONES } from '@/lib/helpers/theme';
+
+const [settings, home, lifeStages, latest, routes] = await Promise.all([
+  getSiteSettings(), getHomePage(), getLifeStages(), getLatestArticles(12), getAllRoutes(),
+]);
+const homeRoute = routes.find((r) => r.kind === 'home')!;
+const meta = buildMeta({
+  path: '/', site: Astro.site, settings, isHome: true,
+  title: home.heroTitle || settings.siteName, seo: home.seo,
+  fallbackDescription: home.heroIntro, image: home.heroImage, noIndex: homeRoute.noIndex,
+});
+const featured = home.featuredArticles ?? [];
+const featuredIds = new Set(featured.map((a) => a._id));
+const recent = latest.filter((a) => !featuredIds.has(a._id));
+let linked = 0;
+---
+<BaseLayout meta={meta}>
+  <Hero variant="home" title={home.heroTitle || settings.siteName} intro={home.heroIntro ?? settings.tagline} image={home.heroImage}>
+    {(home.heroCta?.href || home.heroSecondaryCta?.href) && (
+      <div class="hero-knoppen">
+        {home.heroCta?.label && home.heroCta.href && <Button href={home.heroCta.href}>{home.heroCta.label}</Button>}
+        {home.heroSecondaryCta?.label && home.heroSecondaryCta.href && <Button href={home.heroSecondaryCta.href} variant="secondary">{home.heroSecondaryCta.label}</Button>}
+      </div>
+    )}
+  </Hero>
+
+  {lifeStages.length > 0 && (
+    <ContentSection title={home.lifeStagesTitle || 'In welke fase zit jouw gezin?'} intro={home.lifeStagesIntro} id="levensfasen">
+      <ul class="fasenlijst">
+        {lifeStages.map((ls) => {
+          const href = ls.primaryPillar ? pillarPath(ls.primaryPillar) : null;
+          const tone = href ? PHASE_TONES[linked++ % PHASE_TONES.length] : 'cream';
+          return (
+            <li>
+              <CategoryCard variant="phase" title={ls.name} href={href} tone={tone} icon={ls.slug}
+                meta={formatAgeRange(ls.minimumAgeMonths, ls.maximumAgeMonths) || ls.description} />
+            </li>
+          );
+        })}
+      </ul>
+    </ContentSection>
+  )}
+
+  {featured.length > 0 && (
+    <ContentSection title={home.featuredTitle || 'Uitgelicht'} intro={home.featuredIntro} tone="soft" id="uitgelicht">
+      <CardGrid>{featured.map((a, i) => <ArticleCard article={a} size={i === 0 && featured.length >= 3 ? 'lg' : 'md'} />)}</CardGrid>
+    </ContentSection>
+  )}
+
+  {recent.length > 0 && (
+    <ContentSection title={home.latestTitle || 'Nieuw op de site'} id="recent">
+      <RecentList articles={recent} />
+    </ContentSection>
+  )}
+
+  <FeatureBlock data={home.feature} />
+
+  <CTA {...(home.closingCta ?? {})} />
+</BaseLayout>
+<style>
+  .hero-knoppen { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 36px; align-items: center; }
+  .fasenlijst { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (min-width: 700px) { .fasenlijst { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1000px) { .fasenlijst { grid-template-columns: repeat(6, 1fr); } }
+</style>

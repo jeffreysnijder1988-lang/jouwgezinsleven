@@ -1,0 +1,65 @@
+---
+/**
+ * Centrale header (bestaande site). Desktop-nav en mobiel menu zijn twee presentaties
+ * van dezelfde navigatiedata (siteSettings.mainNav). Zoekformulier van de oude site is
+ * weggelaten: /zoeken/ bestaat niet (zie docs/MIGRATION_STATUS.md).
+ */
+import type { SiteSettings } from '@/lib/content/types';
+import Logo from './Logo.astro';
+interface Props { settings: SiteSettings; currentPath: string; bare?: boolean }
+const { settings, currentPath, bare = false } = Astro.props;
+const nav = settings.mainNav;
+const current = (slug: string) =>
+  currentPath === `/${slug}/` ? 'page' : currentPath.startsWith(`/${slug}/`) ? 'true' : undefined;
+---
+<a class="skip" href="#main">Naar de inhoud</a>
+<header class:list={['header', { 'header--bare': bare }]}>
+  <div class="container header__inner">
+    <Logo settings={settings} />
+    {!bare && nav.length > 0 && (
+      <>
+        <nav class="nav" aria-label="Hoofdnavigatie">
+          <ul>{nav.map((p) => <li><a href={`/${p.slug}/`} aria-current={current(p.slug)}>{p.navLabel || p.name}</a></li>)}</ul>
+        </nav>
+        <button class="menuknop nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
+          Menu
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </>
+    )}
+  </div>
+  {!bare && nav.length > 0 && (
+    <nav class="mobielmenu" id="main-nav" aria-label="Hoofdnavigatie mobiel" data-open="false">
+      <ul>{nav.map((p) => <li><a href={`/${p.slug}/`} aria-current={current(p.slug)}>{p.navLabel || p.name}</a></li>)}</ul>
+    </nav>
+  )}
+</header>
+{!bare && nav.length > 0 && <script is:inline src="/scripts/nav.js" defer></script>}
+
+<style>
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--color-text); color: var(--color-white); padding: 8px 14px; z-index: 100; }
+  .skip:focus { left: 8px; }
+  .header { background: var(--color-white); border-bottom: 2px solid var(--color-cream); position: sticky; top: 0; z-index: 50; }
+  .header--bare { position: static; background: transparent; border: 0; }
+  .header__inner { display: flex; align-items: center; gap: 12px; min-height: 80px; }
+  .nav { display: none; }
+  .nav ul { display: flex; gap: 4px; }
+  .nav a { display: block; padding: 8px 12px; border-radius: var(--radius-pill); font-family: var(--font-heading); font-weight: var(--weight-heading); font-size: 1rem; white-space: nowrap; }
+  .nav a:hover { background: var(--color-cream); text-decoration: none; }
+  .nav a[aria-current] { background: var(--color-cream); }
+  .menuknop {
+    margin-left: auto; background: var(--color-cream); border: 0; border-radius: var(--radius-pill); padding: 10px 14px;
+    font-family: var(--font-heading); font-weight: var(--weight-heading); font-size: 1rem; cursor: pointer; color: var(--color-text);
+    display: flex; align-items: center; gap: 8px; min-height: 44px; flex: none;
+  }
+  .mobielmenu { display: none; background: var(--color-cream); border-top: 2px solid var(--color-pink-soft); }
+  .mobielmenu[data-open='true'] { display: block; }
+  .mobielmenu ul { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 16px var(--gutter); }
+  .mobielmenu a { display: block; background: var(--color-white); padding: 12px 14px; border-radius: 12px; font-family: var(--font-heading); font-weight: var(--weight-heading); }
+  .mobielmenu a[aria-current] { background: var(--color-yellow); }
+  @media (min-width: 900px) {
+    .nav { display: block; margin-left: auto; }
+    .menuknop { display: none; }
+    .mobielmenu, .mobielmenu[data-open='true'] { display: none; }
+  }
+</style>

@@ -1,0 +1,42 @@
+---
+/**
+ * Generiek artikel-template: /[pijler]/[slug]/. Geen code per artikel nodig.
+ */
+import ArticleLayout from '@/layouts/ArticleLayout.astro';
+import { getAllRoutes, getArticle, getRelatedFallback, getSiteSettings, articlePath } from '@/lib/content';
+import { buildMeta } from '@/lib/seo/meta';
+import { articleSchema, faqSchema } from '@/lib/schema/jsonld';
+
+export async function getStaticPaths() {
+  const routes = await getAllRoutes();
+  return routes
+    .filter((r) => r.kind === 'article')
+    .map((r) => ({ params: { pillar: r.params!.pillar, slug: r.params!.slug }, props: { route: r } }));
+}
+
+const { route } = Astro.props;
+const { pillar, slug } = Astro.params as { pillar: string; slug: string };
+const [settings, article] = await Promise.all([getSiteSettings(), getArticle(pillar, slug)]);
+if (!article) throw new Error(`[article] ${pillar}/${slug} niet gevonden`);
+
+const related = article.relatedArticles?.length
+  ? article.relatedArticles.filter((r) => r._id !== article._id).slice(0, 3)
+  : await getRelatedFallback(article.pillar._id, article._id);
+
+const path = articlePath(article);
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: article.pillar.name, path: `/${article.pillar.slug}/` },
+  { name: article.title, path },
+];
+const meta = buildMeta({
+  path, site: Astro.site, settings, title: article.title, seo: article.seo,
+  fallbackDescription: article.excerpt, image: article.heroImage, noIndex: route.noIndex,
+  ogType: 'article', publishedTime: article.publishedAt, modifiedTime: article.updatedAt,
+});
+const schema = [
+  articleSchema(article, meta.canonical, Astro.site),
+  article.faq?.length ? faqSchema(article.faq) : null,
+];
+---
+<ArticleLayout article={article} related={related} meta={meta} crumbs={crumbs} schema={schema} />

@@ -1,0 +1,478 @@
+[
+ {
+  "_id": "siteSettings",
+  "_type": "siteSettings",
+  "_updatedAt": "2026-09-28T10:00:00Z",
+  "siteName": "JouwGezinsleven",
+  "tagline": "[TEST] Tagline uit fixture",
+  "footerTagline": "[TEST] Footer-tagline uit fixture",
+  "organization": {
+   "legalName": "[TEST] Organisatie",
+   "kvkNumber": "00000000",
+   "vatNumber": "NL000000000B00",
+   "phone": "000-0000000",
+   "email": "test@example.com"
+  },
+  "mainNav": [
+   {
+    "_key": "n1",
+    "_type": "reference",
+    "_ref": "pillar-a"
+   },
+   {
+    "_key": "n2",
+    "_type": "reference",
+    "_ref": "pillar-b"
+   },
+   {
+    "_key": "n3",
+    "_type": "reference",
+    "_ref": "pillar-empty"
+   }
+  ],
+  "footerNetworkLinks": [
+   {
+    "_key": "f1",
+    "title": "[TEST] Netwerklink",
+    "url": "https://example.com/"
+   }
+  ],
+  "footerCompanyLinks": [
+   {
+    "_key": "c1",
+    "_type": "reference",
+    "_ref": "page-over"
+   }
+  ],
+  "footerLegalLinks": [
+   {
+    "_key": "l1",
+    "_type": "reference",
+    "_ref": "page-over"
+   }
+  ]
+ },
+ {
+  "_id": "homePage",
+  "_type": "homePage",
+  "_updatedAt": "2026-09-28T10:00:00Z",
+  "heroTitle": "[TEST] Homepage-titel",
+  "heroIntro": "[TEST] Intro van de homepage uit de fixture.",
+  "heroCta": {
+   "label": "[TEST] Naar pijler A",
+   "internal": {
+    "_type": "reference",
+    "_ref": "page-over"
+   }
+  },
+  "lifeStagesTitle": "[TEST] Levensfasen",
+  "closingCta": {
+   "title": "[TEST] CTA-titel",
+   "text": "[TEST] CTA-tekst.",
+   "label": "[TEST] Lees meer",
+   "internal": {
+    "_type": "reference",
+    "_ref": "page-over"
+   }
+  },
+  "featuredArticles": [
+   {
+    "_key": "f1",
+    "_type": "reference",
+    "_ref": "art-1"
+   },
+   {
+    "_key": "f2",
+    "_type": "reference",
+    "_ref": "drafts.art-4"
+   }
+  ],
+  "feature": {
+   "title": "[TEST] Featureblok",
+   "text": "[TEST] Tekst.",
+   "label": "[TEST] Knop",
+   "external": "https://example.com/"
+  },
+  "heroSecondaryCta": {
+   "label": "[TEST] Anker",
+   "external": "#levensfasen"
+  }
+ },
+ {
+  "_id": "pillar-a",
+  "_type": "topic",
+  "_updatedAt": "2026-09-01T10:00:00Z",
+  "kind": "pillar",
+  "name": "Testpijler A",
+  "slug": {
+   "current": "testpijler-a"
+  },
+  "navOrder": 1,
+  "description": "[TEST] Beschrijving pijler A.",
+  "networkDestinations": [
+   {
+    "_key": "nd1",
+    "platform": "lomamo",
+    "externalUrl": "https://lomamo.nl/",
+    "title": "[TEST] Netwerkbestemming",
+    "description": "[TEST] Omschrijving",
+    "priority": 1
+   }
+  ],
+  "heroTitle": "[TEST] Hubtitel A",
+  "navLabel": "Pijler A",
+  "faq": [
+   {
+    "_key": "hq",
+    "question": "[TEST] Hubvraag?",
+    "answer": "[TEST] Hubantwoord."
+   }
+  ],
+  "hubCta": {
+   "title": "[TEST] Hub-CTA",
+   "text": "[TEST] tekst",
+   "label": "[TEST] knop",
+   "external": "https://example.com/"
+  },
+  "relatedTopics": [
+   {
+    "_key": "r1",
+    "_type": "reference",
+    "_ref": "pillar-b"
+   }
+  ]
+ },
+ {
+  "_id": "pillar-b",
+  "_type": "topic",
+  "_updatedAt": "2026-09-01T10:00:00Z",
+  "kind": "pillar",
+  "name": "Testpijler B",
+  "slug": {
+   "current": "testpijler-b"
+  },
+  "navOrder": 2,
+  "description": "[TEST] Beschrijving pijler B."
+ },
+ {
+  "_id": "pillar-empty",
+  "_type": "topic",
+  "_updatedAt": "2026-09-01T10:00:00Z",
+  "kind": "pillar",
+  "name": "Lege pijler",
+  "slug": {
+   "current": "lege-pijler"
+  },
+  "navOrder": 3
+ },
+ {
+  "_id": "sub-a1",
+  "_type": "topic",
+  "kind": "subtopic",
+  "name": "Subonderwerp A1",
+  "slug": {
+   "current": "sub-a1"
+  },
+  "parent": {
+   "_type": "reference",
+   "_ref": "pillar-a"
+  }
+ },
+ {
+  "_id": "ls-1",
+  "_type": "lifeStage",
+  "name": "Testfase 1",
+  "slug": {
+   "current": "testfase-1"
+  },
+  "sortOrder": 1,
+  "minimumAgeMonths": 0,
+  "maximumAgeMonths": 12,
+  "primaryPillar": {
+   "_type": "reference",
+   "_ref": "pillar-a"
+  }
+ },
+ {
+  "_id": "ls-2",
+  "_type": "lifeStage",
+  "name": "Testfase 2",
+  "slug": {
+   "current": "testfase-2"
+  },
+  "sortOrder": 2
+ },
+ {
+  "_id": "art-1",
+  "_type": "article",
+  "_createdAt": "2026-09-01T10:00:00Z",
+  "_updatedAt": "2026-09-02T10:00:00Z",
+  "title": "[TEST] Artikel een",
+  "slug": {
+   "current": "artikel-een"
+  },
+  "excerpt": "[TEST] Samenvatting van artikel een.",
+  "pillar": {
+   "_type": "reference",
+   "_ref": "pillar-a"
+  },
+  "primaryTopic": {
+   "_type": "reference",
+   "_ref": "sub-a1"
+  },
+  "lifeStages": [
+   {
+    "_key": "x",
+    "_type": "reference",
+    "_ref": "ls-1"
+   }
+  ],
+  "searchIntent": "informational",
+  "publishedAt": "2026-09-01T10:00:00Z",
+  "body": [
+   {
+    "_type": "block",
+    "_key": "b1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "s1",
+      "text": "[TEST] Eerste alinea.",
+      "marks": []
+     }
+    ]
+   },
+   {
+    "_type": "block",
+    "_key": "b2",
+    "style": "h2",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "s2",
+      "text": "[TEST] Tussenkop",
+      "marks": []
+     }
+    ]
+   },
+   {
+    "_type": "block",
+    "_key": "b3",
+    "style": "normal",
+    "markDefs": [
+     {
+      "_key": "m1",
+      "_type": "internalLink",
+      "reference": {
+       "_type": "reference",
+       "_ref": "art-2"
+      }
+     },
+     {
+      "_key": "m2",
+      "_type": "link",
+      "href": "https://example.com/bron"
+     }
+    ],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "s3",
+      "text": "Interne link",
+      "marks": [
+       "m1"
+      ]
+     },
+     {
+      "_type": "span",
+      "_key": "s4",
+      "text": " en ",
+      "marks": []
+     },
+     {
+      "_type": "span",
+      "_key": "s5",
+      "text": "externe link",
+      "marks": [
+       "m2"
+      ]
+     }
+    ]
+   },
+   {
+    "_type": "block",
+    "_key": "b4",
+    "style": "normal",
+    "listItem": "bullet",
+    "level": 1,
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "s6",
+      "text": "[TEST] Opsommingspunt",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "faq": [
+   {
+    "_key": "q1",
+    "question": "[TEST] Vraag?",
+    "answer": "[TEST] Antwoord."
+   }
+  ],
+  "networkDestinations": [
+   {
+    "_key": "nd2",
+    "platform": "opvangkiezer",
+    "externalUrl": "https://opvangkiezer.nl/",
+    "title": "[TEST] Opvang vergelijken",
+    "priority": 1
+   }
+  ],
+  "sources": [
+   {
+    "_key": "src1",
+    "sourceName": "[TEST] Bron",
+    "sourceUrl": "https://example.com/bron"
+   }
+  ]
+ },
+ {
+  "_id": "art-2",
+  "_type": "article",
+  "_createdAt": "2026-09-03T10:00:00Z",
+  "_updatedAt": "2026-09-03T10:00:00Z",
+  "title": "[TEST] Artikel twee",
+  "slug": {
+   "current": "artikel-twee"
+  },
+  "excerpt": "[TEST] Samenvatting twee.",
+  "pillar": {
+   "_type": "reference",
+   "_ref": "pillar-a"
+  },
+  "publishedAt": "2026-09-03T10:00:00Z",
+  "seo": {
+   "title": "[TEST] Eigen SEO-titel twee",
+   "description": "[TEST] Eigen meta description."
+  },
+  "body": [
+   {
+    "_type": "block",
+    "_key": "b1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "s1",
+      "text": "[TEST] Tekst twee.",
+      "marks": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "_id": "art-3",
+  "_type": "article",
+  "_createdAt": "2026-09-04T10:00:00Z",
+  "_updatedAt": "2026-09-04T10:00:00Z",
+  "title": "[TEST] Artikel drie noindex",
+  "slug": {
+   "current": "artikel-drie"
+  },
+  "excerpt": "[TEST] Noindex-artikel.",
+  "pillar": {
+   "_type": "reference",
+   "_ref": "pillar-b"
+  },
+  "seo": {
+   "noIndex": true
+  },
+  "body": [
+   {
+    "_type": "block",
+    "_key": "b1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "s1",
+      "text": "[TEST] Tekst drie.",
+      "marks": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "_id": "drafts.art-4",
+  "_type": "article",
+  "_createdAt": "2026-09-05T10:00:00Z",
+  "_updatedAt": "2026-09-05T10:00:00Z",
+  "title": "[TEST] DRAFT mag nooit zichtbaar zijn",
+  "slug": {
+   "current": "draft-artikel"
+  },
+  "pillar": {
+   "_type": "reference",
+   "_ref": "pillar-a"
+  }
+ },
+ {
+  "_id": "page-over",
+  "_type": "page",
+  "_updatedAt": "2026-09-01T10:00:00Z",
+  "title": "[TEST] Over",
+  "slug": {
+   "current": "over-test"
+  },
+  "intro": "[TEST] Intro algemene pagina.",
+  "body": [
+   {
+    "_type": "block",
+    "_key": "b1",
+    "style": "h1",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "s1",
+      "text": "[TEST] H1 in body wordt H2",
+      "marks": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "_id": "art-future",
+  "_type": "article",
+  "title": "[TEST] Ingepland artikel",
+  "slug": {
+   "current": "toekomstig-artikel"
+  },
+  "pillar": {
+   "_type": "reference",
+   "_ref": "pillar-a"
+  },
+  "publishedAt": "2099-01-01T08:00:00Z",
+  "body": []
+ },
+ {
+  "_id": "art-nopillar",
+  "_type": "article",
+  "title": "[TEST] Artikel zonder pijler",
+  "slug": {
+   "current": "zonder-pijler"
+  }
+ }
+]

@@ -1,0 +1,46 @@
+---
+/**
+ * Artikelkaart (bestaande site ".card"). Zonder afbeelding: gekleurd vlak (roze), zoals op de oude site.
+ * size="lg" = uitgelichte kaart (2 kolommen breed op desktop).
+ */
+import type { ArticleCardData } from '@/lib/content/types';
+import { articlePath } from '@/lib/content';
+import { formatDateShort, isoDate } from '@/lib/helpers/format';
+import SanityImg from '@/components/ui/SanityImg.astro';
+interface Props { article: ArticleCardData; showPillar?: boolean; size?: 'md' | 'lg'; tone?: 'white' | 'cream' }
+const { article: a, showPillar = true, size = 'md', tone = 'white' } = Astro.props;
+const href = articlePath(a);
+---
+<article class:list={['card', { 'card--lg': size === 'lg', 'card--cream': tone === 'cream' }]}>
+  <figure>
+    {a.heroImage?.asset && (
+      <SanityImg image={a.heroImage} ratio={16 / 10} widths={[400, 640, 960]} sizes={size === 'lg' ? '(min-width: 1000px) 760px, 100vw' : '(min-width: 1000px) 370px, (min-width: 640px) 50vw, 100vw'} />
+    )}
+  </figure>
+  <div class="body">
+    <span class="meta">
+      {showPillar && a.pillar && <span>{a.pillar.name}</span>}
+      {a.publishedAt && <time datetime={isoDate(a.publishedAt)}>{formatDateShort(a.publishedAt)}</time>}
+    </span>
+    <h3><a href={href}>{a.title}</a></h3>
+    {a.excerpt && <p>{a.excerpt}</p>}
+    <a class="lees" href={href} tabindex="-1" aria-hidden="true">Lees verder</a>
+  </div>
+</article>
+<style>
+  .card { display: flex; flex-direction: column; background: var(--color-white); border-radius: var(--radius-lg); overflow: hidden; }
+  .card--cream { background: var(--color-cream); }
+  figure { margin: 0; aspect-ratio: 16 / 10; background: var(--color-pink-soft); position: relative; }
+  figure :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .meta { display: flex; justify-content: space-between; gap: 12px; font-size: var(--text-sm); color: var(--color-text-muted); }
+  h3 a { display: block; }
+  p { color: var(--color-text-muted); font-size: 1rem; margin: 0; }
+  .lees { margin-top: auto; font-family: var(--font-heading); font-weight: var(--weight-heading); padding-top: 8px; }
+  .card--lg figure { aspect-ratio: 16 / 11; }
+  @media (min-width: 1000px) {
+    .card--lg { grid-column: span 2; }
+    .card--lg .body { padding: 24px 28px 28px; }
+    .card--lg h3 { font-size: 1.55rem; }
+  }
+</style>

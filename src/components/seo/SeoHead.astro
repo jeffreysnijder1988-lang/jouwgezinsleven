@@ -1,0 +1,30 @@
+---
+/**
+ * Alle SEO-headtags. Alleen via BaseLayout gebruikt.
+ */
+import type { PageMeta } from '@/lib/seo/meta';
+interface Props { meta: PageMeta; siteName: string }
+const { meta, siteName } = Astro.props;
+---
+<title>{meta.title}</title>
+{meta.description && <meta name="description" content={meta.description} />}
+<link rel="canonical" href={meta.canonical} />
+<meta name="robots" content={meta.robots} />
+
+<meta property="og:locale" content="nl_NL" />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:type" content={meta.ogType} />
+<meta property="og:title" content={meta.title} />
+{meta.description && <meta property="og:description" content={meta.description} />}
+<meta property="og:url" content={meta.canonical} />
+{meta.ogImage && (
+  <>
+    <meta property="og:image" content={meta.ogImage.url} />
+    <meta property="og:image:width" content={String(meta.ogImage.width)} />
+    <meta property="og:image:height" content={String(meta.ogImage.height)} />
+    <meta property="og:image:alt" content={meta.ogImage.alt} />
+  </>
+)}
+{meta.ogType === 'article' && meta.publishedTime && <meta property="article:published_time" content={meta.publishedTime} />}
+{meta.ogType === 'article' && meta.modifiedTime && <meta property="article:modified_time" content={meta.modifiedTime} />}
+<meta name="twitter:card" content={meta.ogImage ? 'summary_large_image' : 'summary'} />

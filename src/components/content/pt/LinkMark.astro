@@ -1,0 +1,12 @@
+---
+/** Externe link in Portable Text. Externe URL's krijgen rel="noopener"; geen verplicht nieuw venster. */
+import type { Mark } from 'astro-portabletext/types';
+interface Props { node: Mark<{ href?: string; openInNewTab?: boolean }> }
+const { node } = Astro.props;
+const href = node.markDef?.href ?? '';
+const safe = /^(https?:|mailto:|tel:|\/|#)/i.test(href);
+const external = /^https?:/i.test(href);
+---
+{safe ? (
+  <a href={href} rel={external ? 'noopener' : undefined} target={node.markDef?.openInNewTab ? '_blank' : undefined}><slot /></a>
+) : (<slot />)}

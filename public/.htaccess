@@ -1,0 +1,127 @@
+# =====================================================================
+#  JouwGezinsleven.nl – .htaccess (Apache / cPanel, Superspace)
+#  Statische Astro-build. Gebaseerd op de .htaccess van de bestaande site;
+#  aangepast: Google Fonts en inline scripts uit de CSP (fonts zelf gehost,
+#  geen inline JS), Sanity CDN toegestaan voor afbeeldingen, zoek-/nieuwsbrief-
+#  endpoints verwijderd (bestaan niet).
+#  GEEN nieuwe redirects van oude URL's: die pas na akkoord op url-inventory.csv.
+# =====================================================================
+
+Options -Indexes -MultiViews +FollowSymLinks
+DirectoryIndex index.html
+AddDefaultCharset UTF-8
+ServerSignature Off
+ErrorDocument 404 /404.html
+
+# ---------------------------------------------------------------------
+# 1. Canonieke URL's (ongewijzigd t.o.v. bestaande site)
+# ---------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# 1a. Altijd HTTPS + zonder www (één 301, geen ketting)
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://jouwgezinsleven.nl%{REQUEST_URI} [R=301,L]
+
+# 1b. index.html in de URL? → naar de map
+RewriteCond %{THE_REQUEST} \s/(.*/)?index\.html[\s?] [NC]
+RewriteRule ^(.*/)?index\.html$ /$1 [R=301,L]
+
+# 1c. .html in de URL? → schone URL met slash (404.html uitgezonderd)
+RewriteCond %{REQUEST_URI} !^/404\.html$
+RewriteCond %{THE_REQUEST} \s/([^\s?]+)\.html[\s?] [NC]
+RewriteRule ^(.+)\.html$ /$1/ [R=301,L]
+
+# 1d. Geen trailing slash, geen bestand? → slash toevoegen
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !\.[a-z0-9]{2,5}$ [NC]
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^(.+)$ /$1/ [R=301,L]
+
+# 1e. Dubbele slashes opruimen
+RewriteCond %{THE_REQUEST} //
+RewriteRule ^(.*)$ /$1 [R=301,L]
+</IfModule>
+
+# ---------------------------------------------------------------------
+# 2. Security headers
+# ---------------------------------------------------------------------
+<IfModule mod_headers.c>
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+# Eigen bestanden + Sanity CDN (afbeeldingen). JSON-LD is een data-blok, geen uitvoerbaar script.
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://cdn.sanity.io; connect-src 'self'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+Header unset ETag
+</IfModule>
+FileETag None
+
+# ---------------------------------------------------------------------
+# 3. Compressie
+# ---------------------------------------------------------------------
+<IfModule mod_brotli.c>
+AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml text/javascript application/javascript application/json application/xml image/svg+xml
+</IfModule>
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml text/javascript application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# ---------------------------------------------------------------------
+# 4. Caching: gehashte Astro-assets lang, HTML kort
+# ---------------------------------------------------------------------
+<IfModule mod_headers.c>
+<If "%{REQUEST_URI} =~ m#^/_astro/#">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</If>
+<ElseIf "%{REQUEST_URI} =~ m#\.(js|css|webp|avif|png|jpe?g|svg|ico|woff2?)$#">
+Header set Cache-Control "public, max-age=86400"
+</ElseIf>
+<FilesMatch "\.(html|xml|txt)$">
+Header set Cache-Control "public, max-age=3600, must-revalidate"
+</FilesMatch>
+</IfModule>
+
+<IfModule mod_mime.c>
+AddType image/webp .webp
+AddType image/avif .avif
+AddType image/svg+xml .svg
+AddType font/woff2 .woff2
+AddType font/woff .woff
+AddType text/javascript .js .mjs
+</IfModule>
+
+# ---------------------------------------------------------------------
+# 5. Beveiliging van bestanden (ongewijzigd)
+# ---------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+RewriteRule (^|/)\.(?!well-known) - [F]
+</IfModule>
+<FilesMatch "\.(md|json|yml|yaml|log|sql|bak|old|orig|swp|ini|env|sh|py)$">
+<IfModule mod_authz_core.c>
+Require all denied
+</IfModule>
+</FilesMatch>
+
+# Hotlinking van afbeeldingen tegengaan (eigen sites toegestaan)
+<IfModule mod_rewrite.c>
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?jouwgezinsleven\.nl [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?(lomamo|opvangkiezer|rustmetkids|welkespeeltuin|studiocutter)\.(nl|be) [NC]
+RewriteCond %{HTTP_REFERER} !^https?://([^/]+\.)?(google|bing|duckduckgo|pinterest|facebook|instagram)\.[a-z]+ [NC]
+RewriteRule \.(webp|avif|png|jpe?g|gif)$ - [F,NC]
+</IfModule>
+
+# ---------------------------------------------------------------------
+# 6. Oude WordPress-URL's (bestaande regels, ongewijzigd overgenomen)
+# ---------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+RewriteRule ^wp-(admin|login|content|includes)(/.*)?$ / [R=301,L]
+RewriteRule ^xmlrpc\.php$ / [R=410,L]
+RewriteRule ^feed/?$ / [R=301,L]
+RewriteRule ^(category|tag|author)/(.*)$ / [R=301,L]
+</IfModule>

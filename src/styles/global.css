@@ -1,0 +1,78 @@
+/*
+ * Globale basis (overgenomen van de bestaande site).
+ * Fonts worden zelf gehost (@fontsource) — geen verzoeken naar Google (privacy/AVG, CSP).
+ */
+@import '@fontsource/lilita-one/latin-400.css';
+@import '@fontsource/nunito/latin-700.css';
+@import '@fontsource/roboto/latin-400.css';
+@import '@fontsource/roboto/latin-500.css';
+
+@import './tokens.css';
+@import './typography.css';
+@import './utilities.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+main { flex: 1 0 auto; display: block; }
+main:focus { outline: none; }
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+button { font: inherit; color: inherit; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+/* Containers (DESIGN_SYSTEM) — .container komt overeen met .wrap van de oude site */
+.container, .container--narrow, .container--wide {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.container { max-width: var(--container); }
+.container--narrow { max-width: var(--container-narrow); }
+.container--wide { max-width: var(--container-wide); }
+
+/* Secties */
+.section { padding-block: var(--space-section); position: relative; }
+.section--soft { background: var(--color-cream); }
+.section--pink { background: var(--color-pink-soft); }
+.section > .container, .section > .container--narrow { position: relative; z-index: 1; }
+
+/* Sectiekop: titel + intro links, "meer"-link rechts */
+.kop {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-md);
+  margin-bottom: var(--space-xl); flex-wrap: wrap;
+}
+.kop p { margin: 0; color: var(--color-text-muted); max-width: var(--measure); }
+.kop h2 { margin-bottom: 0.35em; }
+.meer {
+  font-family: var(--font-heading); font-weight: var(--weight-heading); color: var(--color-text);
+  border-bottom: 3px solid var(--color-yellow); padding-bottom: 2px; white-space: nowrap;
+}
+.meer:hover { text-decoration: none; border-color: var(--color-coral); }
+
+/* Decoratieve organische vormen */
+.blob { position: absolute; pointer-events: none; z-index: 0; }

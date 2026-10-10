@@ -1,0 +1,37 @@
+/*
+ * Typografische hiërarchie (bestaande site): H1 Lilita One · H2–H4 Nunito 700 · body Roboto 400 18px.
+ */
+h1, h2, h3, h4 { margin: 0; line-height: var(--leading-tight); color: var(--color-text); }
+h1, .h1 { font-family: var(--font-display); font-weight: 400; }
+h2, h3, h4, .h2, .h3, .h4 { font-family: var(--font-heading); font-weight: var(--weight-heading); }
+h2, .h2 { font-size: var(--text-h2); }
+h3, .h3 { font-size: var(--text-h3); }
+h4, .h4 { font-size: 1rem; }
+p { margin: 0 0 1em; }
+
+.lead { font-size: var(--text-lg); color: var(--color-text-muted); }
+.meta, small { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+.eyebrow { font-size: var(--text-sm); font-weight: 500; color: var(--color-text-muted); }
+
+/* Lopende tekst (artikelen, algemene pagina's) */
+.prose { max-width: 42em; line-height: var(--leading-relaxed); }
+.prose > * + * { margin-top: var(--space-md); }
+.prose p { margin: 0; }
+.prose h2 { margin-top: var(--space-2xl); }
+.prose h3 { margin-top: var(--space-xl); }
+.prose h4 { margin-top: var(--space-lg); }
+.prose a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.prose a:hover { text-decoration-thickness: 2px; }
+.prose ul, .prose ol { padding-left: 1.3em; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li + li { margin-top: var(--space-2xs); }
+.prose blockquote {
+  margin-inline: 0; padding: var(--space-md) var(--space-lg);
+  border-left: 4px solid var(--color-yellow); background: var(--color-cream);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--color-text-muted);
+}
+.prose figure { margin: var(--space-xl) 0; }
+.prose figcaption { margin-top: var(--space-xs); font-size: var(--text-sm); color: var(--color-text-muted); }
+.prose img { border-radius: var(--radius-lg); }

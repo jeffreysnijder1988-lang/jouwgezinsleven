@@ -1,0 +1,25 @@
+---
+/**
+ * Golf-scheiding (bestaande site). position="bottom": onderaan een sectie (wit vult de golf).
+ * position="top": bovenaan (180° gedraaid). double: tweede, half-transparante golf erachter.
+ */
+interface Props { position?: 'bottom' | 'top'; double?: boolean; shape?: 'a' | 'b' | 'footer'; fill?: string }
+const { position = 'bottom', double = false, shape = 'a', fill = '#FFFFFF' } = Astro.props;
+const back = shape === 'b'
+  ? 'M0 60 C260 0 520 120 760 70 C1000 20 1220 0 1440 60 L1440 120 L0 120 Z'
+  : 'M0 70 C240 120 480 0 720 40 C960 80 1200 120 1440 60 L1440 120 L0 120 Z';
+const front = shape === 'b'
+  ? 'M0 85 C260 30 520 130 760 90 C1000 50 1220 30 1440 85 L1440 120 L0 120 Z'
+  : shape === 'footer'
+    ? 'M0 80 C360 20 720 130 1080 70 C1260 40 1380 50 1440 70 L1440 120 L0 120 Z'
+    : 'M0 90 C260 130 520 30 760 60 C1000 90 1220 130 1440 80 L1440 120 L0 120 Z';
+---
+<svg class:list={['golf', `golf--${position}`]} viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  {double && <path d={back} fill={fill} opacity=".45" />}
+  <path d={front} fill={fill} />
+</svg>
+<style>
+  .golf { position: absolute; left: 0; right: 0; width: 100%; height: auto; display: block; pointer-events: none; z-index: 2; }
+  .golf--bottom { bottom: -2px; }
+  .golf--top { top: -1px; transform: rotate(180deg); }
+</style>

@@ -1,0 +1,82 @@
+---
+/**
+ * Centrale footer (bestaande site): merk · onderwerpen · over de site · juridisch + onderbalk.
+ * Alle inhoud uit siteSettings. Kolommen zonder bestaande pagina's worden niet gerenderd
+ * (geen dode links).
+ */
+import type { SiteSettings } from '@/lib/content/types';
+import WaveDivider from '@/components/ui/WaveDivider.astro';
+import Logo from './Logo.astro';
+interface Props { settings: SiteSettings }
+const { settings } = Astro.props;
+const org = settings.organization ?? {};
+const year = new Date().getFullYear();
+const tel = org.phone ? `tel:${org.phone.replace(/[^\d+]/g, '').replace(/^0/, '+31')}` : undefined;
+const host = org.url ? new URL(org.url).host.replace(/^www\./, '') : null;
+---
+<footer class="footer">
+  <WaveDivider position="top" shape="footer" />
+  <div class="container">
+    <div class="footergrid">
+      <div class="merk">
+        <Logo settings={settings} size="lg" />
+        {settings.footerTagline && <p>{settings.footerTagline}</p>}
+        {(org.legalName || org.kvkNumber || org.vatNumber || org.phone) && (
+          <p class="bedrijf">
+            {(host || org.legalName) && (
+              <>Een uitgave van {host ? <a href={org.url} rel="noopener">{host}</a> : org.legalName}{org.city && `, ${org.city}`}<br /></>
+            )}
+            {org.kvkNumber && `KvK ${org.kvkNumber}`}{org.kvkNumber && org.vatNumber && ' · '}{org.vatNumber && `BTW ${org.vatNumber}`}
+            {org.phone && (<><br /><a href={tel}>{org.phone}</a></>)}
+            {org.email && (<><br /><a href={`mailto:${org.email}`}>{org.email}</a></>)}
+          </p>
+        )}
+      </div>
+
+      {settings.mainNav.length > 0 && (
+        <nav aria-labelledby="f-onderwerpen">
+          <h2 id="f-onderwerpen" class="footer__kop">Onderwerpen</h2>
+          <ul>{settings.mainNav.map((p) => <li><a href={`/${p.slug}/`}>{p.navLabel || p.name}</a></li>)}</ul>
+        </nav>
+      )}
+
+      {(settings.footerCompanyLinks.length > 0 || settings.footerNetworkLinks.length > 0) && (
+        <nav aria-labelledby="f-over">
+          <h2 id="f-over" class="footer__kop">Over de site</h2>
+          <ul>
+            {settings.footerCompanyLinks.map((l) => <li><a href={`/${l.slug}/`}>{l.title}</a></li>)}
+            {settings.footerNetworkLinks.map((l) => <li><a href={l.url} rel="noopener">{l.title}</a></li>)}
+          </ul>
+        </nav>
+      )}
+
+      {settings.footerLegalLinks.length > 0 && (
+        <nav aria-labelledby="f-juridisch">
+          <h2 id="f-juridisch" class="footer__kop">Juridisch</h2>
+          <ul>{settings.footerLegalLinks.map((l) => <li><a href={`/${l.slug}/`}>{l.title}</a></li>)}</ul>
+        </nav>
+      )}
+    </div>
+    <div class="onderbalk">
+      <span>© {year} {settings.siteName}</span>
+      {settings.footerNote && <span>{settings.footerNote}</span>}
+    </div>
+  </div>
+</footer>
+<style>
+  .footer { position: relative; background: var(--color-footer-bg); color: var(--color-footer-text); padding: 120px 0 32px; font-size: var(--text-small); overflow: hidden; margin-top: auto; }
+  .footergrid { display: grid; gap: 36px; position: relative; z-index: 1; }
+  .footer__kop { color: var(--color-footer-text); font-size: 1rem; margin-bottom: 12px; }
+  .footer ul li { margin-bottom: 8px; }
+  .footer a { color: var(--color-footer-text); }
+  .merk :global(.logo) { margin-bottom: 12px; color: var(--color-footer-text); }
+  .merk p { max-width: 26em; }
+  .bedrijf { font-size: var(--text-sm); line-height: 1.7; }
+  .bedrijf a { font-weight: 500; }
+  .onderbalk {
+    border-top: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent); margin-top: 40px; padding-top: 20px;
+    display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; font-size: var(--text-sm); position: relative; z-index: 1;
+  }
+  @media (min-width: 700px) { .footergrid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1000px) { .footergrid { grid-template-columns: 1.6fr 1fr 1fr 1fr; } }
+</style>

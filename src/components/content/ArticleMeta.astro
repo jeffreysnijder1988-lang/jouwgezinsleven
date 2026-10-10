@@ -1,0 +1,19 @@
+---
+/** Artikelmeta: alleen echte, vastgelegde gegevens tonen. */
+import type { Article } from '@/lib/content/types';
+import { formatDate, isoDate, formatAgeRange } from '@/lib/helpers/format';
+interface Props { article: Article }
+const { article: a } = Astro.props;
+const age = formatAgeRange(a.minimumAgeMonths, a.maximumAgeMonths);
+const updated = a.updatedAt && a.updatedAt !== a.publishedAt ? a.updatedAt : null;
+---
+<div class="article-meta meta">
+  {a.author?.name && <span>Door {a.author.name}</span>}
+  {a.publishedAt && <span>Gepubliceerd <time datetime={isoDate(a.publishedAt)}>{formatDate(a.publishedAt)}</time></span>}
+  {updated && <span>Bijgewerkt <time datetime={isoDate(updated)}>{formatDate(updated)}</time></span>}
+  {a.lastReviewedAt && <span>Gecontroleerd <time datetime={isoDate(a.lastReviewedAt)}>{formatDate(a.lastReviewedAt)}</time></span>}
+  {age && <span>Leeftijd: {age}</span>}
+</div>
+<style>
+  .article-meta { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-md); }
+</style>

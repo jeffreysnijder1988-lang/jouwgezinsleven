@@ -1,0 +1,636 @@
+[
+ {
+  "_id": "lifestage-zwanger",
+  "_type": "lifeStage",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "name": "Zwanger",
+  "slug": {
+   "_type": "slug",
+   "current": "zwanger"
+  },
+  "sortOrder": 1,
+  "primaryPillar": {
+   "_type": "reference",
+   "_ref": "pillar-zwanger",
+   "_weak": true
+  },
+  "description": "Van test tot bevalling"
+ },
+ {
+  "_id": "lifestage-baby",
+  "_type": "lifeStage",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "name": "Baby",
+  "slug": {
+   "_type": "slug",
+   "current": "baby"
+  },
+  "sortOrder": 2,
+  "primaryPillar": {
+   "_type": "reference",
+   "_ref": "pillar-baby-peuter",
+   "_weak": true
+  },
+  "minimumAgeMonths": 0,
+  "maximumAgeMonths": 12
+ },
+ {
+  "_id": "lifestage-peuter",
+  "_type": "lifeStage",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "name": "Peuter",
+  "slug": {
+   "_type": "slug",
+   "current": "peuter"
+  },
+  "sortOrder": 3,
+  "primaryPillar": {
+   "_type": "reference",
+   "_ref": "pillar-baby-peuter",
+   "_weak": true
+  },
+  "minimumAgeMonths": 12,
+  "maximumAgeMonths": 48
+ },
+ {
+  "_id": "lifestage-kleuter",
+  "_type": "lifeStage",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "name": "Kleuter",
+  "slug": {
+   "_type": "slug",
+   "current": "kleuter"
+  },
+  "sortOrder": 4,
+  "minimumAgeMonths": 48,
+  "maximumAgeMonths": 72
+ },
+ {
+  "_id": "lifestage-basisschool",
+  "_type": "lifeStage",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "name": "Basisschool",
+  "slug": {
+   "_type": "slug",
+   "current": "basisschool"
+  },
+  "sortOrder": 5,
+  "minimumAgeMonths": 72,
+  "maximumAgeMonths": 144
+ },
+ {
+  "_id": "lifestage-tiener",
+  "_type": "lifeStage",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "name": "Tiener",
+  "slug": {
+   "_type": "slug",
+   "current": "tiener"
+  },
+  "sortOrder": 6,
+  "minimumAgeMonths": 144
+ },
+ {
+  "_id": "pillar-zwanger",
+  "_type": "topic",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "kind": "pillar",
+  "name": "Zwanger",
+  "navOrder": 1,
+  "slug": {
+   "_type": "slug",
+   "current": "zwanger"
+  },
+  "networkDestinations": [
+   {
+    "_key": "k",
+    "_type": "networkDestination",
+    "priority": 1,
+    "relationType": "platform",
+    "platform": "rustigzwanger"
+   }
+  ],
+  "heroTitle": "Zwanger: van de eerste test tot de bevalling",
+  "description": "Rustige, praktische informatie voor elke fase: zwanger worden, de drie trimesters, de bevalling en de eerste weken erna. Geen bangmakerij, wel wat je echt wil weten.",
+  "seo": {
+   "_type": "seo",
+   "title": "Zwanger – praktische info per trimester | JouwGezinsleven.nl",
+   "description": "Praktische, rustige informatie over zwanger worden, elk trimester, de bevalling en de kraamtijd. Zonder paniek, gewoon in het Nederlands."
+  },
+  "faq": [
+   {
+    "_key": "01dee1f8b1",
+    "_type": "faqItem",
+    "question": "Vanaf wanneer heb ik recht op zwangerschapsverlof?",
+    "answer": "In Nederland gaat je zwangerschapsverlof in tussen 6 en 4 weken vóór de uitgerekende datum. Je kiest zelf wanneer, in overleg met je werkgever. Samen met het bevallingsverlof kom je op minimaal 16 weken."
+   },
+   {
+    "_key": "2c3204ccb8",
+    "_type": "faqItem",
+    "question": "Wanneer meld ik me aan bij een verloskundige?",
+    "answer": "Zo snel mogelijk na een positieve test, meestal rond 6 tot 8 weken. De eerste afspraak is vaak rond week 8 tot 10. Bel dus niet te lang na, zeker in drukke praktijken."
+   },
+   {
+    "_key": "c7eb965835",
+    "_type": "faqItem",
+    "question": "Is een fertiliteitsplanner nuttig als ik zwanger wil worden?",
+    "answer": "Voor de meeste stellen wel: je leert je cyclus kennen en ziet snel of je timing klopt. Lukt het na een jaar proberen niet (of na een half jaar boven de 35), ga dan naar de huisarts."
+   }
+  ],
+  "hubCta": {
+   "_type": "ctaLink",
+   "title": "Rustig zwanger, dag voor dag",
+   "text": "Op Rustigzwanger delen we elke week korte, kalme tips voor zwangere vrouwen. Wil je je cyclus of zwangerschap bijhouden, dan is er de fertiliteitsplanner.",
+   "label": "Volg Rustigzwanger",
+   "external": "https://www.instagram.com/rustigzwanger/"
+  },
+  "relatedTopics": [
+   {
+    "_key": "f94f0de3f9",
+    "_type": "reference",
+    "_ref": "pillar-baby-peuter",
+    "_weak": true
+   },
+   {
+    "_key": "4981cdd4e9",
+    "_type": "reference",
+    "_ref": "pillar-kinderopvang",
+    "_weak": true
+   }
+  ]
+ },
+ {
+  "_id": "pillar-baby-peuter",
+  "_type": "topic",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "kind": "pillar",
+  "name": "Baby & Peuter",
+  "navOrder": 2,
+  "slug": {
+   "_type": "slug",
+   "current": "baby-peuter"
+  },
+  "networkDestinations": [
+   {
+    "_key": "k",
+    "_type": "networkDestination",
+    "priority": 1,
+    "relationType": "platform",
+    "platform": "lomamo",
+    "externalUrl": "https://lomamo.nl"
+   }
+  ],
+  "heroTitle": "Baby & peuter: de eerste vier jaar",
+  "description": "Van de eerste nacht thuis tot de laatste luier. Antwoorden op wat je 's nachts googelt: slapen, eten, speelgoed dat wél blijft boeien, en leven met een klein kind in een gewoon huis.",
+  "seo": {
+   "_type": "seo",
+   "title": "Baby & Peuter – slapen, eten, speelgoed en meer | JouwGezinsleven.nl",
+   "description": "Praktische antwoorden voor ouders van een baby of peuter: slapen, eten, speelgoed, ontwikkeling en wonen met een klein kind."
+  },
+  "faq": [
+   {
+    "_key": "12533722d7",
+    "_type": "faqItem",
+    "question": "Hoeveel slaap heeft een peuter nodig?",
+    "answer": "Tussen 1 en 3 jaar gemiddeld 11 tot 14 uur per etmaal, inclusief middagslaapje. Rond 3 jaar verdwijnt het slaapje bij veel kinderen. Grote verschillen tussen kinderen zijn normaal."
+   },
+   {
+    "_key": "ce70e14394",
+    "_type": "faqItem",
+    "question": "Wanneer mag mijn baby beginnen met vaste voeding?",
+    "answer": "Rond 4 tot 6 maanden, in overleg met het consultatiebureau. Begin met kleine oefenhapjes; melk blijft tot 1 jaar de hoofdvoeding."
+   },
+   {
+    "_key": "ce2dc1934f",
+    "_type": "faqItem",
+    "question": "Welk speelgoed is veilig voor onder de 3 jaar?",
+    "answer": "Let op het CE-keurmerk en de leeftijdsaanduiding, vermijd kleine losse onderdelen en lange koorden. Bij houten speelgoed: onbehandeld of speelgoedveilige lak."
+   }
+  ],
+  "hubCta": {
+   "_type": "ctaLink",
+   "title": "Speelgoed dat wél blijft boeien",
+   "text": "Bij Lomamo vind je duurzaam speelgoed en kinderproducten, geselecteerd per leeftijd. Geen plastic rommel, wel dingen die na een jaar nog uit de kast komen.",
+   "label": "Bekijk Lomamo.nl",
+   "external": "https://lomamo.nl/"
+  },
+  "relatedTopics": [
+   {
+    "_key": "4981cdd4e9",
+    "_type": "reference",
+    "_ref": "pillar-kinderopvang",
+    "_weak": true
+   },
+   {
+    "_key": "60d67fdc67",
+    "_type": "reference",
+    "_ref": "pillar-eropuit",
+    "_weak": true
+   }
+  ]
+ },
+ {
+  "_id": "pillar-kinderopvang",
+  "_type": "topic",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "kind": "pillar",
+  "name": "Kinderopvang",
+  "navOrder": 3,
+  "slug": {
+   "_type": "slug",
+   "current": "kinderopvang"
+  },
+  "networkDestinations": [
+   {
+    "_key": "k",
+    "_type": "networkDestination",
+    "priority": 1,
+    "relationType": "platform",
+    "platform": "opvangkiezer",
+    "externalUrl": "https://opvangkiezer.nl"
+   }
+  ],
+  "heroTitle": "Kinderopvang: kiezen, kosten en wachtlijsten",
+  "description": "Opvang regelen is puzzelen: wachtlijsten, uurtarieven, toeslag en het gevoel dat je te laat bent. Hier staat wat je moet weten, per stad en per situatie, zodat je een keuze kunt maken waar je achter staat.",
+  "seo": {
+   "_type": "seo",
+   "title": "Kinderopvang – kosten, toeslag en opvang per stad | JouwGezinsleven.nl",
+   "description": "Kinderopvang zoeken? Wat het kost, hoeveel toeslag je krijgt, gastouder of kinderdagverblijf, en waar per stad nog plek is."
+  },
+  "faq": [
+   {
+    "_key": "bd1a3c6719",
+    "_type": "faqItem",
+    "question": "Wanneer moet ik me inschrijven voor kinderopvang?",
+    "answer": "In de grote steden zo vroeg mogelijk, vaak al rond de 12e week van de zwangerschap. Buiten de Randstad is 3 tot 6 maanden voor de startdatum meestal genoeg. Schrijf je bij meerdere locaties in; dat is gratis en verplicht je tot niets."
+   },
+   {
+    "_key": "9ad3741a79",
+    "_type": "faqItem",
+    "question": "Hoeveel kinderopvangtoeslag krijg ik?",
+    "answer": "Dat hangt af van je gezamenlijke inkomen, het aantal uren opvang en het uurtarief tot het maximumtarief. Bij een modaal inkomen vergoedt de overheid ruwweg 80 tot 90 procent. Reken het exact uit via de Belastingdienst."
+   },
+   {
+    "_key": "8b78684c0e",
+    "_type": "faqItem",
+    "question": "Wat is het verschil tussen gastouder en kinderdagverblijf?",
+    "answer": "Een gastouder vangt maximaal 6 kinderen thuis op: kleiner, flexibeler en vaak goedkoper. Een kinderdagverblijf heeft grotere groepen, vaste openingstijden en meer pedagogisch medewerkers. Beide vallen onder de toeslag."
+   }
+  ],
+  "hubCta": {
+   "_type": "ctaLink",
+   "title": "Vergelijk opvang in jouw buurt",
+   "text": "Op Opvangkiezer vergelijk je kinderdagverblijven, gastouders en BSO's bij jou in de buurt op prijs, openingstijden en beoordelingen. Gratis en zonder inschrijving.",
+   "label": "Vergelijk op Opvangkiezer.nl",
+   "external": "https://opvangkiezer.nl/"
+  },
+  "relatedTopics": [
+   {
+    "_key": "f94f0de3f9",
+    "_type": "reference",
+    "_ref": "pillar-baby-peuter",
+    "_weak": true
+   },
+   {
+    "_key": "60d67fdc67",
+    "_type": "reference",
+    "_ref": "pillar-eropuit",
+    "_weak": true
+   }
+  ]
+ },
+ {
+  "_id": "pillar-eropuit",
+  "_type": "topic",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "kind": "pillar",
+  "name": "Eropuit",
+  "navOrder": 4,
+  "slug": {
+   "_type": "slug",
+   "current": "eropuit"
+  },
+  "networkDestinations": [
+   {
+    "_key": "k",
+    "_type": "networkDestination",
+    "priority": 1,
+    "relationType": "platform",
+    "platform": "welkespeeltuin",
+    "externalUrl": "https://welkespeeltuin.nl"
+   }
+  ],
+  "heroTitle": "Eropuit met kinderen: speeltuinen, uitjes en regendagen",
+  "description": "Een uitje plannen op een regenachtige zondagochtend moet in vijf minuten kunnen. Daarom staat hier alles per regio en per weertype: speeltuinen, binnenspeelplekken, water en gratis uitjes.",
+  "seo": {
+   "_type": "seo",
+   "title": "Eropuit met kinderen – speeltuinen en uitjes per regio | JouwGezinsleven.nl",
+   "description": "Speeltuinen, binnenspeeltuinen, waterspeelplekken en gratis uitjes met kinderen, per provincie en per weertype. Nederland en België."
+  },
+  "faq": [
+   {
+    "_key": "09dda2d8a3",
+    "_type": "faqItem",
+    "question": "Waar vind ik een speeltuin bij mij in de buurt?",
+    "answer": "Op Welkespeeltuin.nl zoek je op plaats of postcode en zie je alle speeltuinen in de omgeving, met foto's en of er een wc en parkeerplek is. Voor België is er Welkespeeltuin.be."
+   },
+   {
+    "_key": "cd0f7e4113",
+    "_type": "faqItem",
+    "question": "Wat is een goed uitje met een peuter bij slecht weer?",
+    "answer": "Binnenspeeltuinen, kinderboerderijen met overdekte stallen, bibliotheken met een peuterhoek en zwembaden met een peuterbad. Kies iets onder de 30 minuten rijden zodat het slaapje niet in de soep loopt."
+   },
+   {
+    "_key": "36e909a3b0",
+    "_type": "faqItem",
+    "question": "Zijn speeltuinen in Nederland gratis?",
+    "answer": "Bijna alle openbare speeltuinen zijn gratis. Sommige grotere speeltuinen met beheer vragen een kleine entree of een vrijwillige bijdrage, meestal een paar euro per kind."
+   }
+  ],
+  "hubCta": {
+   "_type": "ctaLink",
+   "title": "Meer dan 4.000 speeltuinen op de kaart",
+   "text": "Zoek op plaats en je hebt binnen een minuut een plan voor vanmiddag. Met foto's, parkeertips en of er een wc in de buurt is. Ook voor België.",
+   "label": "Zoek op Welkespeeltuin.nl",
+   "external": "https://welkespeeltuin.nl/"
+  },
+  "relatedTopics": [
+   {
+    "_key": "9d81417f7a",
+    "_type": "reference",
+    "_ref": "pillar-feestjes",
+    "_weak": true
+   },
+   {
+    "_key": "19d39ad818",
+    "_type": "reference",
+    "_ref": "pillar-vakantie",
+    "_weak": true
+   }
+  ]
+ },
+ {
+  "_id": "pillar-feestjes",
+  "_type": "topic",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "kind": "pillar",
+  "name": "Feestjes",
+  "navOrder": 5,
+  "slug": {
+   "_type": "slug",
+   "current": "feestjes"
+  },
+  "networkDestinations": [
+   {
+    "_key": "k",
+    "_type": "networkDestination",
+    "priority": 1,
+    "relationType": "platform",
+    "platform": "welkespeeltuin",
+    "externalUrl": "https://welkespeeltuin.nl"
+   }
+  ],
+  "heroTitle": "Kinderfeestjes die je in een weekend regelt",
+  "description": "Een kinderfeestje hoeft geen productie te zijn. Hier vind je ideeën per leeftijd, voor thuis en buiten, met een eerlijk kostenplaatje en een tijdlijn zodat je het niet de avond ervoor nog moet uitvogelen.",
+  "seo": {
+   "_type": "seo",
+   "title": "Kinderfeestjes – ideeën per leeftijd, thuis en buiten | JouwGezinsleven.nl",
+   "description": "Kinderfeestje organiseren? Ideeën per leeftijd, thuis of buiten, traktaties, cadeaus en wat het kost. Praktisch en zonder stress."
+  },
+  "faq": [
+   {
+    "_key": "a07931903d",
+    "_type": "faqItem",
+    "question": "Hoeveel kinderen nodig je uit voor een kinderfeestje?",
+    "answer": "Een handige vuistregel: de leeftijd van je kind plus één. Een 4-jarige dus vijf vriendjes. Boven de 8 kinderen heb je een tweede volwassene nodig."
+   },
+   {
+    "_key": "f966d8ca82",
+    "_type": "faqItem",
+    "question": "Hoe lang duurt een kinderfeestje?",
+    "answer": "Voor peuters en kleuters 1,5 tot 2 uur. Vanaf 6 jaar 2 tot 3 uur. Langer wordt zelden leuker."
+   },
+   {
+    "_key": "267e284fbe",
+    "_type": "faqItem",
+    "question": "Wat kost een kinderfeestje thuis gemiddeld?",
+    "answer": "Thuis kom je met eten, drinken, een taart en een spel meestal uit tussen de 30 en 75 euro. Uitjes zoals een binnenspeeltuin of pretpark beginnen rond de 10 tot 20 euro per kind."
+   }
+  ],
+  "hubCta": {
+   "_type": "ctaLink",
+   "title": "Feestje buiten? Zoek een speeltuin met picknicktafels",
+   "text": "Op Welkespeeltuin.nl filter je op speeltuinen met zitplekken, schaduw en een wc in de buurt. Ideaal voor een feestje in de zomer.",
+   "label": "Zoek op Welkespeeltuin.nl",
+   "external": "https://welkespeeltuin.nl/"
+  },
+  "relatedTopics": [
+   {
+    "_key": "60d67fdc67",
+    "_type": "reference",
+    "_ref": "pillar-eropuit",
+    "_weak": true
+   },
+   {
+    "_key": "f94f0de3f9",
+    "_type": "reference",
+    "_ref": "pillar-baby-peuter",
+    "_weak": true
+   }
+  ]
+ },
+ {
+  "_id": "pillar-vakantie",
+  "_type": "topic",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "kind": "pillar",
+  "name": "Gezinsvakantie",
+  "navOrder": 6,
+  "slug": {
+   "_type": "slug",
+   "current": "gezinsvakantie"
+  },
+  "networkDestinations": [
+   {
+    "_key": "k",
+    "_type": "networkDestination",
+    "priority": 1,
+    "relationType": "platform",
+    "platform": "rustmetkids",
+    "externalUrl": "https://rustmetkids.nl"
+   }
+  ],
+  "heroTitle": "Gezinsvakantie: rust voor jullie, plezier voor de kinderen",
+  "description": "Vakantie met kinderen is geen vakantie zoals vroeger. Maar het kan wel rustig. Hier vind je bestemmingen, parken en checklists die rekening houden met middagslaapjes, korte beentjes en ouders die ook even willen zitten.",
+  "seo": {
+   "_type": "seo",
+   "title": "Gezinsvakantie – vakantie met kinderen in Nederland en Europa | JouwGezinsleven.nl",
+   "description": "Vakantie met kinderen: vakantieparken, kamperen, met baby of peuter, in Nederland, België en Duitsland. Eerlijke tips en checklists."
+  },
+  "faq": [
+   {
+    "_key": "cdb9e00279",
+    "_type": "faqItem",
+    "question": "Wat is de beste leeftijd om voor het eerst met een baby op vakantie te gaan?",
+    "answer": "Veel ouders vinden 3 tot 6 maanden de makkelijkste periode: de baby slaapt nog veel, eet nog niet mee en kruipt nog niet weg. Kies een bestemming met korte reistijd."
+   },
+   {
+    "_key": "d6ce9a1bd4",
+    "_type": "faqItem",
+    "question": "Vakantiepark of huisje: wat is handiger met een peuter?",
+    "answer": "Een park heeft voorzieningen (peuterbad, speeltuin, kinderbedje) binnen handbereik. Een los huisje geeft meer rust maar vraagt meer eigen organisatie. Met één kind onder de 3 wint het park meestal."
+   },
+   {
+    "_key": "5326b01ea8",
+    "_type": "faqItem",
+    "question": "Hoe ver kun je rijden met een peuter?",
+    "answer": "Reken op maximaal 3 tot 4 uur netto rijden per dag, vertrek rond het slaapje en plan elke 1,5 uur een stop met beweging."
+   }
+  ],
+  "hubCta": {
+   "_type": "ctaLink",
+   "title": "Vakanties waar ouders ook uitrusten",
+   "text": "Rustmetkids selecteert vakantieparken en huisjes waar het niet alleen voor de kinderen leuk is. Met eerlijke reviews en tips per leeftijd.",
+   "label": "Bekijk Rustmetkids.nl",
+   "external": "https://rustmetkids.nl/"
+  },
+  "relatedTopics": [
+   {
+    "_key": "60d67fdc67",
+    "_type": "reference",
+    "_ref": "pillar-eropuit",
+    "_weak": true
+   },
+   {
+    "_key": "f94f0de3f9",
+    "_type": "reference",
+    "_ref": "pillar-baby-peuter",
+    "_weak": true
+   }
+  ],
+  "navLabel": "Vakantie"
+ },
+ {
+  "_id": "siteSettings",
+  "_type": "siteSettings",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "siteName": "JouwGezinsleven.nl",
+  "tagline": "Alles wat je wil weten als je een gezin hebt, bouwt of droomt.",
+  "footerTagline": "Alles wat je wil weten als je een gezin hebt, bouwt of droomt.",
+  "mainNav": [
+   {
+    "_key": "n0",
+    "_type": "reference",
+    "_ref": "pillar-zwanger",
+    "_weak": true
+   },
+   {
+    "_key": "n1",
+    "_type": "reference",
+    "_ref": "pillar-baby-peuter",
+    "_weak": true
+   },
+   {
+    "_key": "n2",
+    "_type": "reference",
+    "_ref": "pillar-kinderopvang",
+    "_weak": true
+   },
+   {
+    "_key": "n3",
+    "_type": "reference",
+    "_ref": "pillar-eropuit",
+    "_weak": true
+   },
+   {
+    "_key": "n4",
+    "_type": "reference",
+    "_ref": "pillar-feestjes",
+    "_weak": true
+   },
+   {
+    "_key": "n5",
+    "_type": "reference",
+    "_ref": "pillar-vakantie",
+    "_weak": true
+   }
+  ],
+  "organization": {
+   "kvkNumber": "90450973",
+   "legalName": "Studio Cutter",
+   "phone": "085-2128455",
+   "vatNumber": "NL004817866B25",
+   "url": "https://studiocutter.nl/",
+   "city": "Arnhem"
+  },
+  "shortName": "JouwGezinsleven",
+  "footerNote": "Sommige links op deze site zijn affiliate links. Dat kost jou niets extra.",
+  "logo": {
+   "_type": "image",
+   "alt": "JouwGezinsleven.nl",
+   "asset": {
+    "_type": "reference",
+    "_ref": "image-df45e04ab89dbea64a9d9fceb0f5434da9ee6303-291x259-png"
+   }
+  }
+ },
+ {
+  "_id": "homePage",
+  "_type": "homePage",
+  "_updatedAt": "2026-09-28T21:40:19Z",
+  "heroTitle": "Van zwangerschap tot tiener – alles voor jouw gezin",
+  "heroIntro": "Praktische tips, eerlijke info en leuke uitjes. Gewoon in het Nederlands, gewoon voor Nederlandse gezinnen.",
+  "heroImage": {
+   "_type": "image",
+   "alt": "Ouders met een zoon en dochter, lachend",
+   "asset": {
+    "_type": "reference",
+    "_ref": "image-76e6b83c71c28b17ef78fd90f7be4ead64ceab21-981x917-webp"
+   }
+  },
+  "heroCta": {
+   "_type": "ctaLink",
+   "label": "Kies de fase van jouw gezin",
+   "external": "#levensfasen"
+  },
+  "lifeStagesTitle": "In welke fase zit jouw gezin?",
+  "lifeStagesIntro": "Kies een fase en je ziet alleen wat nu voor jou telt.",
+  "featuredTitle": "Uitgelicht deze maand",
+  "featuredIntro": "Handmatig gekozen. Geen algoritme, gewoon wat nu nuttig is.",
+  "latestTitle": "Nieuw op de site",
+  "feature": {
+   "_type": "ctaLink",
+   "title": "Waar is de dichtstbijzijnde speeltuin?",
+   "text": "Meer dan 4.000 speeltuinen in Nederland en België, met foto's, parkeertips en of er een wc in de buurt is. Zoek op plaats en je hebt binnen een minuut een plan voor vanmiddag.",
+   "label": "Zoek een speeltuin op Welkespeeltuin.nl",
+   "external": "https://welkespeeltuin.nl/"
+  },
+  "seo": {
+   "_type": "seo",
+   "title": "JouwGezinsleven.nl – Praktische gezinsinfo van zwangerschap tot tiener",
+   "description": "Praktische, lokale en herkenbare informatie voor Nederlandse gezinnen. Van zwanger tot tiener: kinderopvang, speelgoed, uitjes, feestjes en vakanties."
+  }
+ },
+ {
+  "_id": "image-76e6b83c71c28b17ef78fd90f7be4ead64ceab21-981x917-webp",
+  "_type": "sanity.imageAsset",
+  "url": "https://cdn.sanity.io/images/amxuxo0p/production/76e6b83c71c28b17ef78fd90f7be4ead64ceab21-981x917.webp",
+  "metadata": {
+   "dimensions": {
+    "width": 981,
+    "height": 917
+   }
+  }
+ },
+ {
+  "_id": "image-df45e04ab89dbea64a9d9fceb0f5434da9ee6303-291x259-png",
+  "_type": "sanity.imageAsset",
+  "url": "https://cdn.sanity.io/images/amxuxo0p/production/df45e04ab89dbea64a9d9fceb0f5434da9ee6303-291x259.png",
+  "metadata": {
+   "dimensions": {
+    "width": 291,
+    "height": 259
+   }
+  }
+ }
+]

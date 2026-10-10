@@ -1,0 +1,17 @@
+---
+/** Regenbooglogo + woordmerk (bestaande site). Logo is een vast merkbestand in /public/img. */
+import type { SiteSettings } from '@/lib/content/types';
+interface Props { settings: SiteSettings; size?: 'md' | 'lg' }
+const { settings, size = 'md' } = Astro.props;
+const word = settings.shortName || settings.siteName;
+---
+<a class:list={['logo', `logo--${size}`]} href="/" aria-label={`${settings.siteName} – naar de homepage`}>
+  <img src="/img/logo.webp" alt="" width="291" height="259" decoding="async" />
+  {word}
+</a>
+<style>
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: clamp(1.15rem, 5.5vw, 1.45rem); line-height: 1; color: var(--color-text); min-width: 0; }
+  .logo:hover { text-decoration: none; }
+  .logo img { width: clamp(48px, 14vw, 64px); height: auto; flex: none; }
+  .logo--lg img { width: 96px; }
+</style>

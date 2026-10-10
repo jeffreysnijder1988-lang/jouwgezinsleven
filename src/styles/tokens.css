@@ -1,0 +1,94 @@
+/*
+ * JouwGezinsleven — design tokens.
+ * Enige bron voor kleuren, typografie, spacing, radii en breedtes.
+ * Waarden 1-op-1 overgenomen uit de bestaande site (css/site.css) + DESIGN_SYSTEM.md.
+ * Componenten gebruiken uitsluitend deze custom properties.
+ */
+:root {
+  /* Merkkleuren (DESIGN_SYSTEM) */
+  --color-yellow: #F2BB6B;
+  --color-coral: #F28482;
+  --color-sage: #84A59D;
+  --color-text: #2D3748;
+  --color-text-muted: #4A5568;
+  --color-text-subtle: #718096; /* alleen voor placeholders/decoratie: haalt op wit geen AA */
+  --color-pink-soft: #F5CAC3;
+  --color-cream: #F7EDE2;
+  --color-white: #FFFFFF;
+
+  /* Afgeleide tinten uit de bestaande site */
+  --color-coral-hover: #EF7270;
+  --color-yellow-hover: #EEAE52;
+  --color-text-hover: #1F2733;
+  --color-sage-light: #CDDDD8;   /* levensfasekaart Peuter */
+  --color-sage-pale: #CFE0DA;    /* hub-hero sage */
+  --color-yellow-pale: #F7D8A4;  /* hub-hero geel (verloop) */
+  --gradient-hero: linear-gradient(110deg, #E5A64E 0%, #ECB562 40%, #EABE77 75%, #F0C98A 100%);
+  --gradient-hub-yellow: linear-gradient(110deg, var(--color-yellow), var(--color-yellow-pale));
+
+  /* Rollen */
+  --color-bg: var(--color-white);
+  --color-bg-soft: var(--color-cream);
+  --color-link: var(--color-text);
+  --color-focus: var(--color-text);
+  --color-cta-bg: var(--color-coral);
+  --color-cta-text: var(--color-text);
+  --color-footer-bg: var(--color-sage);
+  /* Toegankelijkheidsfix: #4A5568 op sage = 2,8:1 en #2D3748 = 4,5:1 → 20% donkerder = 5,2:1 */
+  --color-footer-text: color-mix(in srgb, var(--color-text) 80%, #000);
+  --color-border: var(--color-cream);
+
+  /* Typografie */
+  --font-display: 'Lilita One', 'Arial Rounded MT Bold', system-ui, sans-serif;
+  --font-heading: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --weight-heading: 700;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.85rem;
+  --text-small: 0.95rem;
+  --text-base: 1.125rem;      /* 18px, zoals de bestaande site */
+  --text-md: 1.05rem;
+  --text-lg: 1.15rem;
+  --text-h3: 1.2rem;
+  --text-h2: 1.75rem;
+  --text-hero: clamp(2.5rem, 7vw, 4.6rem);
+  --text-hub: clamp(2.2rem, 6vw, 3.8rem);
+  --text-display: clamp(1.7rem, 4vw, 2.3rem); /* CTA-koppen */
+  --text-feature: clamp(2rem, 5vw, 3.2rem);
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.7;
+
+  /* Spacing */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 22px;
+  --space-xl: 28px;
+  --space-2xl: 36px;
+  --space-3xl: 56px;
+  --space-section: 56px;
+  --gutter: 20px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* Breedtes */
+  --container: 1180px;
+  --container-narrow: 820px;
+  --container-wide: 1400px;
+  --measure: 38em;
+
+  --transition: 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --transition: 0s; }
+}

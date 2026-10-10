@@ -1,0 +1,25 @@
+---
+/**
+ * Eén buttoncomponent (bestaande site ".knop").
+ * primary = koraal · secondary = crème ("licht") · yellow = geel · dark = donker (in CTA-blokken) · text = tekstlink.
+ */
+interface Props { href: string; variant?: 'primary' | 'secondary' | 'yellow' | 'dark' | 'text'; external?: boolean; class?: string }
+const { href, variant = 'primary', external = /^https?:\/\//.test(href), class: cls } = Astro.props;
+---
+<a href={href} class:list={['knop', `knop--${variant}`, cls]} rel={external ? 'noopener' : undefined}><slot /></a>
+<style>
+  .knop {
+    display: inline-block; background: var(--color-coral); color: var(--color-text);
+    font-family: var(--font-heading); font-weight: var(--weight-heading); font-size: var(--text-md); line-height: 1.2;
+    padding: 15px 28px; border-radius: var(--radius-pill); border: 0; cursor: pointer;
+  }
+  .knop:hover { text-decoration: none; background: var(--color-coral-hover); }
+  .knop--yellow { background: var(--color-yellow); }
+  .knop--yellow:hover { background: var(--color-yellow-hover); }
+  .knop--secondary { background: var(--color-cream); }
+  .knop--secondary:hover { background: var(--color-white); }
+  .knop--dark { background: var(--color-text); color: var(--color-white); }
+  .knop--dark:hover { background: var(--color-text-hover); }
+  .knop--text { background: none; padding: 0; border-bottom: 3px solid var(--color-yellow); border-radius: 0; }
+  .knop--text:hover { background: none; border-color: var(--color-coral); }
+</style>

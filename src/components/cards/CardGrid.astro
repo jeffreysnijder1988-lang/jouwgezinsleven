@@ -1,0 +1,9 @@
+---
+/** Grid voor kaarten (bestaande site ".cards"): 1 → 2 → 3 kolommen. */
+---
+<div class="cards"><slot /></div>
+<style>
+  .cards { display: grid; gap: 22px; }
+  @media (min-width: 640px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+</style>

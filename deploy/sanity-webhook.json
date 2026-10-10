@@ -1,0 +1,21 @@
+{
+  "type": "document",
+  "name": "JouwGezinsleven – publicatie → GitHub build & deploy",
+  "description": "Start de publish-workflow in GitHub Actions bij het publiceren, wijzigen of depubliceren van content die op jouwgezinsleven.nl zichtbaar is. Drafts en versies triggeren niet.",
+  "url": "https://api.github.com/repos/<OWNER>/<REPO>/dispatches",
+  "httpMethod": "POST",
+  "dataset": "production",
+  "apiVersion": "v2025-02-19",
+  "includeDrafts": false,
+  "includeAllVersions": false,
+  "rule": {
+    "on": ["create", "update", "delete"],
+    "filter": "_type in [\"article\", \"topic\", \"lifeStage\", \"page\", \"siteSettings\", \"homePage\", \"author\"] && !(delta::operation() == \"update\" && delta::changedOnly((sourceNotes, reviewStatus, origin, legacyUrl)))",
+    "projection": "{\"event_type\": \"sanity-publish\", \"client_payload\": {\"id\": _id, \"type\": _type, \"operation\": delta::operation(), \"slug\": coalesce(after().slug.current, before().slug.current)}}"
+  },
+  "headers": {
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "Authorization": "Bearer <GITHUB_DISPATCH_TOKEN>"
+  }
+}

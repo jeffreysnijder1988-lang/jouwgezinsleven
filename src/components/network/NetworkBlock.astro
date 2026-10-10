@@ -1,0 +1,36 @@
+---
+/**
+ * Contextueel Family Media Network-blok. Data via de adapterlaag (src/lib/network), nooit hardcoded.
+ * Geen items → niets renderen (nette fallback, niets verzinnen).
+ */
+import type { NetworkDestination } from '@/lib/content/types';
+import { resolveNetworkItems } from '@/lib/network';
+interface Props { destinations?: NetworkDestination[] | null; title?: string }
+const { destinations, title = 'Verder in het Family Media Network' } = Astro.props;
+const items = await resolveNetworkItems(destinations);
+---
+{items.length > 0 && (
+  <section class="network" aria-labelledby="network-titel">
+    <h2 id="network-titel">{title}</h2>
+    <ul>
+      {items.map((item) => (
+        <li>
+          <a href={item.url} rel="noopener">
+            <strong>{item.title}</strong>
+            <span>{item.description || item.platform.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+<style>
+  .network { margin-block: var(--space-2xl); }
+  h2 { margin-bottom: 16px; }
+  ul { display: grid; gap: 14px; }
+  @media (min-width: 640px) { ul { grid-template-columns: repeat(2, 1fr); } }
+  a { display: block; border-radius: var(--radius-lg); padding: 20px 22px; background: var(--color-cream); height: 100%; }
+  a:hover { background: var(--color-pink-soft); text-decoration: none; }
+  strong { font-family: var(--font-heading); font-size: var(--text-lg); display: block; margin-bottom: 4px; }
+  span { color: var(--color-text-muted); font-size: var(--text-small); }
+</style>

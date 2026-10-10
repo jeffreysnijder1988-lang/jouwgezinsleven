@@ -1,0 +1,52 @@
+---
+/**
+ * BaseLayout — iedere publieke pagina loopt hierdoorheen.
+ * Beheert html/head, metadata, canonical, OG, structured data, header, main en footer.
+ * bare=true: alleen logo, geen navigatie/footer (404, zoals op de bestaande site).
+ */
+import '@/styles/global.css';
+import SeoHead from '@/components/seo/SeoHead.astro';
+import JsonLd from '@/components/seo/JsonLd.astro';
+import SiteHeader from '@/components/global/SiteHeader.astro';
+import SiteFooter from '@/components/global/SiteFooter.astro';
+import { getSiteSettings, isFixtureBuild } from '@/lib/content';
+import type { PageMeta } from '@/lib/seo/meta';
+import { breadcrumbSchema, graph, organizationSchema, websiteSchema, type Crumb } from '@/lib/schema/jsonld';
+
+interface Props {
+  meta: PageMeta;
+  crumbs?: Crumb[];
+  schema?: (Record<string, unknown> | null)[];
+  bare?: boolean;
+}
+const { meta, crumbs = [], schema = [], bare = false } = Astro.props;
+const settings = await getSiteSettings();
+const site = Astro.site;
+const ld = graph(organizationSchema(settings, site), websiteSchema(settings, site), breadcrumbSchema(crumbs, site), ...schema);
+---
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F7EDE2" />
+    <SeoHead meta={meta} siteName={settings.siteName} />
+    <link rel="icon" type="image/png" href="/img/logo.png" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <JsonLd data={ld} />
+  </head>
+  <body class:list={{ 'body--bare': bare }}>
+    {isFixtureBuild && (
+      <div class="test-banner" role="note">TESTBUILD met fixture-data — niet deployen. Alle pagina's staan op noindex.</div>
+    )}
+    <SiteHeader settings={settings} currentPath={Astro.url.pathname} bare={bare} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    {!bare && <SiteFooter settings={settings} />}
+  </body>
+</html>
+<style>
+  .test-banner { background: var(--color-text); color: var(--color-white); text-align: center; padding: 8px; font-size: var(--text-sm); }
+  .body--bare { background: var(--gradient-hero); }
+</style>

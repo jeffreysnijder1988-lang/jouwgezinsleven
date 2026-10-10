@@ -1,0 +1,36 @@
+---
+/** Featureblok (bestaande site ".feature"): sage tekstvlak + donker illustratievlak. Inhoud uit Sanity. */
+import type { CtaData } from '@/lib/content/types';
+import Button from '@/components/ui/Button.astro';
+import Illustration from '@/components/ui/Illustration.astro';
+interface Props { data?: CtaData | null }
+const { data } = Astro.props;
+---
+{data?.title && (
+  <section class="feature" aria-labelledby="feature-titel">
+    <div class="feature-grid">
+      <div class="feature-tekst">
+        <div>
+          <h2 id="feature-titel">{data.title}</h2>
+          {data.text && <p>{data.text}</p>}
+          {data.label && data.href && <Button href={data.href} variant="yellow">{data.label}</Button>}
+        </div>
+      </div>
+      <div class="feature-visual"><Illustration kind="feature" /></div>
+    </div>
+  </section>
+)}
+<style>
+  .feature { background: var(--color-sage); color: var(--color-text); }
+  .feature-grid { display: grid; }
+  .feature-tekst { padding: 56px var(--gutter); }
+  .feature-tekst h2 { font-family: var(--font-display); font-weight: 400; font-size: var(--text-feature); line-height: 1.05; margin-bottom: .4em; }
+  .feature-tekst p { max-width: 30em; font-size: 1.1rem; }
+  .feature-visual { background: var(--color-text); min-height: 260px; display: flex; align-items: center; justify-content: center; padding: 32px; }
+  .feature-visual :global(svg) { width: 100%; max-width: 460px; height: auto; }
+  @media (min-width: 860px) {
+    .feature-grid { grid-template-columns: 1fr 1fr; }
+    .feature-tekst { padding: 72px 48px 72px var(--gutter); }
+    .feature-tekst > div { max-width: calc(var(--container) / 2 - var(--gutter)); margin-left: auto; }
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+/**
+ * Eén route voor het eerste URL-niveau: pijlerhubs (/baby-peuter/) en algemene pagina's (/over/).
+ * Botsingen worden in de centrale route-registry afgevangen.
+ */
+import HubLayout from '@/layouts/HubLayout.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/content/Hero.astro';
+import PortableBody from '@/components/content/PortableBody.astro';
+import FAQ from '@/components/content/FAQ.astro';
+import { getAllRoutes, getArticlesByPillar, getPage, getPillars, getSiteSettings, articlePath } from '@/lib/content';
+import type { ArticleCardData, Page, Pillar } from '@/lib/content';
+import { buildMeta } from '@/lib/seo/meta';
+import { collectionPageSchema, faqSchema } from '@/lib/schema/jsonld';
+
+export async function getStaticPaths() {
+  const routes = await getAllRoutes();
+  return routes
+    .filter((r) => r.kind === 'pillar' || r.kind === 'page')
+    .map((r) => ({ params: { slug: r.params!.slug }, props: { route: r } }));
+}
+
+const { route } = Astro.props;
+const settings = await getSiteSettings();
+
+let hub: { pillar: Pillar; articles: ArticleCardData[] } | null = null;
+let page: Page | null = null;
+if (route.kind === 'pillar') {
+  const pillar = (await getPillars()).find((p) => p._id === route.id)!;
+  hub = { pillar, articles: await getArticlesByPillar(pillar._id) };
+} else {
+  page = await getPage(route.params!.slug);
+}
+
+const name = hub ? hub.pillar.name : page!.title;
+const crumbs = [{ name: 'Home', path: '/' }, { name, path: route.path }];
+const meta = buildMeta({
+  path: route.path, site: Astro.site, settings,
+  title: hub ? hub.pillar.heroTitle || hub.pillar.name : page!.title,
+  seo: hub ? hub.pillar.seo : page!.seo,
+  fallbackDescription: hub ? hub.pillar.description : page!.intro,
+  image: hub ? hub.pillar.heroImage : null,
+  noIndex: route.noIndex,
+});
+const hubSchema = hub
+  ? [
+      collectionPageSchema(hub.pillar.heroTitle || hub.pillar.name, meta.description, meta.canonical,
+        hub.articles.map((a) => ({ name: a.title, url: articlePath(a) })), Astro.site),
+      hub.pillar.faq?.length ? faqSchema(hub.pillar.faq) : null,
+    ]
+  : [];
+---
+{hub ? (
+  <HubLayout pillar={hub.pillar} articles={hub.articles} meta={meta} crumbs={crumbs} schema={hubSchema} />
+) : (
+  <BaseLayout meta={meta} crumbs={crumbs} schema={[page!.faq?.length ? faqSchema(page!.faq) : null]}>
+    <Hero variant="plain" title={page!.title} intro={page!.intro} crumbs={crumbs} />
+    <div class="container--narrow pagina">
+      <PortableBody value={page!.body} />
+      <FAQ items={page!.faq} />
+    </div>
+  </BaseLayout>
+)}
+
+<style>
+  .pagina { padding-block: var(--space-md) var(--space-section); }
+</style>

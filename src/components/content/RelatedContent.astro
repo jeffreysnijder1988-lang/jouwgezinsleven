@@ -1,0 +1,17 @@
+---
+import type { ArticleCardData } from '@/lib/content/types';
+import ArticleCard from '@/components/cards/ArticleCard.astro';
+import CardGrid from '@/components/cards/CardGrid.astro';
+interface Props { articles?: ArticleCardData[] | null; title?: string }
+const { articles, title = 'Lees ook' } = Astro.props;
+const list = articles ?? [];
+---
+{list.length > 0 && (
+  <section class="related" aria-labelledby="related-titel">
+    <div class="kop"><h2 id="related-titel">{title}</h2></div>
+    <CardGrid>{list.map((a) => <ArticleCard article={a} tone="cream" />)}</CardGrid>
+  </section>
+)}
+<style>
+  .related { margin-top: var(--space-section); }
+</style>

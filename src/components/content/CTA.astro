@@ -1,0 +1,29 @@
+---
+/** CTA-blok (bestaande site ".cta"): koraal vlak, Lilita-kop, donkere knop. */
+import Button from '@/components/ui/Button.astro';
+interface Props { title?: string | null; text?: string | null; label?: string | null; href?: string | null }
+const { title, text, label, href } = Astro.props;
+---
+{(title || text) && (
+  <section class="cta-blok section" aria-labelledby={title ? 'cta-titel' : undefined}>
+    <div class="container">
+      <div class="cta">
+        <div>
+          {title && <h2 id="cta-titel">{title}</h2>}
+          {text && <p>{text}</p>}
+        </div>
+        {label && href && <Button href={href} variant="dark">{label}</Button>}
+      </div>
+    </div>
+  </section>
+)}
+<style>
+  .cta { background: var(--color-cta-bg); color: var(--color-cta-text); border-radius: var(--radius-xl); padding: 36px var(--gutter); display: grid; gap: 20px; align-items: center; }
+  .cta h2 { font-family: var(--font-display); font-weight: 400; font-size: var(--text-display); margin-bottom: .35em; }
+  .cta p { margin: 0; max-width: 36em; }
+  .cta :global(.knop) { justify-self: start; }
+  @media (min-width: 800px) {
+    .cta { grid-template-columns: 1.4fr auto; padding: 44px 48px; }
+    .cta :global(.knop) { justify-self: end; white-space: nowrap; }
+  }
+</style>

@@ -1,0 +1,39 @@
+{
+  "name": "jouwgezinsleven",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "JouwGezinsleven.nl \u2014 Astro frontend met Sanity als redactionele source of truth",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:test": "CONTENT_SOURCE=fixture astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "qa": "node scripts/qa-dist.mjs",
+    "import:legacy": "node scripts/import-legacy-html.mjs",
+    "verify": "node scripts/verify-dist.mjs dist",
+    "deploy": "scripts/deploy.sh deploy dist",
+    "deploy:dry": "DRY_RUN=1 scripts/deploy.sh deploy dist"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "@fontsource/lilita-one": "^5.3.0",
+    "@fontsource/nunito": "^5.3.0",
+    "@fontsource/roboto": "^5.3.0",
+    "@portabletext/types": "^4.0.2",
+    "@sanity/client": "^8.8.0",
+    "@sanity/image-url": "^2.1.1",
+    "astro": "^7.3.5",
+    "astro-portabletext": "^1.0.1",
+    "groq-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.6.3",
+    "node-html-parser": "^9.0.4",
+    "typescript": "^6.0.3"
+  }
+}

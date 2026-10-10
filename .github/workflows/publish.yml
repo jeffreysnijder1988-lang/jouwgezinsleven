@@ -1,0 +1,262 @@
+# =============================================================================
+#  JouwGezinsleven — publicatiestraat
+#
+#  Sanity publish ─webhook→ repository_dispatch "sanity-publish" ─┐
+#  push naar main ────────────────────────────────────────────────┤
+#  dagelijkse run (ingeplande artikelen) ──────────────────────────┼→ build → QA → verify → deploy (cPanel) → verificatie
+#  handmatig (Actions → Publish → Run workflow) ───────────────────┘
+#
+#  Waar gedeployd wordt bij automatische triggers bepaalt repo-variabele AUTO_DEPLOY_TARGET:
+#    none (default) | staging | production
+#  Handmatig kies je zelf staging of production, of zet je een eerdere release terug (rollback_run_id).
+#
+#  Veiligheid:
+#   - deploy alleen als build + QA + verify-dist slagen;
+#   - één publicatiebaan (concurrency): een lopende deploy wordt nooit afgebroken,
+#     de nieuwste wachtende run vervangt oudere wachtende runs → nieuwste content wint;
+#   - de workflow schrijft niets naar Git of Sanity → geen trigger-loops;
+#   - secrets alleen via GitHub Environments, nooit in logs.
+# =============================================================================
+name: Publish
+
+on:
+  repository_dispatch:
+    types: [sanity-publish]
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '**/*.md', 'studio/**']
+  pull_request:
+  schedule:
+    - cron: '10 4 * * *'   # dagelijks 04:10 UTC — zet ingeplande artikelen (publishedAt in de toekomst) live
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Doelomgeving'
+        type: choice
+        options: [staging, production]
+        default: staging
+      rollback_run_id:
+        description: 'Rollback: run-ID van een eerdere geslaagde Publish-run (leeg = nieuwe build)'
+        required: false
+        default: ''
+      allow_content_drop:
+        description: 'Sta toe dat het aantal pagina''s >50% daalt (bewuste opschoning)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'publish' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  actions: read   # nodig om bij rollback het artifact van een eerdere run te downloaden
+
+env:
+  NODE_VERSION: '22'
+  ASTRO_TELEMETRY_DISABLED: '1'
+
+jobs:
+  # ---------------------------------------------------------------------------
+  plan:
+    name: Bepaal trigger en doel
+    runs-on: ubuntu-latest
+    outputs:
+      target: ${{ steps.p.outputs.target }}
+      deploy: ${{ steps.p.outputs.deploy }}
+      site_url: ${{ steps.p.outputs.site_url }}
+      rollback: ${{ steps.p.outputs.rollback }}
+      trigger_detail: ${{ steps.p.outputs.trigger_detail }}
+    steps:
+      - id: p
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_TARGET: ${{ inputs.target }}
+          ROLLBACK: ${{ inputs.rollback_run_id }}
+          AUTO_TARGET: ${{ vars.AUTO_DEPLOY_TARGET }}
+          PROD_URL: ${{ vars.PRODUCTION_URL }}
+          STAGING_URL: ${{ vars.STAGING_URL }}
+          # client_payload komt van buiten → alleen via env gebruiken, nooit direct in een shell-regel
+          P_TYPE: ${{ github.event.client_payload.type }}
+          P_ID: ${{ github.event.client_payload.id }}
+          P_OP: ${{ github.event.client_payload.operation }}
+          P_SLUG: ${{ github.event.client_payload.slug }}
+        run: |
+          set -euo pipefail
+          case "$EVENT" in
+            workflow_dispatch) target="$INPUT_TARGET" ;;
+            pull_request)      target="none" ;;
+            *)                 target="${AUTO_TARGET:-none}" ;;
+          esac
+          [[ "$target" =~ ^(none|staging|production)$ ]] || { echo "::error::ongeldig doel '$target'"; exit 1; }
+          if [[ "$target" == "production" ]]; then url="${PROD_URL:-https://jouwgezinsleven.nl}"; elif [[ "$target" == "staging" ]]; then url="${STAGING_URL:-}"; else url="${PROD_URL:-https://jouwgezinsleven.nl}"; fi
+          if [[ "$target" == "staging" && -z "$url" ]]; then echo "::error::repo-variabele STAGING_URL ontbreekt"; exit 1; fi
+          rollback=""; [[ "$EVENT" == "workflow_dispatch" && -n "$ROLLBACK" ]] && rollback="$ROLLBACK"
+          [[ -z "$rollback" || "$rollback" =~ ^[0-9]+$ ]] || { echo "::error::rollback_run_id moet een getal zijn"; exit 1; }
+          detail="$EVENT"
+          if [[ "$EVENT" == "repository_dispatch" ]]; then
+            detail="sanity ${P_OP:-?} ${P_TYPE:-?} ${P_ID:-?} ${P_SLUG:+(/$P_SLUG/)}"
+            detail="$(printf '%s' "$detail" | tr -cd '[:alnum:] ._/()?:-' | cut -c1-160)"
+          fi
+          {
+            echo "target=$target"
+            echo "deploy=$([[ "$target" != "none" ]] && echo true || echo false)"
+            echo "site_url=$url"
+            echo "rollback=$rollback"
+            echo "trigger_detail=$detail"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "### Publicatie gestart"
+            echo "| | |"; echo "|---|---|"
+            echo "| Trigger | \`$detail\` |"
+            echo "| Doel | **$target** ${url:+($url)} |"
+            echo "| Modus | $([[ -n "$rollback" ]] && echo "rollback naar run $rollback" || echo "nieuwe build") |"
+            echo "| Tijd (UTC) | $(date -u '+%Y-%m-%d %H:%M:%S') |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build + QA
+    needs: plan
+    if: needs.plan.outputs.rollback == ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PUBLIC_SITE_URL: ${{ needs.plan.outputs.site_url }}
+      PUBLIC_NOINDEX_SITE: ${{ needs.plan.outputs.target == 'staging' && '1' || '' }}
+      SANITY_PROJECT_ID: amxuxo0p
+      SANITY_DATASET: production
+      SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}   # optioneel: alleen nodig als de dataset private wordt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck
+        run: npx astro check
+      - name: Testscenario's (drafts, noindex, links) met fixture-data
+        run: |
+          QA_INDEXABLE=1 CONTENT_SOURCE=fixture OUT_DIR=./dist-fixture npx astro build
+          node scripts/qa-dist.mjs dist-fixture
+          if grep -rq "DRAFT mag nooit" dist-fixture; then echo "::error::draft-content in output"; exit 1; fi
+          if test -e dist-fixture/testpijler-a/toekomstig-artikel/index.html; then echo "::error::ingepland artikel te vroeg gepubliceerd"; exit 1; fi
+      - name: Aantal pagina's van de huidige live versie (content-drop guard)
+        if: needs.plan.outputs.deploy == 'true'
+        id: prev
+        env:
+          SITE: ${{ needs.plan.outputs.site_url }}
+        run: |
+          n="$(curl -fsS --max-time 15 "${SITE%/}/_release.txt?ci=${GITHUB_RUN_ID}" 2>/dev/null | sed -n 's/^pages=//p' || true)"
+          echo "count=${n:-0}" >> "$GITHUB_OUTPUT"
+          echo "Live versie: ${n:-onbekend} pagina's"
+      - name: Production build (alleen gepubliceerde Sanity-content)
+        run: npm run build
+      - name: QA op build-output
+        run: npm run qa
+      - name: Deploy-poort (essentiële bestanden, sitemap, robots, canonicals, content-drop)
+        env:
+          RELEASE_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          GIT_SHA: ${{ github.sha }}
+          TRIGGER: ${{ github.event_name }}
+          TRIGGER_DETAIL: ${{ needs.plan.outputs.trigger_detail }}
+          PREVIOUS_PAGE_COUNT: ${{ steps.prev.outputs.count }}
+          ALLOW_CONTENT_DROP: ${{ inputs.allow_content_drop && '1' || '' }}
+        run: node scripts/verify-dist.mjs dist
+      - name: Release bewaren (voor deploy en rollback)
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-${{ needs.plan.outputs.target }}
+          path: dist
+          include-hidden-files: true   # .htaccess
+          retention-days: 90
+          if-no-files-found: error
+      - name: Samenvatting
+        if: always()
+        run: |
+          {
+            echo "### Build: ${{ job.status }}"
+            [[ -f dist/_release.txt ]] && { echo '```'; cat dist/_release.txt; echo '```'; }
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy → ${{ needs.plan.outputs.target }}
+    needs: [plan, build]
+    # draait na een geslaagde build, óf direct bij een rollback (build wordt dan overgeslagen)
+    if: >-
+      always() && needs.plan.outputs.deploy == 'true' &&
+      (needs.build.result == 'success' || (needs.build.result == 'skipped' && needs.plan.outputs.rollback != ''))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: ${{ needs.plan.outputs.target }}
+      url: ${{ needs.plan.outputs.site_url }}
+    env:
+      DEPLOY_PROTOCOL: ${{ vars.DEPLOY_PROTOCOL }}
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      DEPLOY_SITE_URL: ${{ needs.plan.outputs.site_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - name: lftp installeren
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp >/dev/null
+      - name: Release ophalen (deze run)
+        if: needs.plan.outputs.rollback == ''
+        uses: actions/download-artifact@v4
+        with:
+          name: site-${{ needs.plan.outputs.target }}
+          path: release
+      - name: Release ophalen (rollback)
+        if: needs.plan.outputs.rollback != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: site-${{ needs.plan.outputs.target }}
+          path: release
+          run-id: ${{ needs.plan.outputs.rollback }}
+          github-token: ${{ github.token }}
+      - name: Release controleren
+        run: |
+          test -f release/_release.txt && test -f release/index.html && test -f release/.htaccess
+          cat release/_release.txt
+      - name: Snapshot van live bestanden die gewijzigd/verwijderd worden
+        run: DIST_DIR=release scripts/deploy.sh snapshot snapshot
+      - name: Snapshot bewaren
+        uses: actions/upload-artifact@v4
+        with:
+          name: pre-deploy-snapshot-${{ needs.plan.outputs.target }}
+          path: snapshot
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: ignore
+      - name: Deploy (gefaseerd, incrementeel) + live verificatie
+        run: scripts/deploy.sh deploy release
+      - name: Samenvatting
+        if: always()
+        env:
+          RESULT: ${{ job.status }}
+          TARGET: ${{ needs.plan.outputs.target }}
+          SITE: ${{ needs.plan.outputs.site_url }}
+        run: |
+          rel="$(sed -n 's/^release=//p' release/_release.txt 2>/dev/null || echo onbekend)"
+          {
+            echo "### Deploy naar $TARGET: $RESULT"
+            echo "| | |"; echo "|---|---|"
+            echo "| Release | \`$rel\` |"
+            echo "| Site | $SITE |"
+            echo "| Tijd (UTC) | $(date -u '+%Y-%m-%d %H:%M:%S') |"
+            if [[ "$RESULT" != "success" ]]; then
+              echo ""
+              echo "**Deploy mislukt.** Faalde de stap vóór 'fase B', dan is de live site ongewijzigd."
+              echo "Anders: draai deze workflow opnieuw (idempotent) of doe een rollback met de run-ID van de laatste geslaagde Publish-run."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,46 @@
+---
+/**
+ * Kaart voor levensfasen en pijlers.
+ *  variant "phase":   levensfasekaart homepage (bestaande site ".fase"). Zonder href → "Binnenkort meer",
+ *                     niet klikbaar (geen links naar pagina's die niet bestaan).
+ *  variant "related": "Ook interessant"-kaart op hubs (bestaande site ".anderelijst a").
+ */
+import Illustration from '@/components/ui/Illustration.astro';
+import type { PhaseTone } from '@/lib/helpers/theme';
+interface Props { title: string; href?: string | null; description?: string | null; meta?: string | null; icon?: string | null; tone?: PhaseTone; variant?: 'phase' | 'related' }
+const { title, href, description, meta, icon, tone = 'cream', variant = 'phase' } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+{variant === 'phase' ? (
+  <Tag class:list={['fase', `fase--${tone}`, { 'fase--leeg': !href }]} href={href ?? undefined}>
+    {!href && <span class="binnenkort">Binnenkort meer</span>}
+    <strong>{title}</strong>
+    {meta && <small>{meta}</small>}
+    {icon && <Illustration kind="phase" name={icon} class="fase__icoon" />}
+  </Tag>
+) : (
+  <Tag class="andere" href={href ?? undefined}>
+    <strong>{title}</strong>
+    {description && <span>{description}</span>}
+  </Tag>
+)}
+<style>
+  .fase { position: relative; display: block; border-radius: 22px; padding: 22px 18px 18px; min-height: 150px; color: var(--color-text); overflow: hidden; height: 100%; }
+  a.fase:hover { text-decoration: none; }
+  .fase strong { font-family: var(--font-heading); font-size: 1.35rem; display: block; margin-bottom: 4px; }
+  .fase small { display: block; font-size: var(--text-small); color: var(--color-text); }
+  .fase :global(.fase__icoon) { position: absolute; right: -6px; bottom: -6px; width: 70px; height: 70px; opacity: .9; }
+  .fase--pink { background: var(--color-pink-soft); }
+  .fase--yellow { background: var(--color-yellow); }
+  .fase--sage-light { background: var(--color-sage-light); }
+  .fase--cream { background: var(--color-cream); }
+  .binnenkort { position: absolute; top: 12px; right: 12px; background: var(--color-white); color: var(--color-text-muted); font-size: var(--text-xs); padding: 3px 10px; border-radius: var(--radius-pill); font-family: var(--font-heading); font-weight: var(--weight-heading); }
+  .fase--leeg { padding-top: 46px; }
+  .fase--leeg strong { color: var(--color-text-muted); }
+  @media (min-width: 1000px) { .fase { min-height: 180px; } }
+
+  .andere { display: block; border-radius: var(--radius-lg); padding: 20px 22px; background: var(--color-cream); height: 100%; }
+  a.andere:hover { background: var(--color-pink-soft); text-decoration: none; }
+  .andere strong { font-family: var(--font-heading); font-size: var(--text-lg); display: block; margin-bottom: 4px; }
+  .andere span { color: var(--color-text-muted); font-size: var(--text-small); }
+</style>

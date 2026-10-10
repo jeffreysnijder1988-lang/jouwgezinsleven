@@ -1,0 +1,10 @@
+---
+import type { SanityImage } from '@/lib/content/types';
+import SanityImg from '@/components/ui/SanityImg.astro';
+interface Props { node: SanityImage & { _type: 'image' } }
+const { node } = Astro.props;
+---
+<figure>
+  <SanityImg image={node} ratio={3 / 2} widths={[480, 760, 1140]} sizes="(min-width: 800px) 760px, 100vw" />
+  {node.caption && <figcaption>{node.caption}</figcaption>}
+</figure>

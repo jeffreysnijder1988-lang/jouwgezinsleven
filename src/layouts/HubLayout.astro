@@ -1,0 +1,64 @@
+---
+/**
+ * HubLayout — pijlerpagina's (/zwanger/, /baby-peuter/, …). Opbouw van de bestaande site:
+ * hero (kruimelpad, H1, intro, illustratie) · artikelen · intro (optioneel) · FAQ · CTA · Ook interessant.
+ * Artikelsecties verschijnen automatisch zodra er gepubliceerde artikelen zijn.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Hero from '@/components/content/Hero.astro';
+import PortableBody from '@/components/content/PortableBody.astro';
+import ContentSection from '@/components/content/ContentSection.astro';
+import ArticleCard from '@/components/cards/ArticleCard.astro';
+import CardGrid from '@/components/cards/CardGrid.astro';
+import CategoryCard from '@/components/cards/CategoryCard.astro';
+import FAQ from '@/components/content/FAQ.astro';
+import CTA from '@/components/content/CTA.astro';
+import NetworkBlock from '@/components/network/NetworkBlock.astro';
+import type { ArticleCardData, Pillar } from '@/lib/content/types';
+import type { PageMeta } from '@/lib/seo/meta';
+import type { Crumb } from '@/lib/schema/jsonld';
+import { pillarTheme } from '@/lib/helpers/theme';
+import { firstSentence } from '@/lib/helpers/format';
+
+interface Props { pillar: Pillar; articles: ArticleCardData[]; meta: PageMeta; crumbs: Crumb[]; schema?: (Record<string, unknown> | null)[] }
+const { pillar, articles, meta, crumbs, schema = [] } = Astro.props;
+const related = pillar.related ?? [];
+---
+<BaseLayout meta={meta} crumbs={crumbs} schema={schema}>
+  <Hero variant="hub" theme={pillarTheme(pillar.slug)} title={pillar.heroTitle || pillar.name} intro={pillar.description} crumbs={crumbs} />
+
+  {articles.length > 0 && (
+    <ContentSection title={`Artikelen over ${pillar.name.toLowerCase()}`} id="artikelen">
+      <CardGrid>{articles.map((a) => <ArticleCard article={a} showPillar={false} tone="cream" />)}</CardGrid>
+    </ContentSection>
+  )}
+
+  {pillar.intro && pillar.intro.length > 0 && (
+    <div class="container section"><PortableBody value={pillar.intro} /></div>
+  )}
+
+  <FAQ items={pillar.faq} tone="section" />
+
+  {pillar.hubCta?.title ? (
+    <CTA {...pillar.hubCta} />
+  ) : (
+    <div class="container"><NetworkBlock destinations={pillar.networkDestinations} /></div>
+  )}
+
+  {related.length > 0 && (
+    <section class="section andere-sectie" aria-labelledby="andere-titel">
+      <div class="container">
+        <div class="kop"><h2 id="andere-titel">Ook interessant</h2></div>
+        <ul class="anderelijst">
+          {related.map((r) => <li><CategoryCard variant="related" title={r.name} href={`/${r.slug}/`} description={firstSentence(r.description)} /></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+<style>
+  .andere-sectie { padding-top: 0; }
+  .anderelijst { display: grid; gap: 14px; }
+  @media (min-width: 640px) { .anderelijst { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .anderelijst { grid-template-columns: repeat(5, 1fr); } }
+</style>

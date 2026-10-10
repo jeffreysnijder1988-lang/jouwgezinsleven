@@ -1,0 +1,48 @@
+---
+/**
+ * ArticleLayout — generiek artikeltemplate. Nieuw artikel = nieuw Sanity-document, geen code.
+ * Volgorde (PAGE_TEMPLATES): Breadcrumbs · ArticleHero · ArticleMeta · Intro · ArticleBody ·
+ * ContextualNetworkBlock · RelatedArticles · OptionalFAQ.
+ * Visuele stijl afgeleid van de hubpagina's van de bestaande site (die had nog geen artikeltemplate).
+ */
+import BaseLayout from './BaseLayout.astro';
+import Hero from '@/components/content/Hero.astro';
+import ArticleMeta from '@/components/content/ArticleMeta.astro';
+import PortableBody from '@/components/content/PortableBody.astro';
+import NetworkBlock from '@/components/network/NetworkBlock.astro';
+import RelatedContent from '@/components/content/RelatedContent.astro';
+import FAQ from '@/components/content/FAQ.astro';
+import type { Article, ArticleCardData } from '@/lib/content/types';
+import type { PageMeta } from '@/lib/seo/meta';
+import type { Crumb } from '@/lib/schema/jsonld';
+
+interface Props { article: Article; related: ArticleCardData[]; meta: PageMeta; crumbs: Crumb[]; schema: (Record<string, unknown> | null)[] }
+const { article: a, related, meta, crumbs, schema } = Astro.props;
+const sources = (a.sources ?? []).filter((s) => s.sourceUrl || s.sourceName);
+---
+<BaseLayout meta={meta} crumbs={crumbs} schema={schema}>
+  <article>
+    <Hero variant="plain" title={a.title} intro={a.excerpt} image={a.heroImage} crumbs={crumbs}>
+      <ArticleMeta article={a} />
+    </Hero>
+    <div class="container--narrow artikel">
+      <PortableBody value={a.body} />
+      {sources.length > 0 && (
+        <aside class="bronnen" aria-labelledby="bronnen-titel">
+          <h2 id="bronnen-titel" class="h4">Bronnen</h2>
+          <ul>{sources.map((s) => <li>{s.sourceUrl ? <a href={s.sourceUrl} rel="noopener">{s.sourceName || s.sourceUrl}</a> : s.sourceName}</li>)}</ul>
+        </aside>
+      )}
+      <NetworkBlock destinations={a.networkDestinations} />
+      <FAQ items={a.faq} />
+    </div>
+    <div class="container artikel-einde"><RelatedContent articles={related} /></div>
+  </article>
+</BaseLayout>
+<style>
+  .artikel { padding-top: var(--space-md); }
+  .artikel-einde { padding-bottom: var(--space-section); }
+  .bronnen { margin-top: var(--space-2xl); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .bronnen ul { list-style: disc; padding-left: 1.2em; margin-top: 8px; }
+  .bronnen a { text-decoration: underline; }
+</style>

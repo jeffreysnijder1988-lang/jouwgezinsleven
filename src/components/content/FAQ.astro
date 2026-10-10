@@ -1,0 +1,35 @@
+---
+/**
+ * FAQ (bestaande site ".faq"): witte uitklapblokken met koraal pijltje. Native <details>, geen JS.
+ * Alleen tonen als er echte vragen zijn. tone="section" = eigen crème sectie (hubs).
+ */
+import type { FaqItem } from '@/lib/content/types';
+interface Props { items?: FaqItem[] | null; title?: string; tone?: 'section' | 'inline' }
+const { items, title = 'Veelgestelde vragen', tone = 'inline' } = Astro.props;
+const list = (items ?? []).filter((f) => f.question && f.answer);
+---
+{list.length > 0 && (
+  <section class:list={['faq', { 'faq--section': tone === 'section' }]} aria-labelledby="faq-titel">
+    <div class:list={{ 'container--narrow': tone === 'section' }}>
+      <div class="kop"><h2 id="faq-titel">{title}</h2></div>
+      {list.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <div>{f.answer.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>
+        </details>
+      ))}
+    </div>
+  </section>
+)}
+<style>
+  .faq { margin-top: var(--space-2xl); }
+  .faq--section { background: var(--color-cream); padding: var(--space-section) 0; margin-top: 0; }
+  .faq:not(.faq--section) details { background: var(--color-cream); }
+  details { background: var(--color-white); border-radius: 16px; margin-bottom: 12px; }
+  summary { cursor: pointer; list-style: none; padding: 18px 52px 18px 22px; font-family: var(--font-heading); font-weight: var(--weight-heading); font-size: var(--text-md); position: relative; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: ''; position: absolute; right: 22px; top: 50%; width: 10px; height: 10px; border-right: 3px solid var(--color-coral); border-bottom: 3px solid var(--color-coral); transform: translateY(-70%) rotate(45deg); transition: transform var(--transition); }
+  details[open] summary::after { transform: translateY(-30%) rotate(225deg); }
+  details > div { padding: 0 22px 20px; color: var(--color-text-muted); }
+  details > div p:last-child { margin: 0; }
+</style>

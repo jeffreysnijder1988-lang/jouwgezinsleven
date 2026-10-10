@@ -1,0 +1,8 @@
+---
+/** Interne link via Sanity-reference: URL wordt centraal in GROQ opgebouwd, dus nooit dood na slugwijziging. */
+import type { Mark } from 'astro-portabletext/types';
+interface Props { node: Mark<{ href?: string | null }> }
+const { node } = Astro.props;
+const href = node.markDef?.href;
+---
+{href ? <a href={href}><slot /></a> : <slot />}

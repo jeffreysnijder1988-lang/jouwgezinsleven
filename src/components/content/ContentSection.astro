@@ -1,0 +1,21 @@
+---
+/** Generieke sectie met kop (bestaande site: section + .wrap + .kop). */
+interface Props { title?: string | null; intro?: string | null; tone?: 'default' | 'soft' | 'pink'; id?: string; moreHref?: string | null; moreLabel?: string | null }
+const { title, intro, tone = 'default', id, moreHref, moreLabel } = Astro.props;
+const headingId = id ? `${id}-titel` : undefined;
+---
+<section class:list={['section', { 'section--soft': tone === 'soft', 'section--pink': tone === 'pink' }]} id={id} aria-labelledby={title ? headingId : undefined}>
+  <slot name="decor" />
+  <div class="container">
+    {title && (
+      <div class="kop">
+        <div>
+          <h2 id={headingId}>{title}</h2>
+          {intro && <p>{intro}</p>}
+        </div>
+        {moreHref && moreLabel && <a class="meer" href={moreHref}>{moreLabel}</a>}
+      </div>
+    )}
+    <slot />
+  </div>
+</section>

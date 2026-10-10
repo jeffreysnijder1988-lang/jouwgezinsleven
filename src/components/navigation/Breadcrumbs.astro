@@ -1,0 +1,23 @@
+---
+/** Kruimelpad (bestaande site: in de hero, boven de H1). */
+import type { Crumb } from '@/lib/schema/jsonld';
+interface Props { items: Crumb[] }
+const { items } = Astro.props;
+---
+{items.length > 1 && (
+  <nav class="crumbs" aria-label="Kruimelpad">
+    <ol>
+      {items.map((c, i) => (
+        <li>{i < items.length - 1 ? <a href={c.path}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>
+      ))}
+    </ol>
+  </nav>
+)}
+<style>
+  .crumbs { font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 18px; }
+  ol { display: flex; flex-wrap: wrap; gap: 6px; }
+  li { display: inline-flex; gap: 6px; }
+  li + li::before { content: '›'; }
+  a { color: var(--color-text-muted); }
+  [aria-current] { color: var(--color-text); font-weight: 500; }
+</style>

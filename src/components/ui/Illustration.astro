@@ -1,0 +1,44 @@
+---
+/**
+ * Decoratieve SVG-illustraties van de bestaande site (aria-hidden).
+ * kind="hub": grote illustratie in de pijler-hero · kind="phase": icoon op levensfasekaart ·
+ * kind="feature": speeltuinscène in het featureblok.
+ */
+interface Props { kind: 'hub' | 'phase' | 'feature'; name?: string; class?: string }
+const { kind, name = '', class: cls } = Astro.props;
+---
+{kind === 'hub' && name === 'roze' && (
+  <svg class={cls} viewBox="0 0 380 300" aria-hidden="true" focusable="false"><circle cx="190" cy="150" r="130" fill="#FFFFFF" opacity=".55"/><path d="M190 240c-40-30-90-70-90-120a50 50 0 0 1 90-30 50 50 0 0 1 90 30c0 50-50 90-90 120z" fill="#F28482"/><circle cx="300" cy="70" r="26" fill="#F2BB6B"/></svg>
+)}
+{kind === 'hub' && name === 'geel' && (
+  <svg class={cls} viewBox="0 0 380 300" aria-hidden="true" focusable="false"><circle cx="190" cy="150" r="130" fill="#FFFFFF" opacity=".5"/><circle cx="120" cy="90" r="34" fill="#F28482"/><rect x="150" y="140" width="130" height="90" rx="14" fill="#84A59D"/><rect x="180" y="110" width="70" height="40" rx="10" fill="#F5CAC3"/><circle cx="300" cy="80" r="22" fill="#2D3748" opacity=".85"/></svg>
+)}
+{kind === 'hub' && name === 'sage' && (
+  <svg class={cls} viewBox="0 0 380 300" aria-hidden="true" focusable="false"><circle cx="190" cy="150" r="130" fill="#FFFFFF" opacity=".6"/><rect x="110" y="120" width="160" height="110" rx="14" fill="#F2BB6B"/><path d="M95 130 190 60l95 70z" fill="#F28482"/><rect x="170" y="170" width="40" height="60" rx="6" fill="#FFFFFF"/><circle cx="300" cy="70" r="24" fill="#F5CAC3"/></svg>
+)}
+{kind === 'hub' && name === 'creme' && (
+  <svg class={cls} viewBox="0 0 380 300" aria-hidden="true" focusable="false"><circle cx="190" cy="150" r="130" fill="#FFFFFF" opacity=".6"/><circle cx="190" cy="150" r="60" fill="#F2BB6B"/></svg>
+)}
+
+{kind === 'phase' && name === 'zwanger' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="34" r="22" fill="#fff" opacity=".55"/><circle cx="32" cy="34" r="9" fill="#F28482"/></svg>)}
+{kind === 'phase' && name === 'baby' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="30" r="20" fill="#fff" opacity=".55"/><circle cx="25" cy="28" r="3" fill="#2D3748"/><circle cx="39" cy="28" r="3" fill="#2D3748"/><path d="M26 38q6 5 12 0" stroke="#2D3748" stroke-width="3" fill="none" stroke-linecap="round"/></svg>)}
+{kind === 'phase' && name === 'peuter' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="12" y="24" width="40" height="30" rx="6" fill="#fff" opacity=".55"/><rect x="20" y="14" width="14" height="14" rx="3" fill="#F2BB6B"/><rect x="36" y="14" width="14" height="14" rx="3" fill="#F28482"/></svg>)}
+{kind === 'phase' && name === 'kleuter' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d="M32 10 L54 50 L10 50 Z" fill="#84A59D" opacity=".5"/></svg>)}
+{kind === 'phase' && name === 'basisschool' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="14" y="18" width="36" height="30" rx="4" fill="#F2BB6B" opacity=".55"/></svg>)}
+{kind === 'phase' && name === 'tiener' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="20" fill="#F28482" opacity=".45"/></svg>)}
+
+{kind === 'feature' && (
+  <svg class={cls} viewBox="0 0 460 300" aria-hidden="true" focusable="false">
+    <rect x="0" y="0" width="460" height="300" rx="20" fill="#3a4658"/>
+    <path d="M0 300 L0 200 Q120 150 230 200 Q340 250 460 180 L460 300 Z" fill="#84A59D"/>
+    <rect x="60" y="120" width="10" height="90" fill="#F7EDE2"/><rect x="150" y="120" width="10" height="90" fill="#F7EDE2"/>
+    <rect x="50" y="112" width="120" height="10" rx="5" fill="#F28482"/>
+    <path d="M85 122 L85 175" stroke="#F7EDE2" stroke-width="4"/><path d="M135 122 L135 175" stroke="#F7EDE2" stroke-width="4"/>
+    <rect x="72" y="172" width="76" height="8" rx="4" fill="#F2BB6B"/>
+    <path d="M300 90 L300 210" stroke="#F7EDE2" stroke-width="10" stroke-linecap="round"/>
+    <path d="M300 95 L390 210" stroke="#F2BB6B" stroke-width="18" stroke-linecap="round"/>
+    <circle cx="300" cy="80" r="16" fill="#F28482"/>
+    <circle cx="410" cy="60" r="26" fill="#F2BB6B"/>
+    <circle cx="230" cy="215" r="14" fill="#2D3748"/><rect x="220" y="228" width="20" height="30" rx="8" fill="#F5CAC3"/>
+  </svg>
+)}

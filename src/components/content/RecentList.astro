@@ -1,0 +1,28 @@
+---
+/** "Nieuw op de site"-lijst (bestaande site ".recentlijst"). Alleen echte, gepubliceerde artikelen. */
+import type { ArticleCardData } from '@/lib/content/types';
+import { articlePath } from '@/lib/content';
+import { formatDateShort, isoDate } from '@/lib/helpers/format';
+interface Props { articles: ArticleCardData[] }
+const { articles } = Astro.props;
+---
+<ul class="recentlijst">
+  {articles.map((a) => (
+    <li>
+      <a href={articlePath(a)}>
+        {a.publishedAt ? <time datetime={isoDate(a.publishedAt)}>{formatDateShort(a.publishedAt)}</time> : <span />}
+        <span><strong>{a.title}</strong>{a.pillar.name}</span>
+      </a>
+    </li>
+  ))}
+</ul>
+<style>
+  .recentlijst { display: grid; border-top: 2px solid var(--color-cream); }
+  li { border-bottom: 2px solid var(--color-cream); }
+  a { display: grid; grid-template-columns: auto 1fr; gap: 16px; padding: 16px 0; align-items: baseline; }
+  a:hover { text-decoration: none; background: var(--color-cream); margin: 0 -12px; padding-inline: 12px; border-radius: 10px; }
+  time { font-size: var(--text-sm); color: var(--color-text-muted); white-space: nowrap; min-width: 5.5em; font-variant-numeric: tabular-nums; }
+  strong { font-family: var(--font-heading); display: block; }
+  span { font-size: 0.9rem; color: var(--color-text-muted); }
+  @media (min-width: 900px) { .recentlijst { grid-template-columns: 1fr 1fr; column-gap: 48px; } }
+</style>
