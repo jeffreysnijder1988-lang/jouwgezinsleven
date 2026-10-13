@@ -17,8 +17,10 @@ export const lifeStage = defineType({
     defineField({
       name: 'primaryPillar', title: 'Hoofdpijler (navigatie)', type: 'reference', to: [{type: 'topic'}],
       options: {filter: 'kind == "pillar"'},
-      description: 'Waar de levensfasekaart op de homepage naartoe linkt. Leeg = "Binnenkort meer".',
+      description: 'Alleen gebruikt zolang de fase nog geen eigen pagina heeft. Zodra er een artikel aan de fase hangt, linkt de kaart naar de fasepagina (/kleuter/ enz.). Zwanger blijft naar de pijler /zwanger/ gaan.',
     }),
+    defineField({name: 'pageIntro', title: 'Intro fasepagina', type: 'text', rows: 3, description: 'Korte intro bovenaan de fasepagina en fallback meta description.'}),
+    defineField({name: 'seo', title: 'SEO', type: 'seo', description: 'Fasepagina is automatisch noindex zolang er minder dan 6 artikelen aan hangen.'}),
   ],
   orderings: [{title: 'Volgorde', name: 'sortOrder', by: [{field: 'sortOrder', direction: 'asc'}]}],
 })

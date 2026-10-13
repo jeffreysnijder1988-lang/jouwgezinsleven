@@ -19,3 +19,13 @@ export const pillarTheme = (slug: string): HubTheme => PILLAR_THEMES[slug] ?? 'c
 /** Kleur van levensfasekaarten op volgorde (f1–f3 op de bestaande site). Fasen zonder pagina: crème. */
 export const PHASE_TONES = ['pink', 'yellow', 'sage-light'] as const;
 export type PhaseTone = (typeof PHASE_TONES)[number] | 'cream';
+
+/** Hero-kleur van levensfasepagina's. Onbekende fase: crème. */
+const LIFESTAGE_THEMES: Record<string, HubTheme> = {
+  baby: 'geel',
+  peuter: 'sage',
+  kleuter: 'roze',
+  basisschool: 'geel',
+  tiener: 'sage',
+};
+export const lifeStageTheme = (slug: string): HubTheme => LIFESTAGE_THEMES[slug] ?? 'creme';

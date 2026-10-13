@@ -110,6 +110,9 @@ export const LIFE_STAGES_QUERY = /* groq */ `*[_type == "lifeStage" && defined(s
   minimumAgeMonths,
   maximumAgeMonths,
   "primaryPillar": select(primaryPillar->kind == "pillar" && defined(primaryPillar->slug.current) => primaryPillar->${pillarRef}),
+  pageIntro,
+  ${seo},
+  "_updatedAt": _updatedAt,
   "articleCount": count(*[${routableArticle} && references(^._id)])
 }`;
 
@@ -124,6 +127,8 @@ export const ARTICLE_ROUTES_QUERY = /* groq */ `*[${routableArticle}]{
 }`;
 
 export const ARTICLES_BY_PILLAR_QUERY = /* groq */ `*[${routableArticle} && pillar._ref == $pillarId] | order(coalesce(publishedAt, _createdAt) desc)${articleCard}`;
+
+export const ARTICLES_BY_LIFESTAGE_QUERY = /* groq */ `*[${routableArticle} && $id in lifeStages[]._ref] | order(coalesce(publishedAt, _createdAt) desc)${articleCard}`;
 
 export const LATEST_ARTICLES_QUERY = /* groq */ `*[${routableArticle} && seo.noIndex != true] | order(coalesce(publishedAt, _createdAt) desc)[0...$limit]${articleCard}`;
 

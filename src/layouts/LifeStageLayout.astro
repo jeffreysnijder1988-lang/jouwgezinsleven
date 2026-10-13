@@ -1,0 +1,58 @@
+---
+/**
+ * LifeStageLayout — levensfasepagina's (/baby/, /peuter/, /kleuter/, …).
+ * Verzamelt alle artikelen die aan de fase gekoppeld zijn, gegroepeerd per pijler
+ * (volgorde = menuvolgorde), met per groep een link naar de pijlerhub en onderaan de andere fasen.
+ * Geen eigen data: alles komt uit lifeStage + article.lifeStages in Sanity.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Hero from '@/components/content/Hero.astro';
+import ContentSection from '@/components/content/ContentSection.astro';
+import ArticleCard from '@/components/cards/ArticleCard.astro';
+import CardGrid from '@/components/cards/CardGrid.astro';
+import CategoryCard from '@/components/cards/CategoryCard.astro';
+import type { ArticleCardData, LifeStage, Pillar } from '@/lib/content/types';
+import type { PageMeta } from '@/lib/seo/meta';
+import type { Crumb } from '@/lib/schema/jsonld';
+import { lifeStageTheme } from '@/lib/helpers/theme';
+import { formatAgeRange } from '@/lib/helpers/format';
+import { pillarPath } from '@/lib/content';
+
+interface Props {
+  stage: LifeStage; intro: string; articles: ArticleCardData[]; pillars: Pillar[];
+  otherStages: { name: string; href: string; meta?: string | null }[];
+  meta: PageMeta; crumbs: Crumb[]; schema?: (Record<string, unknown> | null)[];
+}
+const { stage, intro, articles, pillars, otherStages, meta, crumbs, schema = [] } = Astro.props;
+const groups = pillars
+  .map((p) => ({ pillar: p, items: articles.filter((a) => a.pillar?._id === p._id) }))
+  .filter((g) => g.items.length > 0);
+const age = formatAgeRange(stage.minimumAgeMonths, stage.maximumAgeMonths);
+---
+<BaseLayout meta={meta} crumbs={crumbs} schema={schema}>
+  <Hero variant="hub" theme={lifeStageTheme(stage.slug)} title={age ? `${stage.name} (${age})` : stage.name} intro={intro} crumbs={crumbs} />
+
+  {groups.map((g, i) => (
+    <ContentSection title={g.pillar.navLabel || g.pillar.name} id={`fase-${g.pillar.slug}`} tone={i % 2 ? 'soft' : 'default'}
+      moreHref={pillarPath(g.pillar)} moreLabel={`Alles over ${(g.pillar.navLabel || g.pillar.name).toLowerCase()}`}>
+      <CardGrid>{g.items.map((a) => <ArticleCard article={a} showPillar={false} tone={i % 2 ? 'white' : 'cream'} />)}</CardGrid>
+    </ContentSection>
+  ))}
+
+  {otherStages.length > 0 && (
+    <section class="section andere-sectie" aria-labelledby="fasen-titel">
+      <div class="container">
+        <div class="kop"><h2 id="fasen-titel">Andere fasen</h2></div>
+        <ul class="anderelijst">
+          {otherStages.map((s) => <li><CategoryCard variant="related" title={s.name} href={s.href} description={s.meta} /></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+<style>
+  .andere-sectie { padding-top: 0; }
+  .anderelijst { display: grid; gap: 14px; }
+  @media (min-width: 640px) { .anderelijst { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .anderelijst { grid-template-columns: repeat(5, 1fr); } }
+</style>

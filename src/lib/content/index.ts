@@ -42,6 +42,8 @@ export const getLifeStages = () => fetchContent<LifeStage[]>(Q.LIFE_STAGES_QUERY
 export const getArticlesByPillar = (pillarId: string) =>
   fetchContent<ArticleCardData[]>(Q.ARTICLES_BY_PILLAR_QUERY, { pillarId });
 
+export const getArticlesByLifeStage = (id: string) =>
+  fetchContent<ArticleCardData[]>(Q.ARTICLES_BY_LIFESTAGE_QUERY, { id });
 export const getLatestArticles = (limit = 6) =>
   fetchContent<ArticleCardData[]>(Q.LATEST_ARTICLES_QUERY, { limit });
 
@@ -57,6 +59,10 @@ export const getPage = (slug: string) => fetchContent<Page | null>(Q.PAGE_QUERY,
 export const articlePath = (a: { pillar: { slug: string }; slug: string }) => `/${a.pillar.slug}/${a.slug}/`;
 export const pillarPath = (p: { slug: string }) => `/${p.slug}/`;
 export const pagePath = (p: { slug: string }) => `/${p.slug}/`;
+export const lifeStagePath = (l: { slug: string }) => `/${l.slug}/`;
+
+/** Levensfasepagina is indexeerbaar vanaf dit aantal artikelen; daaronder noindex (dunne content, SEO_RULES). */
+export const LIFESTAGE_MIN_INDEXABLE = 6;
 
 /** Slugs die niet door redactionele pagina's gebruikt mogen worden. */
 const RESERVED = new Set(['sitemap.xml', 'robots.txt', '404', 'admin', 'studio', 'api', 'blog', 'category', 'categorie']);
@@ -129,6 +135,20 @@ export function getAllRoutes(): Promise<RouteEntry[]> {
       routes.push({
         path: pagePath(pg), kind: 'page', id: pg._id, params: { slug: pg.slug },
         noIndex: pg.noIndex, canonical: pg.canonicalOverride, lastmod: pg.lastmod,
+      });
+    }
+
+    // Levensfasepagina's (/peuter/, /kleuter/, …): alleen met minimaal één artikel, en alleen als de URL
+    // nog vrij is. "Zwanger" valt samen met de pijler /zwanger/ en krijgt dus geen eigen pagina.
+    const lifeStages = await getLifeStages();
+    const taken = new Set(routes.map((r) => r.path));
+    for (const ls of lifeStages) {
+      const path = lifeStagePath(ls);
+      if (!ls.articleCount || taken.has(path) || RESERVED.has(ls.slug) || !slugOk(ls.slug)) continue;
+      routes.push({
+        path, kind: 'lifeStage', id: ls._id, params: { slug: ls.slug },
+        noIndex: Boolean(ls.seo?.noIndex) || ls.articleCount < LIFESTAGE_MIN_INDEXABLE,
+        canonical: ls.seo?.canonicalOverride, lastmod: ls._updatedAt ?? null,
       });
     }
 

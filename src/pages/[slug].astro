@@ -4,19 +4,21 @@
  * Botsingen worden in de centrale route-registry afgevangen.
  */
 import HubLayout from '@/layouts/HubLayout.astro';
+import LifeStageLayout from '@/layouts/LifeStageLayout.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/content/Hero.astro';
 import PortableBody from '@/components/content/PortableBody.astro';
 import FAQ from '@/components/content/FAQ.astro';
-import { getAllRoutes, getArticlesByPillar, getPage, getPillars, getSiteSettings, articlePath } from '@/lib/content';
-import type { ArticleCardData, Page, Pillar } from '@/lib/content';
+import { getAllRoutes, getArticlesByPillar, getArticlesByLifeStage, getLifeStages, getPage, getPillars, getSiteSettings, articlePath, pillarPath } from '@/lib/content';
+import { formatAgeRange } from '@/lib/helpers/format';
+import type { ArticleCardData, LifeStage, Page, Pillar } from '@/lib/content';
 import { buildMeta } from '@/lib/seo/meta';
 import { collectionPageSchema, faqSchema } from '@/lib/schema/jsonld';
 
 export async function getStaticPaths() {
   const routes = await getAllRoutes();
   return routes
-    .filter((r) => r.kind === 'pillar' || r.kind === 'page')
+    .filter((r) => r.kind === 'pillar' || r.kind === 'page' || r.kind === 'lifeStage')
     .map((r) => ({ params: { slug: r.params!.slug }, props: { route: r } }));
 }
 
@@ -25,23 +27,42 @@ const settings = await getSiteSettings();
 
 let hub: { pillar: Pillar; articles: ArticleCardData[] } | null = null;
 let page: Page | null = null;
-if (route.kind === 'pillar') {
+let stage: { stage: LifeStage; articles: ArticleCardData[]; pillars: Pillar[]; intro: string; otherStages: { name: string; href: string; meta?: string | null }[] } | null = null;
+if (route.kind === 'lifeStage') {
+  const [stages, routes, pillars] = await Promise.all([getLifeStages(), getAllRoutes(), getPillars()]);
+  const ls = stages.find((s) => s._id === route.id)!;
+  const stageHref = (s: LifeStage) => routes.find((r) => r.kind === 'lifeStage' && r.id === s._id)?.path
+    ?? (s.primaryPillar ? pillarPath(s.primaryPillar) : null);
+  const age = formatAgeRange(ls.minimumAgeMonths, ls.maximumAgeMonths);
+  stage = {
+    stage: ls, pillars,
+    articles: await getArticlesByLifeStage(ls._id),
+    intro: ls.pageIntro || `Alle artikelen voor de fase ${ls.name.toLowerCase()}${age ? ` (${age})` : ''}, op één plek.`,
+    otherStages: stages.filter((s) => s._id !== ls._id)
+      .map((s) => ({ name: s.name, href: stageHref(s), meta: formatAgeRange(s.minimumAgeMonths, s.maximumAgeMonths) || s.description }))
+      .filter((s): s is { name: string; href: string; meta: string | null | undefined } => Boolean(s.href)),
+  };
+} else if (route.kind === 'pillar') {
   const pillar = (await getPillars()).find((p) => p._id === route.id)!;
   hub = { pillar, articles: await getArticlesByPillar(pillar._id) };
 } else {
   page = await getPage(route.params!.slug);
 }
 
-const name = hub ? hub.pillar.name : page!.title;
+const name = stage ? stage.stage.name : hub ? hub.pillar.name : page!.title;
 const crumbs = [{ name: 'Home', path: '/' }, { name, path: route.path }];
 const meta = buildMeta({
   path: route.path, site: Astro.site, settings,
-  title: hub ? hub.pillar.heroTitle || hub.pillar.name : page!.title,
-  seo: hub ? hub.pillar.seo : page!.seo,
-  fallbackDescription: hub ? hub.pillar.description : page!.intro,
+  title: stage ? stage.stage.name : hub ? hub.pillar.heroTitle || hub.pillar.name : page!.title,
+  seo: stage ? stage.stage.seo : hub ? hub.pillar.seo : page!.seo,
+  fallbackDescription: stage ? stage.intro : hub ? hub.pillar.description : page!.intro,
   image: hub ? hub.pillar.heroImage : null,
   noIndex: route.noIndex,
 });
+const stageSchema = stage
+  ? [collectionPageSchema(stage.stage.name, meta.description, meta.canonical,
+      stage.articles.map((a) => ({ name: a.title, url: articlePath(a) })), Astro.site)]
+  : [];
 const hubSchema = hub
   ? [
       collectionPageSchema(hub.pillar.heroTitle || hub.pillar.name, meta.description, meta.canonical,
@@ -50,7 +71,10 @@ const hubSchema = hub
     ]
   : [];
 ---
-{hub ? (
+{stage ? (
+  <LifeStageLayout stage={stage.stage} intro={stage.intro} articles={stage.articles} pillars={stage.pillars}
+    otherStages={stage.otherStages} meta={meta} crumbs={crumbs} schema={stageSchema} />
+) : hub ? (
   <HubLayout pillar={hub.pillar} articles={hub.articles} meta={meta} crumbs={crumbs} schema={hubSchema} />
 ) : (
   <BaseLayout meta={meta} crumbs={crumbs} schema={[page!.faq?.length ? faqSchema(page!.faq) : null]}>

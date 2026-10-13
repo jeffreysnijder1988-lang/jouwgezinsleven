@@ -46,7 +46,8 @@ let linked = 0;
     <ContentSection title={home.lifeStagesTitle || 'In welke fase zit jouw gezin?'} intro={home.lifeStagesIntro} id="levensfasen">
       <ul class="fasenlijst">
         {lifeStages.map((ls) => {
-          const href = ls.primaryPillar ? pillarPath(ls.primaryPillar) : null;
+          const href = routes.find((r) => r.kind === 'lifeStage' && r.id === ls._id)?.path
+            ?? (ls.primaryPillar ? pillarPath(ls.primaryPillar) : null);
           const tone = href ? PHASE_TONES[linked++ % PHASE_TONES.length] : 'cream';
           return (
             <li>

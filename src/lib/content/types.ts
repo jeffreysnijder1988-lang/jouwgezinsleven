@@ -54,6 +54,9 @@ export interface LifeStage {
   minimumAgeMonths?: number | null;
   maximumAgeMonths?: number | null;
   primaryPillar?: PillarRef | null;
+  pageIntro?: string | null;
+  seo?: Seo | null;
+  _updatedAt?: string;
   articleCount: number;
 }
 
@@ -149,7 +152,7 @@ export interface HomePage {
 
 export interface RouteEntry {
   path: string;
-  kind: 'home' | 'pillar' | 'article' | 'page';
+  kind: 'home' | 'pillar' | 'article' | 'page' | 'lifeStage';
   id?: string;
   params?: Record<string, string>;
   noIndex: boolean;
