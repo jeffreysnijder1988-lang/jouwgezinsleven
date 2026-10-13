@@ -25,7 +25,8 @@
 #    DEPLOY_HOST, DEPLOY_PORT (optioneel), DEPLOY_USER
 #    DEPLOY_PASSWORD   (ftps/sftp met wachtwoord)   of   DEPLOY_SSH_KEY (sftp, private key-inhoud)
 #    DEPLOY_KNOWN_HOSTS (sftp: regel(s) uit known_hosts — verplicht, host-key pinning)
-#    DEPLOY_PATH       remote document root, bijv. /home/<account>/public_html (verplicht, nooit "/")
+#    DEPLOY_PATH       remote document root, bijv. /home/<account>/public_html (verplicht, nooit "/"),
+#                      of "." voor een FTP-account dat alleen de document root van deze site ziet
 #    DEPLOY_SITE_URL   publieke URL voor verificatie (optioneel)
 #    DEPLOY_TLS_VERIFY 1 (default) — alleen op 0 zetten als de host geen geldig certificaat heeft
 #    DRY_RUN=1         toont wat er zou gebeuren, verandert niets
@@ -49,8 +50,12 @@ case "$PROTO" in
   ftp) [[ "${ALLOW_PLAIN_FTP:-}" == "1" ]] || die "onversleutelde FTP geweigerd (zet ALLOW_PLAIN_FTP=1 als er echt geen alternatief is)";;
   *) die "DEPLOY_PROTOCOL moet sftp of ftps zijn";;
 esac
+# "." = de startmap van het FTP-account zelf. Bedoeld voor een cPanel-FTP-account dat is opgesloten in
+# de document root van één site (least privilege): die map heet voor het account "/", wat hieronder geweigerd wordt.
 REMOTE="${DEPLOY_PATH%/}"
-[[ "$REMOTE" == /* && "$REMOTE" != "/" && "$REMOTE" != *".."* ]] || die "DEPLOY_PATH moet een absoluut pad zijn, niet '/' en zonder '..'"
+if [[ "$DEPLOY_PATH" != "." ]]; then
+  [[ "$REMOTE" == /* && "$REMOTE" != "/" && "$REMOTE" != *".."* ]] || die "DEPLOY_PATH moet '.' of een absoluut pad zijn, niet '/' en zonder '..'"
+fi
 
 command -v lftp >/dev/null || die "lftp is niet geïnstalleerd"
 
