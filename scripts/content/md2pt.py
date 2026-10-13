@@ -2,6 +2,8 @@
 # Gebruik: python3 scripts/content/md2pt.py <werkmap> <submap>  (leest <werkmap>/<submap>/<pijler>/<slug>.md)
 # Output: <werkmap>/<submap>/sanity-docs.json + images.json (imagePrompt/imageAlt per artikel).
 # - [[TOOL:uitgerekende-datum]] op een eigen regel -> toolEmbed-blok
+# - {{fact:kot-uurprijzen.bso}} / {{fact:kot-uurprijzen._year}} in tekst -> inline factValue (FAQ-antwoorden: token blijft staan, build vult in)
+# - [[FACTS:kot-betaaldata|upcoming|limit=3]] of [[FACTS:kot-uurprijzen|next]] op een eigen regel -> factList-blok
 # - interne links /pijler/slug/ -> weak reference (alleen als het md-bestand in articles/ of articles2/ staat); /baby/ etc. -> platte tekst
 # - Lomamo-URLs gecontroleerd tegen <werkmap>/articles/BRIEF.md
 # - Live artikelen buiten de md-bestanden: <werkmap>/existing.json ({"/pijler/slug/": "article-slug"}), bv. uit GROQ.
@@ -51,7 +53,18 @@ def spans(text,bk,src):
     if pos<len(text): ch.append((text[pos:],[]))
     for t,_ in ch:
         if re.search(r'\*\*|\]\(|^#',t): probs.append((src,'leftover md',t[:60]))
-    return [{'_type':'span','_key':key(bk,i),'text':t,'marks':mk} for i,(t,mk) in enumerate(ch)],md
+    out=[]
+    for i,(t,mk) in enumerate(ch):
+        # {{fact:reeks.sleutel}} / {{fact:reeks._year}} -> inline factValue (zie src/lib/content/facts.ts)
+        parts=re.split(r'\{\{fact:([a-z0-9-]+)\.([a-z0-9_-]+)\}\}',t)
+        for j in range(0,len(parts),3):
+            if parts[j]: out.append({'_type':'span','_key':key(bk,i,j),'text':parts[j],'marks':mk})
+            if j+2<len(parts):
+                fv={'_type':'factValue','_key':key(bk,i,j,'fact'),'series':parts[j+1]}
+                if parts[j+2]=='_year': fv['format']='year'
+                else: fv['key']=parts[j+2]; fv['format']='value'
+                out.append(fv)
+    return out,md
 out=[];report=[]
 for i,(f,(m,body)) in enumerate(arts.items()):
     if not m.get('imagePrompt') or not m.get('imageAlt'): probs.append((m['slug'],'no image prompt/alt',''))
@@ -66,6 +79,16 @@ for i,(f,(m,body)) in enumerate(arts.items()):
     for ln in body.split('\n'):
         s=ln.rstrip()
         if not s.strip() or s.strip()=='>': flush();continue
+        mf=re.match(r'^\[\[FACTS:([a-z0-9-]+)((?:\|[a-z]+(?:=\d+)?)*)\]\]$',s.strip())
+        if mf:
+            flush();opts=[o for o in mf.group(2).split('|') if o]
+            fl={'_type':'factList','_key':key(src,'facts',mf.group(1),len(blocks)),'series':mf.group(1)}
+            for o in opts:
+                if o=='upcoming': fl['onlyUpcoming']=True
+                elif o=='next': fl['showNext']=True
+                elif o.startswith('limit='): fl['limit']=int(o[6:])
+                else: probs.append((src,'onbekende FACTS-optie',o))
+            blocks.append(fl);continue
         if re.match(r'^\[\[TOOL:([a-z0-9-]+)\]\]$',s.strip()):
             flush();t=s.strip()[7:-2];blocks.append({'_type':'toolEmbed','_key':key(src,'tool',t),'tool':t});continue
         if s.startswith('### '): flush();add(s[4:],'h3')
@@ -77,7 +100,7 @@ for i,(f,(m,body)) in enumerate(arts.items()):
         elif '|' in s and s.strip().startswith('|'): probs.append((src,'table',s[:40]))
         else: para.append(s.strip())
     flush()
-    words=sum(len(c['text'].split()) for b in blocks for c in b.get('children',[]))
+    words=sum(len(c.get('text','x').split()) for b in blocks for c in b.get('children',[]))
     for fld,lim in (('title',110),('excerpt',300),('seoTitle',60),('seoDescription',160)):
         if len(m.get(fld) or '')>lim or not m.get(fld): probs.append((src,'len '+fld,len(m.get(fld) or '')))
     doc={'_id':'article-'+m['slug'],'_type':'article','title':m['title'],'slug':{'_type':'slug','current':m['slug']},

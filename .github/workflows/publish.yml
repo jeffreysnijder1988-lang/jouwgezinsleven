@@ -143,6 +143,18 @@ jobs:
           node scripts/qa-dist.mjs dist-fixture
           if grep -rq "DRAFT mag nooit" dist-fixture; then echo "::error::draft-content in output"; exit 1; fi
           if test -e dist-fixture/testpijler-a/toekomstig-artikel/index.html; then echo "::error::ingepland artikel te vroeg gepubliceerd"; exit 1; fi
+      - name: Testscenario's cijfers en regels (factSet, jaarwissel, ontbrekende sleutel)
+        run: |
+          A=dist-fixture/testpijler-a/artikel-een/index.html
+          grep -q "maximum voor bso € 9,98 per uur" "$A" || { echo "::error::inline factValue niet ingevuld"; exit 1; }
+          grep -q "Vanaf 1 januari 2099 (voorlopig):" "$A" || { echo "::error::factList showNext ontbreekt"; exit 1; }
+          grep -q "maximaal € 9,98 per uur." "$A" || { echo "::error::FAQ-token niet ingevuld"; exit 1; }
+          if grep -q "{{fact:" "$A"; then echo "::error::onopgelost {{fact:}}-token in output"; exit 1; fi
+          FACTS_TODAY=2099-01-02 QA_INDEXABLE=1 CONTENT_SOURCE=fixture OUT_DIR=./dist-fixture-2099 npx astro build
+          grep -q "maximum voor bso € 10,31 per uur" dist-fixture-2099/testpijler-a/artikel-een/index.html || { echo "::error::jaarwissel: nieuwe set niet gebruikt"; exit 1; }
+          node -e "const f=require('./tests/fixtures/content.json');f.find(d=>d._id==='art-1').body.find(b=>b._key==='fb1').children.find(c=>c._key==='fv2').key='bestaat-niet';require('fs').writeFileSync('/tmp/fixture-bad.json',JSON.stringify(f))"
+          if CONTENT_FIXTURE=/tmp/fixture-bad.json CONTENT_SOURCE=fixture OUT_DIR=./dist-fixture-bad npx astro build >/tmp/bad.log 2>&1; then echo "::error::ontbrekende factsleutel liet de build niet falen"; exit 1; fi
+          grep -q "\[facts\]" /tmp/bad.log || { echo "::error::build faalde, maar niet op de factcheck"; exit 1; }
       - name: Aantal pagina's van de huidige live versie (content-drop guard)
         if: needs.plan.outputs.deploy == 'true'
         id: prev

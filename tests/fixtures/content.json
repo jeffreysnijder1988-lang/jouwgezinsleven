@@ -319,6 +319,73 @@
       "marks": []
      }
     ]
+   },
+   {
+    "_type": "block",
+    "_key": "fb1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "fs1",
+      "text": "[TEST] In ",
+      "marks": []
+     },
+     {
+      "_type": "factValue",
+      "_key": "fv1",
+      "series": "test-uurprijzen",
+      "format": "year"
+     },
+     {
+      "_type": "span",
+      "_key": "fs2",
+      "text": " is het maximum voor bso ",
+      "marks": []
+     },
+     {
+      "_type": "factValue",
+      "_key": "fv2",
+      "series": "test-uurprijzen",
+      "key": "bso"
+     },
+     {
+      "_type": "span",
+      "_key": "fs3",
+      "text": " per uur; vast in set B: ",
+      "marks": []
+     },
+     {
+      "_type": "factValue",
+      "_key": "fv3",
+      "factSet": {
+       "_type": "reference",
+       "_ref": "fact-test-uurprijzen-b",
+       "_weak": true
+      },
+      "key": "dagopvang"
+     },
+     {
+      "_type": "span",
+      "_key": "fs4",
+      "text": ".",
+      "marks": []
+     }
+    ]
+   },
+   {
+    "_type": "factList",
+    "_key": "fl1",
+    "series": "test-uurprijzen",
+    "showNext": true
+   },
+   {
+    "_type": "factList",
+    "_key": "fl2",
+    "series": "test-betaaldata",
+    "onlyUpcoming": true,
+    "limit": 2
    }
   ],
   "faq": [
@@ -326,6 +393,12 @@
     "_key": "q1",
     "question": "[TEST] Vraag?",
     "answer": "[TEST] Antwoord."
+   },
+   {
+    "_key": "q-fact",
+    "_type": "faqItem",
+    "question": "[TEST] Hoeveel is de bso-uurprijs?",
+    "answer": "[TEST] In {{fact:test-uurprijzen._year}} maximaal {{fact:test-uurprijzen.bso}} per uur."
    }
   ],
   "networkDestinations": [
@@ -477,5 +550,113 @@
   "slug": {
    "current": "zonder-pijler"
   }
+ },
+ {
+  "_id": "fact-test-uurprijzen-a",
+  "_type": "factSet",
+  "title": "[TEST] Uurprijzen A",
+  "series": "test-uurprijzen",
+  "validFrom": "2000-01-01",
+  "validUntil": "2098-12-31",
+  "status": "definitief",
+  "items": [
+   {
+    "_key": "i1",
+    "key": "dagopvang",
+    "label": "Dagopvang",
+    "value": "11.23",
+    "unit": "eurPerHour"
+   },
+   {
+    "_key": "i2",
+    "key": "bso",
+    "label": "Bso",
+    "value": "9.98",
+    "unit": "eurPerHour"
+   }
+  ],
+  "sources": [
+   {
+    "_key": "fs1",
+    "_type": "sourceRef",
+    "sourceName": "[TEST] Bron",
+    "sourceUrl": "https://example.org/bron"
+   }
+  ],
+  "lastReviewedAt": "2026-10-13"
+ },
+ {
+  "_id": "fact-test-uurprijzen-b",
+  "_type": "factSet",
+  "title": "[TEST] Uurprijzen B",
+  "series": "test-uurprijzen",
+  "validFrom": "2099-01-01",
+  "status": "voorlopig",
+  "items": [
+   {
+    "_key": "i1",
+    "key": "dagopvang",
+    "label": "Dagopvang",
+    "value": "11.60",
+    "unit": "eurPerHour"
+   },
+   {
+    "_key": "i2",
+    "key": "bso",
+    "label": "Bso",
+    "value": "10.31",
+    "unit": "eurPerHour"
+   }
+  ],
+  "sources": [
+   {
+    "_key": "fs1",
+    "_type": "sourceRef",
+    "sourceName": "[TEST] Bron",
+    "sourceUrl": "https://example.org/bron"
+   }
+  ],
+  "lastReviewedAt": "2026-10-13"
+ },
+ {
+  "_id": "fact-test-betaaldata",
+  "_type": "factSet",
+  "title": "[TEST] Betaaldata",
+  "series": "test-betaaldata",
+  "validFrom": "2000-01-01",
+  "validUntil": "2099-12-31",
+  "status": "definitief",
+  "items": [
+   {
+    "_key": "d1",
+    "key": "2098-11",
+    "label": "toeslag voor november",
+    "value": "2098-10-20",
+    "unit": "date"
+   },
+   {
+    "_key": "d2",
+    "key": "2098-12",
+    "label": "toeslag voor december",
+    "value": "2098-11-20",
+    "unit": "date"
+   },
+   {
+    "_key": "d3",
+    "key": "2099-01",
+    "label": "toeslag voor januari 2099",
+    "value": "2098-12-21",
+    "unit": "date"
+   }
+  ],
+  "sources": [
+   {
+    "_key": "fs1",
+    "_type": "sourceRef",
+    "sourceName": "[TEST] Bron",
+    "sourceUrl": "https://example.org/bron"
+   }
+  ],
+  "lastReviewedAt": "2026-10-13"
  }
 ]

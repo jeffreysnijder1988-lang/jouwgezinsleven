@@ -211,6 +211,9 @@ export const PAGE_QUERY = /* groq */ `*[_type == "page" && slug.current == $slug
 }`;
 
 /** Gepubliceerde artikelen die NIET gerouteerd worden door ontbrekende verplichte velden (voor duidelijke buildmeldingen). */
+/** Alle gepubliceerde sets "Cijfers en regels" (klein; één keer per build opgehaald). */
+export const FACT_SETS_QUERY = /* groq */ `*[_type == "factSet" && !(_id in path("drafts.**"))] | order(series asc, validFrom asc){ _id, title, series, validFrom, validUntil, status, items[]{ key, label, value, unit }, sources[]{ sourceName, sourceUrl }, reviewDueAt }`;
+
 /** Gepubliceerde artikelen waarvan de controledatum (reviewDueAt) is verstreken. Alleen waarschuwen, nooit de build blokkeren. */
 export const REVIEW_OVERDUE_QUERY = /* groq */ `*[_type == "article" && !(_id in path("drafts.**")) && defined(reviewDueAt) && reviewDueAt < $today] | order(reviewDueAt asc){ _id, title, "slug": slug.current, "pillar": pillar->slug.current, reviewDueAt, reviewNote }`;
 

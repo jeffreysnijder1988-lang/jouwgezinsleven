@@ -1,6 +1,7 @@
 import type {StructureResolver} from 'sanity/structure'
 import {CogIcon} from '@sanity/icons/Cog'
 import {HomeIcon} from '@sanity/icons/Home'
+import {NumberIcon} from '@sanity/icons/Number'
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -17,10 +18,11 @@ export const structure: StructureResolver = (S) =>
         const soon = new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10)
         return S.documentList()
           .title('Te controleren')
-          .filter('_type == "article" && defined(reviewDueAt) && reviewDueAt <= $soon')
+          .filter('_type in ["article", "factSet"] && defined(reviewDueAt) && reviewDueAt <= $soon')
           .params({soon})
           .defaultOrdering([{field: 'reviewDueAt', direction: 'asc'}])
       }),
+      S.documentTypeListItem('factSet').title('Cijfers en regels').icon(NumberIcon),
       S.divider(),
       S.listItem().title('Pijlers').child(S.documentList().title('Pijlers').filter('_type == "topic" && kind == "pillar"').defaultOrdering([{field: 'navOrder', direction: 'asc'}])),
       S.documentTypeListItem('topic').title('Alle onderwerpen'),

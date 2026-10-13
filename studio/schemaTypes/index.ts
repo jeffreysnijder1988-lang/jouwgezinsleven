@@ -12,10 +12,11 @@ import {author} from './documents/author'
 import {page} from './documents/page'
 import {siteSettings} from './documents/siteSettings'
 import {homePage} from './documents/homePage'
+import {factSet} from './documents/factSet'
 
 export const schemaTypes = [
   // documents
-  article, topic, lifeStage, author, page, siteSettings, homePage,
+  article, topic, lifeStage, author, page, siteSettings, homePage, factSet,
   // objects
   seo, networkDestination, faqItem, sourceRef, location, ctaLink, footerLink, blockContent,
 ]

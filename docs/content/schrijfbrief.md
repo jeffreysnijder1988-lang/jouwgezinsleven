@@ -14,6 +14,16 @@ JouwGezinsleven.nl is een Nederlandse informatiesite voor gezinnen (zwangerschap
 - NIET doorlinken naar welkespeeltuin.nl (nog niet live). Geen concrete uitjes/locaties noemen die je niet hebt geverifieerd; generieke typen uitjes is prima.
 - Netwerkrichtlijn: JouwGezinsleven richt zich niet op de commerciële productintentie van Lomamo ("speelgoed 2 jaar kopen"); wij beantwoorden de informatieve vraag en verwijzen contextueel.
 
+## Cijfers uit reeksen (verplicht waar een reeks bestaat)
+Officiële, jaarlijks wisselende gegevens staan op één plek in Sanity ("Cijfers en regels"). Typ die NOOIT als los getal in de tekst, maar gebruik de notatie; de build vult de waarde in die vandaag geldt.
+- Inline in tekst én in FAQ-antwoorden: `{{fact:reeks.sleutel}}` → bijv. `{{fact:kot-uurprijzen.bso}}` wordt "€ 9,98". Het jaartal van de geldende set: `{{fact:kot-uurprijzen._year}}`. Schrijf dus "In {{fact:kot-uurprijzen._year}} krijg je toeslag over maximaal {{fact:kot-uurprijzen.bso}} per uur."
+- Als lijst, op een eigen regel: `[[FACTS:kot-uurprijzen]]` (alle waarden), `[[FACTS:kot-uurprijzen|next]]` (ook de volgende set als die al bekend is), `[[FACTS:kot-betaaldata|upcoming|limit=3]]` (eerstvolgende betaaldatums).
+- Beschikbare reeksen:
+  - `kot-uurprijzen`: maximum uurprijzen kinderopvangtoeslag. Sleutels `dagopvang`, `bso`, `gastouder`.
+  - `kot-betaaldata`: betaaldatums toeslagen (alleen als lijst met `upcoming`).
+- Rekenvoorbeelden die een bedrag combineren met een percentage of een eigen uurprijs blijven gewone tekst en noemen expliciet het jaar ("met de bedragen van 2026").
+- Ontbreekt een reeks die je nodig hebt: schrijf het getal met jaartal en meld in `notes` dat er een reeks voor zou moeten komen.
+
 ## Lomamo-collecties (enige toegestane Lomamo-URL's)
 - Speelmatten — https://lomamo.nl/collections/speelmatten
 - Soft Play — https://lomamo.nl/collections/soft-play

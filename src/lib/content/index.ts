@@ -2,6 +2,7 @@
  * Data access layer. Pagina's en componenten halen content uitsluitend via deze functies.
  */
 import { fetchContent } from './source';
+import { resolveFactsInBlocks, resolveFactTokens, factWarnings } from './facts';
 import * as Q from '../sanity/queries';
 import type {
   Article, ArticleCardData, HomePage, LifeStage, Page, Pillar, RouteEntry, SiteSettings,
@@ -47,13 +48,24 @@ export const getArticlesByLifeStage = (id: string) =>
 export const getLatestArticles = (limit = 6) =>
   fetchContent<ArticleCardData[]>(Q.LATEST_ARTICLES_QUERY, { limit });
 
-export const getArticle = (pillar: string, slug: string) =>
-  fetchContent<Article | null>(Q.ARTICLE_QUERY, { pillar, slug });
+export async function getArticle(pillar: string, slug: string): Promise<Article | null> {
+  const a = await fetchContent<Article | null>(Q.ARTICLE_QUERY, { pillar, slug });
+  if (!a) return a;
+  const where = `artikel /${pillar}/${slug}/`;
+  return {
+    ...a,
+    body: await resolveFactsInBlocks(a.body, where),
+    faq: a.faq ? await Promise.all(a.faq.map(async (f) => ({ ...f, answer: (await resolveFactTokens(f.answer, `${where} FAQ`)) ?? f.answer }))) : a.faq,
+  };
+}
 
 export const getRelatedFallback = (pillarId: string, id: string) =>
   fetchContent<ArticleCardData[]>(Q.RELATED_FALLBACK_QUERY, { pillarId, id });
 
-export const getPage = (slug: string) => fetchContent<Page | null>(Q.PAGE_QUERY, { slug });
+export async function getPage(slug: string): Promise<Page | null> {
+  const p = await fetchContent<Page | null>(Q.PAGE_QUERY, { slug });
+  return p ? { ...p, body: await resolveFactsInBlocks(p.body, `pagina /${slug}/`) } : p;
+}
 
 /** Canoniek pad voor een artikel. Eén plek, overal hergebruikt. */
 export const articlePath = (a: { pillar: { slug: string }; slug: string }) => `/${a.pillar.slug}/${a.slug}/`;
@@ -113,6 +125,7 @@ export function getAllRoutes(): Promise<RouteEntry[]> {
     for (const o of overdue) {
       warnings.push(`artikel /${o.pillar}/${o.slug}/ moest vóór ${o.reviewDueAt} opnieuw gecontroleerd worden${o.reviewNote ? ` (${o.reviewNote.split('\n')[0].slice(0, 120)})` : ''}`);
     }
+    for (const w of await factWarnings()) warnings.push(w);
     warnings.forEach((w) => console.warn(`[content] waarschuwing: ${w}`));
     if (problems.length) {
       throw new Error(`[content] ${problems.length} contentfout(en) — build afgebroken, productie blijft ongewijzigd:\n - ${problems.join('\n - ')}`);

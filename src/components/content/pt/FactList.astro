@@ -1,0 +1,21 @@
+---
+/**
+ * Lijst uit "Cijfers en regels" (factSet). De waarden zijn al opgelost in de datalaag
+ * (src/lib/content/facts.ts); dit component rendert alleen. Gewone lijst-markup, zodat
+ * de prose-opmaak van artikelen geldt.
+ */
+import type { ResolvedFactList } from '@/lib/content/facts';
+interface Props { node: ResolvedFactList }
+const { node } = Astro.props;
+---
+{node.items.length > 0 ? (
+  <ul>{node.items.map((i) => <li>{i.text}</li>)}</ul>
+) : node.emptyText && (
+  <p>{node.emptyText}{node.emptyHref && <> <a href={node.emptyHref} rel="noopener">Bekijk de officiële pagina</a>.</>}</p>
+)}
+{node.next && node.next.items.length > 0 && (
+  <>
+    <p>{node.next.heading}</p>
+    <ul>{node.next.items.map((i) => <li>{i.text}</li>)}</ul>
+  </>
+)}
