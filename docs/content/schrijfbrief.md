@@ -93,6 +93,8 @@ lifeStages: [zwanger]      # uit: zwanger, baby, peuter, kleuter, basisschool, t
 minimumAgeMonths: null     # alleen indien zinvol
 maximumAgeMonths: null
 volatile: true             # true als er regels/bedragen/termijnen/veiligheidsadvies in staan
+reviewDueAt: 2026-12-15    # VERPLICHT bij volatile: eerste datum waarop iets in de tekst verouderd kan zijn (nieuw toeslagjaar 1 jan, laatste betaaldatum, aangekondigde wetswijziging, nieuwe richtlijn). Kies een datum ruim vóór de wijziging ingaat. Niet-volatile: weglaten (wordt 12 maanden).
+reviewNote: "…"            # bij volatile: welke cijfers/datums/regels dan opnieuw nagekeken moeten worden en bij welke bron (1–3 zinnen)
 sources:                   # alle geraadpleegde bronnen die feiten onderbouwen (verplicht bij volatile/medisch)
   - name: "UWV – Zwangerschapsverlof"
     url: "https://…"

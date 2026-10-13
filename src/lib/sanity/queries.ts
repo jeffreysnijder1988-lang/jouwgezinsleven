@@ -211,4 +211,7 @@ export const PAGE_QUERY = /* groq */ `*[_type == "page" && slug.current == $slug
 }`;
 
 /** Gepubliceerde artikelen die NIET gerouteerd worden door ontbrekende verplichte velden (voor duidelijke buildmeldingen). */
+/** Gepubliceerde artikelen waarvan de controledatum (reviewDueAt) is verstreken. Alleen waarschuwen, nooit de build blokkeren. */
+export const REVIEW_OVERDUE_QUERY = /* groq */ `*[_type == "article" && !(_id in path("drafts.**")) && defined(reviewDueAt) && reviewDueAt < $today] | order(reviewDueAt asc){ _id, title, "slug": slug.current, "pillar": pillar->slug.current, reviewDueAt, reviewNote }`;
+
 export const UNROUTABLE_ARTICLES_QUERY = /* groq */ `*[_type == "article" && !(${routableArticle}) && !(defined(publishedAt) && dateTime(publishedAt) > dateTime(now()))]{ _id, title, "slug": slug.current, "pillar": pillar->slug.current, "pillarKind": pillar->kind }`;

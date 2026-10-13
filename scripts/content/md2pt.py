@@ -94,6 +94,11 @@ for i,(f,(m,body)) in enumerate(arts.items()):
     for k in ('minimumAgeMonths','maximumAgeMonths'):
         if m.get(k) is not None: doc[k]=m[k]
     if m.get('volatile'): doc['lastReviewedAt']=TODAY
+    # Controledatum: expliciet uit frontmatter, anders 12 maanden na vandaag (ook voor niet-veranderlijke artikelen)
+    due=m.get('reviewDueAt') or (BASE.replace(year=BASE.year+1).date().isoformat())
+    doc['reviewDueAt']=str(due)
+    if m.get('reviewNote'): doc['reviewNote']=m['reviewNote']
+    if m.get('volatile') and not m.get('reviewDueAt'): probs.append((src,'volatile zonder reviewDueAt',''))
     doc={k:v for k,v in doc.items() if v not in (None,[])}
     for n in doc.get('networkDestinations',[]):
         for k in [k for k,v in n.items() if v is None]: del n[k]

@@ -204,6 +204,8 @@
  },
  {
   "_id": "art-1",
+  "reviewDueAt": "2020-01-01",
+  "reviewNote": "Testfixture: verlopen controledatum moet een buildwaarschuwing geven.",
   "_type": "article",
   "_createdAt": "2026-09-01T10:00:00Z",
   "_updatedAt": "2026-09-02T10:00:00Z",
@@ -345,6 +347,7 @@
  },
  {
   "_id": "art-2",
+  "reviewDueAt": "2099-01-01",
   "_type": "article",
   "_createdAt": "2026-09-03T10:00:00Z",
   "_updatedAt": "2026-09-03T10:00:00Z",

@@ -410,6 +410,42 @@
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "attributes": {
+              "tool": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "union",
+                  "of": [
+                    {
+                      "type": "string",
+                      "value": "uitgerekende-datum"
+                    }
+                  ]
+                },
+                "optional": true
+              },
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "toolEmbed"
+                }
+              }
+            },
+            "rest": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         ]
       }
@@ -997,6 +1033,14 @@
         },
         "optional": true
       },
+      "heroSecondaryCta": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "ctaLink"
+        },
+        "optional": true
+      },
       "lifeStagesTitle": {
         "type": "objectAttribute",
         "value": {
@@ -1019,6 +1063,20 @@
         "optional": true
       },
       "pillarsIntro": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "featuredTitle": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "featuredIntro": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1051,6 +1109,14 @@
         "type": "objectAttribute",
         "value": {
           "type": "string"
+        },
+        "optional": true
+      },
+      "feature": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "ctaLink"
         },
         "optional": true
       },
@@ -1202,6 +1268,13 @@
         },
         "optional": true
       },
+      "shortName": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "tagline": {
         "type": "objectAttribute",
         "value": {
@@ -1210,6 +1283,13 @@
         "optional": true
       },
       "footerTagline": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "footerNote": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1424,6 +1504,20 @@
               },
               "optional": true
             },
+            "url": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
+            "city": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
+              },
+              "optional": true
+            },
             "kvkNumber": {
               "type": "objectAttribute",
               "value": {
@@ -1541,6 +1635,21 @@
         "value": {
           "type": "inline",
           "name": "topic.reference"
+        },
+        "optional": true
+      },
+      "pageIntro": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "seo": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "seo"
         },
         "optional": true
       }
@@ -2001,6 +2110,20 @@
         },
         "optional": true
       },
+      "reviewDueAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "reviewNote": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "sources": {
         "type": "objectAttribute",
         "value": {
@@ -2388,6 +2511,20 @@
         },
         "optional": true
       },
+      "navLabel": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "heroTitle": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "navOrder": {
         "type": "objectAttribute",
         "value": {
@@ -2518,6 +2655,28 @@
         },
         "optional": true
       },
+      "faq": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "faqItem"
+            }
+          }
+        },
+        "optional": true
+      },
       "relatedTopics": {
         "type": "objectAttribute",
         "value": {
@@ -2537,6 +2696,14 @@
               "name": "topic.reference"
             }
           }
+        },
+        "optional": true
+      },
+      "hubCta": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "ctaLink"
         },
         "optional": true
       },

@@ -85,6 +85,17 @@ export const article = defineType({
     defineField({name: 'publishedAt', title: 'Publicatiedatum', type: 'datetime', group: 'editorial'}),
     defineField({name: 'updatedAt', title: 'Inhoudelijk bijgewerkt op', type: 'datetime', group: 'editorial', description: 'Alleen bij een echte inhoudelijke update.'}),
     defineField({name: 'lastReviewedAt', title: 'Laatst gecontroleerd op', type: 'date', group: 'editorial', description: 'Verplicht bij veranderlijke info (regels, toeslagen, prijzen, veiligheid).'}),
+    defineField({
+      name: 'reviewDueAt', title: 'Opnieuw controleren vóór', type: 'date', group: 'editorial',
+      description: 'Datum waarop de inhoud verouderd kan zijn: nieuw toeslagjaar, nieuwe betaaldata, wetswijziging, jaarlijkse check. Stuurt de lijst "Te controleren" en de onderhoudstaak.',
+      validation: (r) => r.custom((value, ctx) => {
+        const doc = ctx.document as {lastReviewedAt?: string} | undefined
+        if (!value) return doc?.lastReviewedAt ? {message: 'Veranderlijke info zonder controledatum: vul in wanneer dit opnieuw gecontroleerd moet worden.', level: 'warning'} as never : true
+        if (String(value) < new Date().toISOString().slice(0, 10)) return {message: 'Controledatum is verstreken: controleer de inhoud en zet een nieuwe datum.', level: 'warning'} as never
+        return true
+      }),
+    }),
+    defineField({name: 'reviewNote', title: 'Wat verloopt er?', type: 'text', rows: 3, group: 'editorial', description: 'Intern. Welke cijfers, datums of regels moeten bij de controle opnieuw nagekeken worden, en bij welke bron.'}),
     defineField({name: 'sources', title: 'Bronnen', type: 'array', of: [{type: 'sourceRef'}], group: 'editorial'}),
     defineField({name: 'sourceNotes', title: 'Interne bronnotities', type: 'text', rows: 4, group: 'editorial', description: 'Niet publiek zichtbaar.'}),
     defineField({
@@ -116,7 +127,10 @@ export const article = defineType({
   }),
   orderings: [{title: 'Publicatiedatum (nieuw → oud)', name: 'publishedDesc', by: [{field: 'publishedAt', direction: 'desc'}]}],
   preview: {
-    select: {title: 'title', pillar: 'pillar.name', media: 'heroImage', status: 'reviewStatus'},
-    prepare: ({title, pillar, media, status}) => ({title, subtitle: [pillar, status].filter(Boolean).join(' · '), media}),
+    select: {title: 'title', pillar: 'pillar.name', media: 'heroImage', status: 'reviewStatus', due: 'reviewDueAt'},
+    prepare: ({title, pillar, media, status, due}) => {
+      const overdue = due && String(due) < new Date().toISOString().slice(0, 10)
+      return {title, subtitle: [pillar, status, overdue ? `controle verlopen (${due})` : due ? `controle ${due}` : null].filter(Boolean).join(' · '), media}
+    },
   },
 })

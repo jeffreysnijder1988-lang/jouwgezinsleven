@@ -13,6 +13,14 @@ export const structure: StructureResolver = (S) =>
       S.listItem().title('Artikelen ter review').child(
         S.documentList().title('Ter review').filter('_type == "article" && reviewStatus == "needs_review"'),
       ),
+      S.listItem().title('Te controleren (verlopen of < 30 dagen)').child(() => {
+        const soon = new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10)
+        return S.documentList()
+          .title('Te controleren')
+          .filter('_type == "article" && defined(reviewDueAt) && reviewDueAt <= $soon')
+          .params({soon})
+          .defaultOrdering([{field: 'reviewDueAt', direction: 'asc'}])
+      }),
       S.divider(),
       S.listItem().title('Pijlers').child(S.documentList().title('Pijlers').filter('_type == "topic" && kind == "pillar"').defaultOrdering([{field: 'navOrder', direction: 'asc'}])),
       S.documentTypeListItem('topic').title('Alle onderwerpen'),

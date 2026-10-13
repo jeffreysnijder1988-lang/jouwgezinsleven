@@ -107,6 +107,12 @@ export function getAllRoutes(): Promise<RouteEntry[]> {
     for (const u of unroutable) {
       warnings.push(`artikel ${u._id} ("${u.title ?? '?'}") wordt NIET gepubliceerd: ${!u.slug ? 'slug ontbreekt' : !u.pillar ? 'pijler ontbreekt' : 'gekoppelde topic is geen pijler'}`);
     }
+    const overdue = await fetchContent<{ _id: string; title?: string; slug?: string; pillar?: string; reviewDueAt: string; reviewNote?: string }[]>(
+      Q.REVIEW_OVERDUE_QUERY, { today: new Date().toISOString().slice(0, 10) },
+    );
+    for (const o of overdue) {
+      warnings.push(`artikel /${o.pillar}/${o.slug}/ moest vóór ${o.reviewDueAt} opnieuw gecontroleerd worden${o.reviewNote ? ` (${o.reviewNote.split('\n')[0].slice(0, 120)})` : ''}`);
+    }
     warnings.forEach((w) => console.warn(`[content] waarschuwing: ${w}`));
     if (problems.length) {
       throw new Error(`[content] ${problems.length} contentfout(en) — build afgebroken, productie blijft ongewijzigd:\n - ${problems.join('\n - ')}`);
