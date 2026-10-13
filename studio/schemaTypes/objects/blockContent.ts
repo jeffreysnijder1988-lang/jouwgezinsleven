@@ -1,10 +1,17 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {LinkIcon} from '@sanity/icons/Link'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
+import {ControlsIcon} from '@sanity/icons/Controls'
+
+/** Interactieve tools die in een artikel kunnen worden geplaatst. Rendering gebeurt in Astro. */
+export const TOOL_OPTIONS = [
+  {title: 'Uitgerekende datum berekenen', value: 'uitgerekende-datum'},
+]
 
 /**
  * Rich text voor artikelen en pagina's. Bewust beperkt: H2–H4, lijsten, citaat,
- * interne links (reference) en externe links, afbeeldingen met verplichte alt.
+ * interne links (reference) en externe links, afbeeldingen met verplichte alt,
+ * en een tool-blok om een interactieve tool (bijv. calculator) op een vaste plek te tonen.
  * Geen designopties in content.
  */
 export const blockContent = defineType({
@@ -71,6 +78,29 @@ export const blockContent = defineType({
         defineField({name: 'alt', title: 'Alt-tekst', type: 'string', description: 'Beschrijf wat er te zien is. Leeg alleen bij puur decoratieve afbeeldingen.'}),
         defineField({name: 'caption', title: 'Onderschrift', type: 'string'}),
       ],
+    }),
+    defineArrayMember({
+      name: 'toolEmbed',
+      title: 'Tool',
+      type: 'object',
+      icon: ControlsIcon,
+      fields: [
+        defineField({
+          name: 'tool',
+          title: 'Welke tool',
+          type: 'string',
+          options: {list: TOOL_OPTIONS, layout: 'radio'},
+          validation: (r) => r.required(),
+        }),
+      ],
+      preview: {
+        select: {tool: 'tool'},
+        prepare: ({tool}) => ({
+          title: TOOL_OPTIONS.find((t) => t.value === tool)?.title ?? 'Tool',
+          subtitle: 'Interactieve tool',
+          media: ControlsIcon,
+        }),
+      },
     }),
   ],
 })

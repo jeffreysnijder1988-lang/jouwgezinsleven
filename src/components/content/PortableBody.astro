@@ -5,11 +5,12 @@ import type { PortableTextBlock } from '@portabletext/types';
 import LinkMark from './pt/LinkMark.astro';
 import InternalLinkMark from './pt/InternalLinkMark.astro';
 import PtImage from './pt/PtImage.astro';
+import ToolEmbed from './pt/ToolEmbed.astro';
 interface Props { value?: PortableTextBlock[] | null; class?: string }
 const { value, class: cls } = Astro.props;
 const blocks = (value ?? []).map((b) => (b._type === 'block' && (b as { style?: string }).style === 'h1' ? { ...b, style: 'h2' } : b));
 const components = {
-  type: { image: PtImage },
+  type: { image: PtImage, toolEmbed: ToolEmbed },
   mark: { link: LinkMark, internalLink: InternalLinkMark },
 };
 ---

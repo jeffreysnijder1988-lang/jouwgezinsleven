@@ -1,0 +1,7 @@
+---
+/** Rendert een tool-blok uit Portable Text. Onbekende tools renderen niets. */
+import DueDateCalculator from '@/components/tools/DueDateCalculator.astro';
+interface Props { node: { _type: 'toolEmbed'; tool?: string } }
+const { node } = Astro.props;
+---
+{node.tool === 'uitgerekende-datum' && <DueDateCalculator />}

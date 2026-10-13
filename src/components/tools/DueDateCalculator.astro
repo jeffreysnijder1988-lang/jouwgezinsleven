@@ -1,0 +1,372 @@
+---
+/**
+ * Calculator uitgerekende datum. Wordt via een `toolEmbed`-blok in Sanity in een artikel geplaatst.
+ * Vanilla JS, rekent direct bij invoer, slaat niets op (alles blijft in de browser).
+ * Rekenlogica + mijlpalen: src/lib/tools/dueDate.ts
+ */
+interface Props { id?: string }
+const { id = 'ddc' } = Astro.props;
+const weeks = Array.from({ length: 37 }, (_, i) => i + 6); // 6..42
+const cycles = Array.from({ length: 26 }, (_, i) => i + 20); // 20..45
+---
+<section class="ddc" data-ddc aria-labelledby={`${id}-titel`}>
+  <header class="ddc__kop">
+    <span class="ddc__label">Calculator</span>
+    <h2 id={`${id}-titel`}>Bereken je uitgerekende datum</h2>
+    <p>Kies waarmee je wilt rekenen. Je ziet direct je datum, hoe ver je bent en wat er de komende weken gebeurt.</p>
+  </header>
+
+  <form class="ddc__form" novalidate>
+    <fieldset class="ddc__methodes">
+      <legend class="visually-hidden">Rekenen met</legend>
+      <label class="ddc__methode">
+        <input type="radio" name="method" value="lmp" checked />
+        <span><strong>Laatste menstruatie</strong><small>Meest gebruikt</small></span>
+      </label>
+      <label class="ddc__methode">
+        <input type="radio" name="method" value="conception" />
+        <span><strong>Bevruchting</strong><small>Als je de dag weet</small></span>
+      </label>
+      <label class="ddc__methode">
+        <input type="radio" name="method" value="ivf" />
+        <span><strong>IVF of ICSI</strong><small>Terugplaatsing</small></span>
+      </label>
+      <label class="ddc__methode">
+        <input type="radio" name="method" value="echo" />
+        <span><strong>Echo</strong><small>Datum en termijn</small></span>
+      </label>
+    </fieldset>
+
+    <div class="ddc__velden">
+      <div class="ddc__veld ddc__veld--datum">
+        <label for={`${id}-datum`} data-date-label>Eerste dag van je laatste menstruatie</label>
+        <input id={`${id}-datum`} name="date" type="date" required autocomplete="off" />
+      </div>
+
+      <div class="ddc__veld" data-for="lmp">
+        <label for={`${id}-cyclus`}>Gemiddelde cyclus</label>
+        <select id={`${id}-cyclus`} name="cycle">
+          {cycles.map((c) => <option value={c} selected={c === 28}>{c} dagen{c === 28 ? ' (gemiddeld)' : ''}</option>)}
+        </select>
+      </div>
+
+      <fieldset class="ddc__veld ddc__keuze" data-for="ivf" hidden>
+        <legend>Leeftijd embryo</legend>
+        <label><input type="radio" name="embryo" value="5" checked /> <span>Dag 5</span></label>
+        <label><input type="radio" name="embryo" value="3" /> <span>Dag 3</span></label>
+      </fieldset>
+
+      <div class="ddc__veld ddc__termijn" data-for="echo" hidden>
+        <span class="ddc__veldlabel" id={`${id}-termijn-label`}>Termijn bij de echo</span>
+        <div class="ddc__duo" role="group" aria-labelledby={`${id}-termijn-label`}>
+          <select name="echoWeeks" aria-label="Weken">
+            {weeks.map((w) => <option value={w} selected={w === 12}>{w} weken</option>)}
+          </select>
+          <select name="echoDays" aria-label="Dagen">
+            {[0, 1, 2, 3, 4, 5, 6].map((d) => <option value={d}>+ {d} {d === 1 ? 'dag' : 'dagen'}</option>)}
+          </select>
+        </div>
+      </div>
+    </div>
+    <p class="ddc__fout" data-error role="alert" hidden></p>
+    <noscript><p class="ddc__fout">Zet JavaScript aan om de calculator te gebruiken. Zelf rekenen: tel 280 dagen op bij de eerste dag van je laatste menstruatie.</p></noscript>
+  </form>
+
+  <div class="ddc__uitkomst" data-result hidden aria-live="polite">
+    <div class="ddc__datumblok">
+      <p class="ddc__boven">Je uitgerekende datum</p>
+      <p class="ddc__datum" data-due></p>
+      <p class="ddc__status" data-status></p>
+    </div>
+
+    <dl class="ddc__cijfers" data-stats>
+      <div class="ddc__cijfer ddc__cijfer--sage"><dt>Zwanger</dt><dd><span data-ga></span><small data-ga-long></small></dd></div>
+      <div class="ddc__cijfer ddc__cijfer--geel"><dt>Trimester</dt><dd><span data-tri></span><small data-tri-long></small></dd></div>
+      <div class="ddc__cijfer ddc__cijfer--roze"><dt>Nog te gaan</dt><dd><span data-togo></span><small data-togo-long></small></dd></div>
+    </dl>
+
+    <div class="ddc__voortgang" data-progress-wrap>
+      <div class="ddc__balk" role="progressbar" aria-valuemin="0" aria-valuemax="40" data-progress aria-label="Weken zwanger">
+        <span class="ddc__vulling" data-fill></span>
+        <span class="ddc__stip" data-dot></span>
+      </div>
+      <ol class="ddc__trimesters" aria-hidden="true">
+        <li style="flex: 13">1e trimester</li><li style="flex: 14">2e trimester</li><li style="flex: 13">3e trimester</li>
+      </ol>
+    </div>
+
+    <div class="ddc__tijdlijn-wrap">
+      <h3>Wat er de komende tijd gebeurt</h3>
+      <ol class="ddc__tijdlijn" data-timeline></ol>
+    </div>
+
+    <div class="ddc__acties">
+      <button type="button" class="ddc__knop ddc__knop--donker" data-ics>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v3M17 2v3M3.5 9h17M5 4.5h14a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 19 20.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Zet in je agenda
+      </button>
+      <button type="button" class="ddc__knop" data-share>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 13v6a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span data-share-label>Delen</span>
+      </button>
+      <button type="button" class="ddc__knop ddc__knop--tekst" data-reset>Opnieuw</button>
+    </div>
+  </div>
+
+  <p class="ddc__disclaimer">
+    Dit is een berekening, geen medische vaststelling. Je verloskundige of arts stelt de datum vast bij de termijnecho; bij IVF of ICSI houd je de datum van je kliniek aan. We slaan niets op: alles blijft op je eigen apparaat.
+  </p>
+</section>
+
+<script>
+  import { calculate, MILESTONES, DAY, icsForDueDate, todayUTC, toISODate, type Method } from '@/lib/tools/dueDate';
+
+  const fmtLong = new Intl.DateTimeFormat('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const fmtShort = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  const fmtShortY = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+  const DATE_LABELS: Record<Method, string> = {
+    lmp: 'Eerste dag van je laatste menstruatie',
+    conception: 'Datum van de bevruchting',
+    ivf: 'Datum van de terugplaatsing',
+    echo: 'Datum van de echo',
+  };
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-ddc]')) {
+    const form = root.querySelector('form')!;
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const dateInput = q<HTMLInputElement>('input[name="date"]');
+    const dateLabel = q<HTMLElement>('[data-date-label]');
+    const errorEl = q<HTMLElement>('[data-error]');
+    const resultEl = q<HTMLElement>('[data-result]');
+    let lastDue: number | null = null;
+    let lastText = '';
+
+    const today = todayUTC();
+    dateInput.max = toISODate(today);
+    dateInput.min = toISODate(today - 320 * DAY);
+
+    const method = () => (form.querySelector<HTMLInputElement>('input[name="method"]:checked')?.value ?? 'lmp') as Method;
+
+    function syncFields() {
+      const m = method();
+      dateLabel.textContent = DATE_LABELS[m];
+      root.querySelectorAll<HTMLElement>('[data-for]').forEach((el) => { el.hidden = el.dataset.for !== m; });
+    }
+
+    function showError(msg: string) {
+      errorEl.textContent = msg;
+      errorEl.hidden = !msg;
+    }
+
+    function render() {
+      syncFields();
+      const fd = new FormData(form);
+      const value = String(fd.get('date') ?? '');
+      if (!value) { resultEl.hidden = true; showError(''); return; }
+      const r = calculate({
+        method: method(), date: value,
+        cycleLength: Number(fd.get('cycle') ?? 28),
+        embryoDay: fd.get('embryo') === '3' ? 3 : 5,
+        echoWeeks: Number(fd.get('echoWeeks') ?? 12), echoDays: Number(fd.get('echoDays') ?? 0),
+      }, today);
+      if (!r) { resultEl.hidden = true; showError('Vul een geldige datum in.'); return; }
+      if (r.start > today + 21 * DAY || (method() !== 'echo' && value > toISODate(today))) {
+        resultEl.hidden = true; showError('Deze datum ligt in de toekomst. Controleer de datum.'); return;
+      }
+      if (r.status === 'past') {
+        resultEl.hidden = true; showError('Volgens deze datum ben je al meer dan 42 weken zwanger. Controleer de datum.'); return;
+      }
+      showError('');
+      lastDue = r.due;
+
+      q<HTMLElement>('[data-due]').textContent = fmtLong.format(r.due);
+      const statsEl = q<HTMLElement>('[data-stats]');
+      const progressWrap = q<HTMLElement>('[data-progress-wrap]');
+      const status = q<HTMLElement>('[data-status]');
+
+      if (r.status === 'not-yet') {
+        statsEl.hidden = true; progressWrap.hidden = true;
+        status.textContent = 'Je zwangerschap telt vanaf de eerste dag van je laatste menstruatie. Volgens deze datum is die nog niet begonnen.';
+      } else {
+        statsEl.hidden = false; progressWrap.hidden = false;
+        const notation = `${r.weeks}+${r.days}`;
+        status.textContent = r.daysToGo > 0
+          ? `Je bent ${plural(r.weeks, 'week', 'weken')} en ${plural(r.days, 'dag', 'dagen')} zwanger.`
+          : r.daysToGo === 0 ? 'Vandaag is je uitgerekende datum. Veel succes!' : `Je bent ${plural(-r.daysToGo, 'dag', 'dagen')} over je uitgerekende datum.`;
+        q<HTMLElement>('[data-ga]').textContent = notation;
+        q<HTMLElement>('[data-ga-long]').textContent = `${plural(r.weeks, 'week', 'weken')}, ${plural(r.days, 'dag', 'dagen')}`;
+        q<HTMLElement>('[data-tri]').textContent = r.trimester ? `${r.trimester}e` : '–';
+        q<HTMLElement>('[data-tri-long]').textContent = r.trimester === 1 ? 't/m week 13' : r.trimester === 2 ? 'week 14 t/m 27' : 'vanaf week 28';
+        const togo = Math.max(r.daysToGo, 0);
+        q<HTMLElement>('[data-togo]').textContent = String(togo);
+        q<HTMLElement>('[data-togo-long]').textContent = togo === 1 ? 'dag' : togo >= 14 ? `dagen (± ${Math.round(togo / 7)} weken)` : 'dagen';
+        const pct = Math.min(r.gestationalDays / 280, 1) * 100;
+        q<HTMLElement>('[data-fill]').style.width = `${pct}%`;
+        q<HTMLElement>('[data-dot]').style.left = `${pct}%`;
+        const bar = q<HTMLElement>('[data-progress]');
+        bar.setAttribute('aria-valuenow', String(Math.min(r.weeks, 40)));
+        bar.setAttribute('aria-valuetext', `${notation} weken zwanger`);
+      }
+
+      // Tijdlijn
+      const ga = r.gestationalDays;
+      let nextMarked = false;
+      q<HTMLElement>('[data-timeline]').innerHTML = MILESTONES.map((m) => {
+        const end = m.toDay ?? m.fromDay;
+        const state = ga > end ? 'klaar' : ga >= m.fromDay ? 'nu' : 'straks';
+        const isNext = state !== 'klaar' && !nextMarked ? (nextMarked = true) : false;
+        const from = r.start + m.fromDay * DAY;
+        const when = m.toDay
+          ? `${fmtShort.format(from)} – ${fmtShortY.format(r.start + m.toDay * DAY)}`
+          : fmtShortY.format(from);
+        const wk = m.toDay ? `week ${Math.floor(m.fromDay / 7)}–${Math.floor(m.toDay / 7)}` : `week ${Math.floor(m.fromDay / 7)}`;
+        return `<li class="ddc__mijlpaal is-${state}${isNext ? ' is-volgende' : ''}">
+          <span class="ddc__punt" aria-hidden="true"></span>
+          <div>
+            <p class="ddc__wanneer"><time datetime="${toISODate(from)}">${when}</time> <span>· ${wk}</span>${state === 'klaar' ? ' <span class="ddc__tag">geweest</span>' : state === 'nu' ? ' <span class="ddc__tag ddc__tag--nu">nu</span>' : ''}</p>
+            <p class="ddc__wat">${esc(m.label)}</p>
+            <p class="ddc__uitleg">${esc(m.note)} <a href="${m.url}" rel="noopener" target="_blank">Bron: ${esc(m.source)}</a></p>
+          </div>
+        </li>`;
+      }).join('');
+
+      lastText = `Mijn uitgerekende datum is ${fmtLong.format(r.due)}${r.status === 'pregnant' ? ` (nu ${r.weeks}+${r.days} weken)` : ''}.`;
+      const wasHidden = resultEl.hidden;
+      resultEl.hidden = false;
+      if (wasHidden) requestAnimationFrame(() => resultEl.classList.add('is-zichtbaar'));
+    }
+
+    form.addEventListener('input', render);
+    form.addEventListener('change', render);
+    form.addEventListener('submit', (e) => { e.preventDefault(); render(); });
+
+    q<HTMLButtonElement>('[data-ics]').addEventListener('click', () => {
+      if (lastDue === null) return;
+      const blob = new Blob([icsForDueDate(lastDue, location.href.split('#')[0])], { type: 'text/calendar;charset=utf-8' });
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'uitgerekende-datum.ics' });
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
+
+    const shareLabel = q<HTMLElement>('[data-share-label]');
+    q<HTMLButtonElement>('[data-share]').addEventListener('click', async () => {
+      const url = location.href.split('#')[0];
+      try {
+        if (navigator.share) { await navigator.share({ title: 'Mijn uitgerekende datum', text: lastText, url }); return; }
+        await navigator.clipboard.writeText(`${lastText} Berekend op ${url}`);
+        shareLabel.textContent = 'Gekopieerd';
+        setTimeout(() => { shareLabel.textContent = 'Delen'; }, 2000);
+      } catch { /* geannuleerd of niet toegestaan */ }
+    });
+
+    q<HTMLButtonElement>('[data-reset]').addEventListener('click', () => {
+      form.reset(); resultEl.hidden = true; resultEl.classList.remove('is-zichtbaar'); showError(''); syncFields(); dateInput.focus();
+    });
+
+    syncFields();
+    if (dateInput.value) render();
+  }
+</script>
+
+<style>
+  .ddc { margin-block: var(--space-2xl); background: var(--color-cream); border-radius: var(--radius-xl); padding: var(--space-lg) var(--space-md); }
+  @media (min-width: 640px) { .ddc { padding: var(--space-2xl) var(--space-2xl) var(--space-xl); } }
+  .ddc__kop h2 { margin: 6px 0 6px; font-size: clamp(1.45rem, 3.2vw, 1.8rem); }
+  .ddc__kop p { margin: 0 0 var(--space-lg); color: var(--color-text-muted); }
+  .ddc__label { display: inline-block; background: var(--color-white); border-radius: var(--radius-pill); padding: 3px 12px; font: var(--weight-heading) var(--text-xs)/1.6 var(--font-heading); text-transform: uppercase; letter-spacing: .06em; color: var(--color-text-muted); }
+
+  .ddc__methodes { border: 0; padding: 0; margin: 0 0 var(--space-lg); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (min-width: 760px) { .ddc__methodes { grid-template-columns: repeat(4, 1fr); } }
+  .ddc__methode { position: relative; cursor: pointer; }
+  .ddc__methode input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .ddc__methode span { display: block; height: 100%; padding: 12px 14px; background: color-mix(in srgb, var(--color-white) 55%, transparent); border: 2px solid transparent; border-radius: var(--radius-md); transition: background var(--transition), border-color var(--transition), box-shadow var(--transition); }
+  .ddc__methode strong { display: block; font-family: var(--font-heading); font-size: var(--text-small); line-height: 1.25; }
+  .ddc__methode small { display: block; color: var(--color-text-muted); font-size: var(--text-sm); margin-top: 2px; }
+  .ddc__methode:hover span { background: var(--color-white); }
+  .ddc__methode input:checked + span { background: var(--color-white); border-color: var(--color-coral); box-shadow: 0 6px 18px -10px rgba(45, 55, 72, .35); }
+  .ddc__methode input:focus-visible + span { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+
+  .ddc__velden { display: grid; gap: var(--space-md); }
+  @media (min-width: 640px) { .ddc__velden { grid-template-columns: 1.3fr 1fr; align-items: end; } }
+  .ddc__veld { display: grid; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0; }
+  .ddc__veld[hidden] { display: none; }
+  .ddc__veld > label, .ddc__veldlabel, .ddc__keuze legend { font: var(--weight-heading) var(--text-small)/1.3 var(--font-heading); padding: 0; }
+  .ddc input[type="date"], .ddc select { width: 100%; min-height: 54px; padding: 0 14px; font: inherit; font-size: var(--text-base); color: var(--color-text); background: var(--color-white); border: 2px solid var(--color-white); border-radius: var(--radius-md); box-shadow: inset 0 0 0 1px rgba(45, 55, 72, .08); appearance: none; -webkit-appearance: none; }
+  .ddc select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%232D3748' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 12px; padding-right: 38px; }
+  .ddc input[type="date"]:focus, .ddc select:focus { outline: none; border-color: var(--color-coral); }
+  .ddc__duo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ddc__keuze { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .ddc__keuze legend { width: 100%; margin-bottom: 6px; }
+  .ddc__keuze label { position: relative; cursor: pointer; }
+  .ddc__keuze input { position: absolute; opacity: 0; inset: 0; margin: 0; }
+  .ddc__keuze span { display: inline-flex; align-items: center; min-height: 54px; padding: 0 22px; background: var(--color-white); border: 2px solid var(--color-white); border-radius: var(--radius-md); font-family: var(--font-heading); font-weight: var(--weight-heading); }
+  .ddc__keuze input:checked + span { border-color: var(--color-coral); }
+  .ddc__keuze input:focus-visible + span { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+  .ddc__fout { margin: var(--space-sm) 0 0; padding: 10px 14px; background: var(--color-white); border-left: 4px solid var(--color-coral); border-radius: var(--radius-sm); font-size: var(--text-small); }
+  .ddc__fout[hidden] { display: none; }
+
+  .ddc__uitkomst { margin-top: var(--space-lg); background: var(--color-white); border-radius: var(--radius-lg); padding: var(--space-lg) var(--space-md); opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform .35s ease; }
+  .ddc__uitkomst.is-zichtbaar { opacity: 1; transform: none; }
+  .ddc__uitkomst[hidden] { display: none; }
+  @media (min-width: 640px) { .ddc__uitkomst { padding: var(--space-xl); } }
+  @media (prefers-reduced-motion: reduce) { .ddc__uitkomst { transition: none; } }
+  .ddc__datumblok { text-align: center; padding-bottom: var(--space-lg); }
+  .ddc__boven { margin: 0; font: var(--weight-heading) var(--text-sm)/1.4 var(--font-heading); text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-muted); }
+  .ddc__datum { margin: 4px 0 6px; font-family: var(--font-display); font-size: clamp(1.8rem, 6vw, 2.8rem); line-height: 1.1; }
+  .ddc__datum::first-letter { text-transform: uppercase; }
+  .ddc__status { margin: 0 auto; max-width: 34em; color: var(--color-text-muted); }
+
+  .ddc__cijfers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 var(--space-lg); }
+  .ddc__cijfers[hidden] { display: none; }
+  .ddc__cijfer { border-radius: var(--radius-md); padding: 12px 10px; text-align: center; }
+  .ddc__cijfer--sage { background: var(--color-sage-light); }
+  .ddc__cijfer--geel { background: var(--color-yellow-pale); }
+  .ddc__cijfer--roze { background: var(--color-pink-soft); }
+  .ddc__cijfer dt { font: var(--weight-heading) var(--text-xs)/1.4 var(--font-heading); text-transform: uppercase; letter-spacing: .06em; }
+  .ddc__cijfer dd { margin: 2px 0 0; }
+  .ddc__cijfer dd span { display: block; font-family: var(--font-display); font-size: clamp(1.4rem, 5vw, 2rem); line-height: 1.15; }
+  .ddc__cijfer dd small { display: block; font-size: var(--text-xs); line-height: 1.35; }
+
+  .ddc__voortgang { margin-bottom: var(--space-xl); }
+  .ddc__voortgang[hidden] { display: none; }
+  .ddc__balk { position: relative; height: 14px; border-radius: var(--radius-pill); background: var(--color-cream); }
+  .ddc__vulling { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--color-sage), var(--color-yellow) 60%, var(--color-coral)); transition: width .6s ease; }
+  .ddc__stip { position: absolute; top: 50%; left: 0; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: var(--color-white); border: 4px solid var(--color-coral); box-shadow: 0 2px 8px rgba(45, 55, 72, .25); transition: left .6s ease; }
+  @media (prefers-reduced-motion: reduce) { .ddc__vulling, .ddc__stip { transition: none; } }
+  .ddc__trimesters { display: flex; list-style: none; margin: 8px 0 0; padding: 0; font-size: var(--text-xs); color: var(--color-text-muted); }
+  .ddc__trimesters li { text-align: center; border-left: 1px solid rgba(45, 55, 72, .15); }
+  .ddc__trimesters li:first-child { border-left: 0; }
+
+  .ddc__tijdlijn-wrap h3 { font-size: var(--text-h3); margin: 0 0 var(--space-md); }
+  .ddc__tijdlijn { list-style: none; margin: 0; padding: 0; }
+  .ddc :global(.ddc__mijlpaal) { margin: 0; position: relative; display: grid; grid-template-columns: 22px 1fr; gap: 12px; padding-bottom: var(--space-md); }
+  .ddc :global(.ddc__mijlpaal::before) { content: ''; position: absolute; left: 10px; top: 20px; bottom: -2px; width: 2px; background: var(--color-cream); }
+  .ddc :global(.ddc__mijlpaal:last-child::before) { display: none; }
+  .ddc :global(.ddc__mijlpaal p) { margin: 0; }
+  .ddc :global(.ddc__punt) { width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--color-sage-light); background: var(--color-white); margin-top: 1px; position: relative; z-index: 1; }
+  .ddc :global(.ddc__mijlpaal.is-klaar .ddc__punt) { background: var(--color-sage); border-color: var(--color-sage); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5 7 11l5-6' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-size: 14px; background-position: center; background-repeat: no-repeat; }
+  .ddc :global(.ddc__mijlpaal.is-nu .ddc__punt), .ddc :global(.ddc__mijlpaal.is-volgende .ddc__punt) { border-color: var(--color-coral); box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-coral) 22%, transparent); }
+  .ddc :global(.ddc__mijlpaal.is-klaar .ddc__wat), .ddc :global(.ddc__mijlpaal.is-klaar .ddc__uitleg) { color: var(--color-text-muted); }
+  .ddc :global(.ddc__wanneer) { font-size: var(--text-sm); font-weight: 700; }
+  .ddc :global(.ddc__wanneer span) { font-weight: 400; color: var(--color-text-muted); }
+  .ddc :global(.ddc__tag) { display: inline-block; margin-left: 4px; padding: 0 8px; border-radius: var(--radius-pill); background: var(--color-cream); font: var(--weight-heading) var(--text-xs)/1.7 var(--font-heading); color: var(--color-text); }
+  .ddc :global(.ddc__tag--nu) { background: var(--color-coral); }
+  .ddc :global(.ddc__wat) { font: var(--weight-heading) var(--text-md)/1.35 var(--font-heading); }
+  .ddc :global(.ddc__uitleg) { font-size: var(--text-small); color: var(--color-text-muted); }
+  .ddc :global(.ddc__uitleg a) { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-size: var(--text-sm); white-space: nowrap; }
+
+  .ddc__acties { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-md); padding-top: var(--space-lg); border-top: 1px solid var(--color-cream); }
+  .ddc__knop { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: var(--radius-pill); border: 2px solid var(--color-text); background: var(--color-white); color: var(--color-text); font: var(--weight-heading) var(--text-small)/1 var(--font-heading); cursor: pointer; transition: background var(--transition), color var(--transition); }
+  .ddc__knop svg { width: 18px; height: 18px; }
+  .ddc__knop:hover { background: var(--color-cream); }
+  .ddc__knop--donker { background: var(--color-text); color: var(--color-white); }
+  .ddc__knop--donker:hover { background: var(--color-text-hover); }
+  .ddc__knop--tekst { border-color: transparent; text-decoration: underline; text-underline-offset: 3px; padding: 0 10px; }
+  .ddc__knop--tekst:hover { background: transparent; }
+  .ddc__knop:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+
+  .ddc__disclaimer { margin: var(--space-md) 0 0; font-size: var(--text-sm); color: var(--color-text-muted); }
+</style>
