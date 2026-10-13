@@ -1,6 +1,6 @@
 # Migratiestatus — JouwGezinsleven naar Astro + Sanity
 
-Stand: 10 oktober 2026 (code op GitHub, CI groen)
+Stand: 13 oktober 2026 (nieuwe site live op productie)
 
 ## Bron
 
@@ -55,9 +55,11 @@ Overgenomen zonder herschrijven. Bron toevoegen of aanpassen vóór livegang:
 - [ ] `cd studio && npx sanity login && npm run schema:deploy && npm run deploy`.
 - [x] GitHub-repo `jeffreysnijder1988-lang/jouwgezinsleven` aangemaakt; `main` gepusht. Publish-runs 1 en 2 (push) groen: typecheck, fixture-tests, productiebuild, QA en deploy-poort. Deploy overgeslagen omdat `AUTO_DEPLOY_TARGET` niet gezet is.
 - [x] Actions op Node 24-versies (checkout@v5, setup-node@v5, upload-artifact@v6, download-artifact@v7).
-- [ ] Environments `staging` en `production` aanmaken, met per environment de secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PATH` en `DEPLOY_PASSWORD` óf `DEPLOY_SSH_KEY` (+ `DEPLOY_KNOWN_HOSTS` bij sftp).
-- [ ] Repo-variabelen: `DEPLOY_PROTOCOL` (`sftp` of `ftps`), optioneel `DEPLOY_PORT`, `STAGING_URL`, `PRODUCTION_URL`. `AUTO_DEPLOY_TARGET` pas zetten na een geslaagde handmatige staging-deploy.
-- [ ] Staging-deploy via Actions → Publish → Run workflow, target `staging` (`PUBLIC_NOINDEX_SITE=1` gaat automatisch). Controle op echte Apache (.htaccess, CSP, headers).
+- [x] Live gezet op 13-10-2026 via handmatige Publish-run (#5, target production). Staging bewust overgeslagen; pre-deploy-snapshot staat als artifact in de run.
+- [x] Deploy-gegevens als repository secrets: `DEPLOY_HOST` (ams118.yourwebhoster.com, buiten DNS om), `DEPLOY_USER` (FTP-account `deploy@jouwgezinsleven.nl`, opgesloten in `public_html/jouwgezinsleven.nl`), `DEPLOY_PASSWORD`, `DEPLOY_PATH` = `.`; variabele `DEPLOY_PROTOCOL` = `ftps`.
+- [x] DNS: nameservers bij Superspace (yourwebhoster), geen Cloudflare. Geen cache-purge nodig na deploy.
+- [ ] `AUTO_DEPLOY_TARGET` = `production` zetten + Sanity-webhook, zodat publiceren automatisch live gaat.
+- [ ] Oude bestanden van de vorige site opruimen in de document root: `tools/`, `litespeed.conf`, `.well-known.zip`, oude `css/` en ongebruikte afbeeldingen in `img/`.
 - [ ] Na 19 oktober 2026 (`ubuntu-latest` → Ubuntu 26): eerste deploy-run controleren op de `lftp`-installatie.
 - [ ] Na livegang: sitemap indienen in Search Console en 404's volgen.
 
