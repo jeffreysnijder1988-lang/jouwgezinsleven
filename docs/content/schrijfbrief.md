@@ -1,4 +1,4 @@
-# Schrijfbrief JouwGezinsleven.nl — eerste batch artikelen (13 oktober 2026)
+# Schrijfbrief JouwGezinsleven.nl — tweede batch artikelen (13 oktober 2026)
 
 JouwGezinsleven.nl is een Nederlandse informatiesite voor gezinnen (zwangerschap t/m tiener), uitgegeven door StudioCutter (Arnhem). Doel: concrete vragen van ouders beantwoorden, organisch zoekverkeer, en waar het inhoudelijk past doorverwijzen naar eigen platforms (vooral Lomamo.nl).
 
@@ -42,22 +42,24 @@ JouwGezinsleven.nl is een Nederlandse informatiesite voor gezinnen (zwangerschap
 
 Andere netwerksites (alleen homepage, alleen waar logisch): https://opvangkiezer.nl (kinderopvang vergelijken), https://rustmetkids.nl (rustige gezinsvakanties/vakantieparken).
 
-## Batch (alle artikelen die tegelijk online gaan)
-- /zwanger/zwangerschapsverlof/
-- /zwanger/kraampakket/
-- /zwanger/babykamer-inrichten/
-- /baby-peuter/wanneer-gaat-baby-kruipen/
-- /baby-peuter/tandjes-baby/
-- /baby-peuter/van-ledikant-naar-peuterbed/
-- /kinderopvang/kinderopvangtoeslag/
-- /kinderopvang/kosten-kinderopvang/
-- /eropuit/uitjes-bij-regen/
-- /eropuit/uitjes-met-peuter/
-- /feestjes/traktatie-school/
-- /feestjes/traktatie-peuter/
-- /feestjes/kinderfeestje-thuis/
-- /gezinsvakantie/vliegen-met-baby/
-- /gezinsvakantie/vakantie-met-peuter/
+## Al live (batch 1) — hier mag je naar linken
+- /zwanger/zwangerschapsverlof/ · /zwanger/kraampakket/ · /zwanger/babykamer-inrichten/
+- /baby-peuter/wanneer-gaat-baby-kruipen/ · /baby-peuter/tandjes-baby/ · /baby-peuter/van-ledikant-naar-peuterbed/
+- /kinderopvang/kinderopvangtoeslag/ · /kinderopvang/kosten-kinderopvang/
+- /eropuit/uitjes-bij-regen/ · /eropuit/uitjes-met-peuter/
+- /feestjes/traktatie-school/ · /feestjes/traktatie-peuter/ · /feestjes/kinderfeestje-thuis/
+- /gezinsvakantie/vliegen-met-baby/ · /gezinsvakantie/vakantie-met-peuter/
+- Fasepagina's: /baby/ · /peuter/ · /kleuter/ · /basisschool/
+
+## Batch 2 (gaat tegelijk online)
+- /zwanger/geboorteverlof-partner/ · /zwanger/eerste-symptomen-zwangerschap/
+- /baby-peuter/slaapregressie/ · /baby-peuter/sprongetjes-baby/ · /baby-peuter/wakkertijden-baby/ · /baby-peuter/loopwagen-loopstoel/ · /baby-peuter/zindelijk-worden/
+- /kinderopvang/bso/ · /kinderopvang/gastouder/
+- /eropuit/dagje-uit-met-kinderen/ · /eropuit/gratis-uitjes-met-kinderen/
+- /feestjes/kinderfeestje-ideeen/ · /feestjes/speurtocht-kinderfeestje/ · /feestjes/uitnodiging-kinderfeestje/
+- /gezinsvakantie/autorit-met-kinderen/ · /gezinsvakantie/vakantie-met-baby/
+
+Interne links: 2–4 per artikel naar artikelen uit batch 1 of 2 of een pijler-/fasepagina, alleen waar het de lezer echt verder helpt. Niet naar artikelen die niet in deze lijsten staan.
 
 ## Uitvoerformaat — één bestand per artikel
 Pad: `<scratchpad>/articles/<pillar-slug>/<slug>.md`. YAML-frontmatter, daarna de body in Markdown.
@@ -71,7 +73,7 @@ excerpt: "…"               # 1–2 zinnen, max 260 tekens, geeft al het kernan
 seoTitle: "…"              # max 60 tekens, hoofdzoekwoord vooraan
 seoDescription: "…"        # 130–155 tekens
 searchIntent: informational   # informational | problem-solving | comparison | inspiration | commercial-editorial
-lifeStages: [zwanger]      # uit: zwanger, baby, peuter, kleuter, basisschool, tiener
+lifeStages: [zwanger]      # uit: zwanger, baby, peuter, kleuter, basisschool, tiener — ALLE fasen waarvoor het artikel echt relevant is (dit bepaalt de fasepagina's)
 minimumAgeMonths: null     # alleen indien zinvol
 maximumAgeMonths: null
 volatile: true             # true als er regels/bedragen/termijnen/veiligheidsadvies in staan
@@ -88,6 +90,8 @@ faq:                       # 3–5 echte vragen die niet al letterlijk als H2 be
   - q: "…"
     a: "…"
 notes: "Interne notitie: wat geverifieerd is en waar twijfel zit."
+imagePrompt: "Engelse prompt voor een fotorealistische redactionele hero-foto (16:9) die precies dit artikel illustreert. Stijl altijd: natural soft daylight, warm muted palette of sage green, cream, soft coral and mustard accents, shallow depth of field, gentle film grain, candid and authentic, not posed. No text, no logos, no brand names. Toon niets wat in strijd is met het veiligheidsadvies in het artikel (bijv. geen losse dekens/kussens bij slapende baby, baby altijd op de rug slapend, kinderen in autostoel correct)."
+imageAlt: "Nederlandse alt-tekst, 1 zin, beschrijft wat er op de foto te zien is."
 ---
 Eerste alinea met het kernantwoord…
 
