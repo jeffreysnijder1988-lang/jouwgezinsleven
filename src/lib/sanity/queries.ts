@@ -70,6 +70,8 @@ export const HOME_QUERY = /* groq */ `*[_type == "homePage" && _id == "homePage"
   heroSecondaryCta${cta},
   lifeStagesTitle,
   lifeStagesIntro,
+  pillarsTitle,
+  pillarsIntro,
   "featuredArticles": featuredArticles[${routableArticleRef}]->${articleCard},
   featuredTitle,
   featuredIntro,

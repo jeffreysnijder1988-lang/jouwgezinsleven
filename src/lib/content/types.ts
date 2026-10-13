@@ -135,6 +135,8 @@ export interface HomePage {
   heroSecondaryCta?: CtaData | null;
   lifeStagesTitle?: string | null;
   lifeStagesIntro?: string | null;
+  pillarsTitle?: string | null;
+  pillarsIntro?: string | null;
   featuredArticles?: ArticleCardData[] | null;
   featuredTitle?: string | null;
   featuredIntro?: string | null;

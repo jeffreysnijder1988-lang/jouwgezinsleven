@@ -1,10 +1,10 @@
 ---
 /**
  * Decoratieve SVG-illustraties van de bestaande site (aria-hidden).
- * kind="hub": grote illustratie in de pijler-hero · kind="phase": icoon op levensfasekaart ·
+ * kind="hub": grote illustratie in de pijler-hero ·
  * kind="feature": speeltuinscène in het featureblok.
  */
-interface Props { kind: 'hub' | 'phase' | 'feature'; name?: string; class?: string }
+interface Props { kind: 'hub' | 'feature'; name?: string; class?: string }
 const { kind, name = '', class: cls } = Astro.props;
 ---
 {kind === 'hub' && name === 'roze' && (
@@ -20,12 +20,6 @@ const { kind, name = '', class: cls } = Astro.props;
   <svg class={cls} viewBox="0 0 380 300" aria-hidden="true" focusable="false"><circle cx="190" cy="150" r="130" fill="#FFFFFF" opacity=".6"/><circle cx="190" cy="150" r="60" fill="#F2BB6B"/></svg>
 )}
 
-{kind === 'phase' && name === 'zwanger' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="34" r="22" fill="#fff" opacity=".55"/><circle cx="32" cy="34" r="9" fill="#F28482"/></svg>)}
-{kind === 'phase' && name === 'baby' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="30" r="20" fill="#fff" opacity=".55"/><circle cx="25" cy="28" r="3" fill="#2D3748"/><circle cx="39" cy="28" r="3" fill="#2D3748"/><path d="M26 38q6 5 12 0" stroke="#2D3748" stroke-width="3" fill="none" stroke-linecap="round"/></svg>)}
-{kind === 'phase' && name === 'peuter' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="12" y="24" width="40" height="30" rx="6" fill="#fff" opacity=".55"/><rect x="20" y="14" width="14" height="14" rx="3" fill="#F2BB6B"/><rect x="36" y="14" width="14" height="14" rx="3" fill="#F28482"/></svg>)}
-{kind === 'phase' && name === 'kleuter' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d="M32 10 L54 50 L10 50 Z" fill="#84A59D" opacity=".5"/></svg>)}
-{kind === 'phase' && name === 'basisschool' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect x="14" y="18" width="36" height="30" rx="4" fill="#F2BB6B" opacity=".55"/></svg>)}
-{kind === 'phase' && name === 'tiener' && (<svg class={cls} viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="20" fill="#F28482" opacity=".45"/></svg>)}
 
 {kind === 'feature' && (
   <svg class={cls} viewBox="0 0 460 300" aria-hidden="true" focusable="false">

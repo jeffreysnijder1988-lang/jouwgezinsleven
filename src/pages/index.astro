@@ -13,13 +13,13 @@ import RecentList from '@/components/content/RecentList.astro';
 import FeatureBlock from '@/components/content/FeatureBlock.astro';
 import CTA from '@/components/content/CTA.astro';
 import Button from '@/components/ui/Button.astro';
-import { getHomePage, getSiteSettings, getLifeStages, getLatestArticles, getAllRoutes, pillarPath } from '@/lib/content';
+import { getHomePage, getSiteSettings, getLifeStages, getPillars, getLatestArticles, getAllRoutes, pillarPath } from '@/lib/content';
 import { buildMeta } from '@/lib/seo/meta';
 import { formatAgeRange } from '@/lib/helpers/format';
 import { PHASE_TONES } from '@/lib/helpers/theme';
 
-const [settings, home, lifeStages, latest, routes] = await Promise.all([
-  getSiteSettings(), getHomePage(), getLifeStages(), getLatestArticles(12), getAllRoutes(),
+const [settings, home, lifeStages, pillars, latest, routes] = await Promise.all([
+  getSiteSettings(), getHomePage(), getLifeStages(), getPillars(), getLatestArticles(12), getAllRoutes(),
 ]);
 const homeRoute = routes.find((r) => r.kind === 'home')!;
 const meta = buildMeta({
@@ -50,11 +50,21 @@ let linked = 0;
           const tone = href ? PHASE_TONES[linked++ % PHASE_TONES.length] : 'cream';
           return (
             <li>
-              <CategoryCard variant="phase" title={ls.name} href={href} tone={tone} icon={ls.slug}
+              <CategoryCard variant="phase" title={ls.name} href={href} tone={tone}
                 meta={formatAgeRange(ls.minimumAgeMonths, ls.maximumAgeMonths) || ls.description} />
             </li>
           );
         })}
+      </ul>
+    </ContentSection>
+  )}
+
+  {pillars.length > 0 && (
+    <ContentSection title={home.pillarsTitle || 'Waar ben je naar op zoek?'} intro={home.pillarsIntro} id="onderwerpen">
+      <ul class="onderwerpenlijst">
+        {pillars.map((p) => (
+          <li><CategoryCard variant="related" title={p.navLabel || p.name} href={pillarPath(p)} description={p.description} /></li>
+        ))}
       </ul>
     </ContentSection>
   )}
@@ -79,5 +89,8 @@ let linked = 0;
   .hero-knoppen { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 36px; align-items: center; }
   .fasenlijst { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   @media (min-width: 700px) { .fasenlijst { grid-template-columns: repeat(3, 1fr); } }
+  .onderwerpenlijst { display: grid; gap: 14px; }
+  @media (min-width: 700px) { .onderwerpenlijst { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .onderwerpenlijst { grid-template-columns: repeat(3, 1fr); } }
   @media (min-width: 1000px) { .fasenlijst { grid-template-columns: repeat(6, 1fr); } }
 </style>

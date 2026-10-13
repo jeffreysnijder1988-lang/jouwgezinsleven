@@ -5,10 +5,9 @@
  *                     niet klikbaar (geen links naar pagina's die niet bestaan).
  *  variant "related": "Ook interessant"-kaart op hubs (bestaande site ".anderelijst a").
  */
-import Illustration from '@/components/ui/Illustration.astro';
 import type { PhaseTone } from '@/lib/helpers/theme';
-interface Props { title: string; href?: string | null; description?: string | null; meta?: string | null; icon?: string | null; tone?: PhaseTone; variant?: 'phase' | 'related' }
-const { title, href, description, meta, icon, tone = 'cream', variant = 'phase' } = Astro.props;
+interface Props { title: string; href?: string | null; description?: string | null; meta?: string | null; tone?: PhaseTone; variant?: 'phase' | 'related' }
+const { title, href, description, meta, tone = 'cream', variant = 'phase' } = Astro.props;
 const Tag = href ? 'a' : 'div';
 ---
 {variant === 'phase' ? (
@@ -16,7 +15,6 @@ const Tag = href ? 'a' : 'div';
     {!href && <span class="binnenkort">Binnenkort meer</span>}
     <strong>{title}</strong>
     {meta && <small>{meta}</small>}
-    {icon && <Illustration kind="phase" name={icon} class="fase__icoon" />}
   </Tag>
 ) : (
   <Tag class="andere" href={href ?? undefined}>
@@ -29,7 +27,6 @@ const Tag = href ? 'a' : 'div';
   a.fase:hover { text-decoration: none; }
   .fase strong { font-family: var(--font-heading); font-size: 1.35rem; display: block; margin-bottom: 4px; }
   .fase small { display: block; font-size: var(--text-small); color: var(--color-text); }
-  .fase :global(.fase__icoon) { position: absolute; right: -6px; bottom: -6px; width: 70px; height: 70px; opacity: .9; }
   .fase--pink { background: var(--color-pink-soft); }
   .fase--yellow { background: var(--color-yellow); }
   .fase--sage-light { background: var(--color-sage-light); }

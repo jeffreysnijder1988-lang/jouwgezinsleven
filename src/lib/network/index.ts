@@ -16,14 +16,15 @@ export type PlatformKey =
   | 'lomamo' | 'opvangkiezer' | 'welkespeeltuin' | 'welkespeeltuin-be' | 'rustmetkids'
   | 'rustigzwanger' | 'bevallingschecklist' | 'aanstaandevader' | 'jouwkraamtijd' | 'streaq';
 
-export interface Platform { key: PlatformKey; name: string; url?: string }
+/** live: false = site nog niet online → nergens naartoe linken (geen dode doorverwijzingen). */
+export interface Platform { key: PlatformKey; name: string; url?: string; live?: boolean }
 
 /** Publieke platformgegevens uit NETWORK_MAP.md. Alleen domeinen die daar vastliggen. */
 export const PLATFORMS: Record<PlatformKey, Platform> = {
   lomamo: { key: 'lomamo', name: 'Lomamo', url: 'https://lomamo.nl' },
   opvangkiezer: { key: 'opvangkiezer', name: 'Opvangkiezer', url: 'https://opvangkiezer.nl' },
-  welkespeeltuin: { key: 'welkespeeltuin', name: 'WelkeSpeeltuin', url: 'https://welkespeeltuin.nl' },
-  'welkespeeltuin-be': { key: 'welkespeeltuin-be', name: 'WelkeSpeeltuin.be', url: 'https://welkespeeltuin.be' },
+  welkespeeltuin: { key: 'welkespeeltuin', name: 'WelkeSpeeltuin', url: 'https://welkespeeltuin.nl', live: false },
+  'welkespeeltuin-be': { key: 'welkespeeltuin-be', name: 'WelkeSpeeltuin.be', url: 'https://welkespeeltuin.be', live: false },
   rustmetkids: { key: 'rustmetkids', name: 'Rustmetkids', url: 'https://rustmetkids.nl' },
   rustigzwanger: { key: 'rustigzwanger', name: 'RustigZwanger' },
   bevallingschecklist: { key: 'bevallingschecklist', name: 'Bevallingschecklist', url: 'https://bevallingschecklist.nl' },
@@ -64,7 +65,7 @@ function isSafeHttpUrl(u?: string | null): u is string {
 function fromManualReference(d: NetworkDestination): NetworkItem | null {
   const platform = PLATFORMS[d.platform as PlatformKey];
   const url = isSafeHttpUrl(d.externalUrl) ? d.externalUrl : platform?.url;
-  if (!platform || !url) return null;
+  if (!platform || !url || platform.live === false) return null;
   return {
     key: d._key,
     platform,
