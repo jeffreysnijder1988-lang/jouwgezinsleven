@@ -53,4 +53,5 @@ jobs:
         run: npx sanity deploy --yes
       - name: Samenvatting
         if: always()
-        run: echo "### Studio deploy: ${{ job.status }} — https://jouwgezinsleven.sanity.studio" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "### Studio deploy: ${{ job.status }} — https://jouwgezinsleven.sanity.studio" >> "$GITHUB_STEP_SUMMARY"
