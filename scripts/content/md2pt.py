@@ -4,14 +4,19 @@
 # - [[TOOL:uitgerekende-datum]] op een eigen regel -> toolEmbed-blok
 # - interne links /pijler/slug/ -> weak reference (alleen als het md-bestand in articles/ of articles2/ staat); /baby/ etc. -> platte tekst
 # - Lomamo-URLs gecontroleerd tegen <werkmap>/articles/BRIEF.md
-# Nieuwe drafts krijgen reviewStatus needs_review, origin ai-assisted. publishedAt staat hard op 13-10-2026: aanpassen!
-import re,json,sys,glob,hashlib,yaml,os
+# - Live artikelen buiten de md-bestanden: <werkmap>/existing.json ({"/pijler/slug/": "article-slug"}), bv. uit GROQ.
+# Nieuwe drafts krijgen reviewStatus needs_review, origin ai-assisted.
+# publishedAt: PUBLISHED_BASE=2026-10-13T14:00 (UTC, moet in het verleden liggen); per artikel +3 min.
+import re,json,sys,glob,hashlib,yaml,os,datetime
 S=sys.argv[1]; D=sys.argv[2] if len(sys.argv)>2 else 'articles'
 PIL={'zwanger':'pillar-zwanger','baby-peuter':'pillar-baby-peuter','kinderopvang':'pillar-kinderopvang','eropuit':'pillar-eropuit','feestjes':'pillar-feestjes','gezinsvakantie':'pillar-vakantie'}
 LOMAMO=set(re.findall(r'https://lomamo\.nl/collections/[a-z0-9-]+',open(f'{S}/articles/BRIEF.md').read()))|{f'https://lomamo.nl/collections/speelgoed-{i}-jaar' for i in range(1,7)}
 files=sorted(glob.glob(f'{S}/{D}/*/*.md'))
 prev=[f for f in sorted(glob.glob(f'{S}/articles/*/*.md')+glob.glob(f'{S}/articles2/*/*.md')) if not f.startswith(f'{S}/{D}/')]
 arts={};paths={}
+if os.path.exists(f'{S}/existing.json'): paths.update(json.load(open(f'{S}/existing.json')))
+BASE=datetime.datetime.fromisoformat(os.environ.get('PUBLISHED_BASE','2026-10-13T06:00'))
+TODAY=BASE.date().isoformat()
 for f in prev:
     _,fm,_b=open(f).read().split('---',2); m=yaml.safe_load(fm); paths[f"/{m['pillar']}/{m['slug']}/"]='article-'+m['slug']
 STAGES={'/baby/':'lifestage-baby','/peuter/':'lifestage-peuter','/kleuter/':'lifestage-kleuter','/basisschool/':'lifestage-basisschool'}
@@ -82,13 +87,13 @@ for i,(f,(m,body)) in enumerate(arts.items()):
      'lifeStages':[{'_key':key(src,'ls',x),'_type':'reference','_ref':'lifestage-'+x} for x in m.get('lifeStages') or []],
      'searchIntent':m.get('searchIntent'),
      'networkDestinations':[{'_key':key(src,'nw',j),'_type':'networkDestination','platform':n['platform'],'externalUrl':n['url'],'relationType':n.get('relationType','platform'),'title':n.get('title'),'description':n.get('description'),'priority':n.get('priority',0)} for j,n in enumerate(m.get('network') or [])],
-     'publishedAt':('2026-10-13T%02d:%02d:00Z'%(6,i*3) if D=='articles' else '2026-10-13T%02d:%02d:00Z'%(10,i*3)),
-     'sources':[{'_key':key(src,'src',j),'_type':'sourceRef','sourceName':x['name'],'sourceUrl':x['url'],'lastCheckedAt':'2026-10-13'} for j,x in enumerate(m.get('sources') or [])],
+     'publishedAt':(BASE+datetime.timedelta(minutes=3*i)).strftime('%Y-%m-%dT%H:%M:00Z'),
+     'sources':[{'_key':key(src,'src',j),'_type':'sourceRef','sourceName':x['name'],'sourceUrl':x['url'],'lastCheckedAt':TODAY} for j,x in enumerate(m.get('sources') or [])],
      'sourceNotes':m.get('notes'),'reviewStatus':'needs_review','origin':'ai-assisted',
      'seo':{'_type':'seo','title':m['seoTitle'],'description':m['seoDescription']}}
     for k in ('minimumAgeMonths','maximumAgeMonths'):
         if m.get(k) is not None: doc[k]=m[k]
-    if m.get('volatile'): doc['lastReviewedAt']='2026-10-13'
+    if m.get('volatile'): doc['lastReviewedAt']=TODAY
     doc={k:v for k,v in doc.items() if v not in (None,[])}
     for n in doc.get('networkDestinations',[]):
         for k in [k for k,v in n.items() if v is None]: del n[k]

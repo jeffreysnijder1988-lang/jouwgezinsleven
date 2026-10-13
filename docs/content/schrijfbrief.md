@@ -1,4 +1,4 @@
-# Schrijfbrief JouwGezinsleven.nl — tweede batch artikelen (13 oktober 2026)
+# Schrijfbrief JouwGezinsleven.nl — batch 3 (13 oktober 2026)
 
 JouwGezinsleven.nl is een Nederlandse informatiesite voor gezinnen (zwangerschap t/m tiener), uitgegeven door StudioCutter (Arnhem). Doel: concrete vragen van ouders beantwoorden, organisch zoekverkeer, en waar het inhoudelijk past doorverwijzen naar eigen platforms (vooral Lomamo.nl).
 
@@ -42,24 +42,40 @@ JouwGezinsleven.nl is een Nederlandse informatiesite voor gezinnen (zwangerschap
 
 Andere netwerksites (alleen homepage, alleen waar logisch): https://opvangkiezer.nl (kinderopvang vergelijken), https://rustmetkids.nl (rustige gezinsvakanties/vakantieparken).
 
-## Al live (batch 1) — hier mag je naar linken
-- /zwanger/zwangerschapsverlof/ · /zwanger/kraampakket/ · /zwanger/babykamer-inrichten/
-- /baby-peuter/wanneer-gaat-baby-kruipen/ · /baby-peuter/tandjes-baby/ · /baby-peuter/van-ledikant-naar-peuterbed/
-- /kinderopvang/kinderopvangtoeslag/ · /kinderopvang/kosten-kinderopvang/
-- /eropuit/uitjes-bij-regen/ · /eropuit/uitjes-met-peuter/
-- /feestjes/traktatie-school/ · /feestjes/traktatie-peuter/ · /feestjes/kinderfeestje-thuis/
-- /gezinsvakantie/vliegen-met-baby/ · /gezinsvakantie/vakantie-met-peuter/
-- Fasepagina's: /baby/ · /peuter/ · /kleuter/ · /basisschool/
+## Al live — hier mag je naar linken (alleen deze URL's)
+- Zwanger: /zwanger/zwangerschapsverlof/ · /zwanger/kraampakket/ · /zwanger/babykamer-inrichten/ · /zwanger/geboorteverlof-partner/ · /zwanger/eerste-symptomen-zwangerschap/ · /zwanger/uitgerekende-datum-berekenen/
+- Baby & peuter: /baby-peuter/wanneer-gaat-baby-kruipen/ · /baby-peuter/tandjes-baby/ · /baby-peuter/van-ledikant-naar-peuterbed/ · /baby-peuter/slaapregressie/ · /baby-peuter/sprongetjes-baby/ · /baby-peuter/wakkertijden-baby/ · /baby-peuter/loopwagen-loopstoel/ · /baby-peuter/zindelijk-worden/
+- Kinderopvang: /kinderopvang/kinderopvangtoeslag/ · /kinderopvang/kosten-kinderopvang/ · /kinderopvang/bso/ · /kinderopvang/gastouder/
+- Eropuit: /eropuit/uitjes-bij-regen/ · /eropuit/uitjes-met-peuter/ · /eropuit/dagje-uit-met-kinderen/ · /eropuit/gratis-uitjes-met-kinderen/
+- Feestjes: /feestjes/traktatie-school/ · /feestjes/traktatie-peuter/ · /feestjes/kinderfeestje-thuis/ · /feestjes/kinderfeestje-ideeen/ · /feestjes/speurtocht-kinderfeestje/ · /feestjes/uitnodiging-kinderfeestje/
+- Gezinsvakantie: /gezinsvakantie/vliegen-met-baby/ · /gezinsvakantie/vakantie-met-peuter/ · /gezinsvakantie/autorit-met-kinderen/ · /gezinsvakantie/vakantie-met-baby/
+- Pijlers: /zwanger/ · /baby-peuter/ · /kinderopvang/ · /eropuit/ · /feestjes/ · /gezinsvakantie/
+- Fasepagina's (/baby/, /peuter/ enz.) NIET linken: die worden nog als platte tekst weergegeven.
 
-## Batch 2 (gaat tegelijk online)
-- /zwanger/geboorteverlof-partner/ · /zwanger/eerste-symptomen-zwangerschap/
-- /baby-peuter/slaapregressie/ · /baby-peuter/sprongetjes-baby/ · /baby-peuter/wakkertijden-baby/ · /baby-peuter/loopwagen-loopstoel/ · /baby-peuter/zindelijk-worden/
-- /kinderopvang/bso/ · /kinderopvang/gastouder/
-- /eropuit/dagje-uit-met-kinderen/ · /eropuit/gratis-uitjes-met-kinderen/
-- /feestjes/kinderfeestje-ideeen/ · /feestjes/speurtocht-kinderfeestje/ · /feestjes/uitnodiging-kinderfeestje/
-- /gezinsvakantie/autorit-met-kinderen/ · /gezinsvakantie/vakantie-met-baby/
+## Batch 3 (gaat tegelijk online, onderling linken mag)
+- /feestjes/gezonde-traktaties/ · /feestjes/afscheid-kinderdagverblijf/ · /feestjes/escape-room-kinderfeestje/
+- /kinderopvang/kinderopvangtoeslag-aanvragen/ · /kinderopvang/betaaldata-kinderopvangtoeslag/ · /kinderopvang/recht-op-kinderopvangtoeslag/ · /kinderopvang/kinderopvang-2027/ · /kinderopvang/gastouder-of-kinderdagverblijf/
+- /baby-peuter/regeldagen-baby/ · /baby-peuter/gehoorbescherming-baby/
 
-Interne links: 2–4 per artikel naar artikelen uit batch 1 of 2 of een pijler-/fasepagina, alleen waar het de lezer echt verder helpt. Niet naar artikelen die niet in deze lijsten staan.
+Interne links: 2–4 per artikel, alleen waar het de lezer echt verder helpt.
+
+## Kannibalisatie: hub-and-spoke (verplicht)
+Bestaande hubs bevatten al een korte sectie over sommige batch-3-onderwerpen. Een batch-3-artikel gaat dieper op precies zijn eigen vraag, herhaalt de hub niet en linkt 1x terug naar de hub. Behandel andere deelonderwerpen hooguit in één zin met een link.
+- /kinderopvang/kinderopvangtoeslag/ (hub) heeft H2's: wie heeft recht, hoeveel in 2026, aanvragen, wanneer betaald, wijzigingen doorgeven, wat verandert in 2027.
+  - aanvragen = het stappenplan (Mijn toeslagen, DigiD, gegevens, termijnen, terugwerkende kracht, daarna wijzigen). Niet de hoogte uitrekenen.
+  - betaaldata = wanneer en hoe er betaald wordt (betaaldata 2026 en, als gepubliceerd, 2027; voorschot vs. definitieve berekening; te laat/niet gestort). Exacte datums ALLEEN van belastingdienst.nl/rijksoverheid.nl; kun je ze niet verifiëren: niet noemen.
+  - recht-op = de voorwaarden in detail (werk/studie/traject, geregistreerde opvang LRK, contract, partner, situaties zonder recht, stoppen met werken).
+  - kinderopvang-2027 = wat er per 2027 verandert/vastligt volgens het kabinet. Alleen besloten of officieel aangekondigd beleid; onderscheid duidelijk "besloten" vs "plan". Check de actuele stand (oktober 2026).
+- /kinderopvang/gastouder/ heeft al een H2 "Gastouder of kinderdagverblijf: wat is het verschil?". gastouder-of-kinderdagverblijf = keuzehulp: welke opvang past bij jouw kind en situatie (leeftijd, temperament, werktijden, flexibiliteit, ziek kind, kosten in grote lijnen met link naar /kinderopvang/kosten-kinderopvang/). Hoofd-CTA Opvangkiezer.
+- /feestjes/traktatie-school/ en /feestjes/traktatie-peuter/ bevatten ideeënlijsten. gezonde-traktaties = invalshoek gezond: wat telt als gezond (Voedingscentrum), principes, ideeën gezond per type (fruit, groente, hartig, niet-eetbaar), en wat je vermijdt. Andere ideeën dan in de bestaande artikelen waar mogelijk.
+- /baby-peuter/sprongetjes-baby/ is er al. regeldagen-baby = wat een regeldag is (term gebruikt in Nederland), verschil met sprongetje, clusteren en groeispurt, wat je kunt doen, wanneer naar consultatiebureau/huisarts. Neutraal en eerlijk over het wetenschappelijk bewijs.
+
+## Netwerk per artikel
+- Kinderopvang-artikelen: Opvangkiezer (homepage, relationType platform) als network-item, in de tekst max 1 vermelding waar logisch.
+- afscheid-kinderdagverblijf: geen Lomamo tenzij een collectie echt aansluit bij een afscheidscadeau (bv. houten speelgoed of montessori speelgoed voor de groep) — redactioneel en zonder productclaims, anders network leeg.
+- gehoorbescherming-baby: er is GEEN Lomamo-collectie voor gehoorbescherming; geen Lomamo-link. Geen merken of producteigenschappen noemen. Bronnen: hoorstichting.nl, rivm.nl/geluid, ncj.nl, thuisarts.nl, gezondheidsfondsen. Decibelwaarden alleen met bron.
+- escape-room-kinderfeestje: zelf maken thuis voor 8–12 jaar (opbouw, raadsels-typen, tijd, materialen). Geen bedrijven noemen.
+- regeldagen-baby: geen netwerk.
 
 ## Uitvoerformaat — één bestand per artikel
 Pad: `<scratchpad>/articles/<pillar-slug>/<slug>.md`. YAML-frontmatter, daarna de body in Markdown.
