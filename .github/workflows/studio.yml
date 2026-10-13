@@ -1,0 +1,56 @@
+# =============================================================================
+#  JouwGezinsleven — Sanity Studio online zetten
+#
+#  Bouwt de Studio uit /studio en zet hem op https://jouwgezinsleven.sanity.studio
+#  (studioHost in studio/sanity.cli.ts). Deploy schrijft ook het schema naar
+#  Sanity, zodat tools buiten de Studio (MCP, Dashboard) dezelfde velden kennen.
+#
+#  Triggers: wijziging in studio/ op main, of handmatig (Actions → Studio → Run workflow).
+#  Secret:   SANITY_AUTH_TOKEN — API-token met rechten "Deploy Studio" (sanity.io/manage → API → Tokens).
+#  Raakt de website niet: die wordt door de Publish-workflow gebouwd.
+# =============================================================================
+name: Studio
+
+on:
+  push:
+    branches: [main]
+    paths: ['studio/**', '.github/workflows/studio.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: studio
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Studio bouwen en deployen
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: studio
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - name: Token aanwezig?
+        run: |
+          if [[ -z "$SANITY_AUTH_TOKEN" ]]; then
+            echo "::error::Repository secret SANITY_AUTH_TOKEN ontbreekt (sanity.io/manage → API → Tokens → Deploy Studio)."
+            exit 1
+          fi
+      - name: Dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Deploy naar jouwgezinsleven.sanity.studio
+        run: npx sanity deploy --yes
+      - name: Samenvatting
+        if: always()
+        run: echo "### Studio deploy: ${{ job.status }} — https://jouwgezinsleven.sanity.studio" >> "$GITHUB_STEP_SUMMARY"
