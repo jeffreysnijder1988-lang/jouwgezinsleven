@@ -2,7 +2,7 @@
 /**
  * Eén hero-component voor alle paginatypes (bestaande site).
  *  variant "home": oranje-geel verloop, grote H1, uitgesneden foto rechts, dubbele golf.
- *  variant "hub":  gekleurde pijler-hero met kruimelpad, H1, intro en decoratieve illustratie.
+ *  variant "hub":  gekleurde pijler-hero met kruimelpad, H1 en intro (geen decoratieve illustraties).
  *  variant "plain": rustige kop voor artikelen/pagina's (crème vlak + golf).
  */
 import type { SanityImage } from '@/lib/content/types';
@@ -11,7 +11,6 @@ import type { HubTheme } from '@/lib/helpers/theme';
 import Breadcrumbs from '@/components/navigation/Breadcrumbs.astro';
 import SanityImg from '@/components/ui/SanityImg.astro';
 import WaveDivider from '@/components/ui/WaveDivider.astro';
-import Illustration from '@/components/ui/Illustration.astro';
 import { hasImage, imageUrl } from '@/lib/sanity/image';
 interface Props {
   title: string;
@@ -59,7 +58,6 @@ const h = img?.asset?.height ?? 917;
         {intro && <p class="hero__intro">{intro}</p>}
         <slot />
       </div>
-      <div class="hero__illu"><Illustration kind="hub" name={theme} /></div>
     </div>
     <WaveDivider />
   </section>
@@ -106,8 +104,6 @@ const h = img?.asset?.height ?? 917;
   .hero__grid--hub { align-items: center; padding-bottom: 96px; }
   .hero--hub h1 { font-size: var(--text-hub); max-width: 12em; margin-bottom: .35em; }
   .hero--hub .hero__intro { color: var(--color-text-muted); }
-  .hero__illu { justify-self: center; width: min(100%, 380px); }
-  .hero__illu :global(svg) { width: 100%; height: auto; }
   .hero--roze { background: var(--color-pink-soft); }
   .hero--geel { background: var(--gradient-hub-yellow); }
   .hero--sage { background: var(--color-sage-pale); }
@@ -127,7 +123,6 @@ const h = img?.asset?.height ?? 917;
     .hero--home .hero__grid { grid-template-columns: 1.1fr .9fr; gap: 40px; }
     .hero__tekst { padding-bottom: 140px; }
     .hero__visual { justify-self: end; margin-bottom: 0; }
-    .hero__grid--hub { grid-template-columns: 1.2fr .8fr; gap: 48px; }
-    .hero__illu { justify-self: end; }
+    .hero__grid--hub > div { max-width: 46rem; }
   }
 </style>
