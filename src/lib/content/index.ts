@@ -5,7 +5,8 @@ import { fetchContent } from './source';
 import { resolveFactsInBlocks, resolveFactTokens, factWarnings } from './facts';
 import * as Q from '../sanity/queries';
 import type {
-  Article, ArticleCardData, HomePage, LifeStage, Page, Pillar, RouteEntry, SiteSettings,
+  Article, ArticleCardData, HomePage, LifeStage, Page, Pillar, PregnancyHub, PregnancyMilestone,
+  PregnancyWeek, PregnancyWeekCard, RouteEntry, SiteSettings, TrimesterInfo,
 } from './types';
 
 export * from './types';
@@ -67,6 +68,64 @@ export async function getPage(slug: string): Promise<Page | null> {
   return p ? { ...p, body: await resolveFactsInBlocks(p.body, `pagina /${slug}/`) } : p;
 }
 
+// --- Zwangerschap week voor week ---
+
+type WeekRoute = PregnancyWeekCard & { noIndex: boolean; canonicalOverride?: string; lastmod?: string };
+
+/** Hub-slug onder de zwangerschapspijler. */
+export const PREGNANCY_HUB_SLUG = 'week-voor-week';
+/** Weekoverzicht is indexeerbaar vanaf dit aantal gepubliceerde weken (dunne content daaronder). */
+export const PREGNANCY_HUB_MIN_INDEXABLE = 6;
+
+/** Trimester afgeleid uit de week (1–13, 14–27, 28–42); niet opgeslagen. */
+export const trimesterOf = (week: number): 1 | 2 | 3 => (week <= 13 ? 1 : week <= 27 ? 2 : 3);
+export const TRIMESTER_LABELS: Record<1 | 2 | 3, string> = { 1: 'Eerste trimester', 2: 'Tweede trimester', 3: 'Derde trimester' };
+/** "Week 12" of "Week 1–3". */
+export const weekLabel = (w: { week: number; weekStart?: number | null }) =>
+  w.weekStart && w.weekStart < w.week ? `Week ${w.weekStart}–${w.week}` : `Week ${w.week}`;
+
+export const getPregnancyWeeks = () => fetchContent<WeekRoute[]>(Q.PREGNANCY_WEEKS_QUERY);
+export const getTrimesters = () => fetchContent<TrimesterInfo[]>(Q.TRIMESTERS_QUERY);
+
+export async function getPregnancyHub(): Promise<PregnancyHub> {
+  const h = await fetchContent<PregnancyHub | null>(Q.PREGNANCY_HUB_QUERY);
+  const base: PregnancyHub = h ?? { title: '', seo: {} };
+  return {
+    ...base,
+    title: base.title || 'Zwangerschap week voor week',
+    body: await resolveFactsInBlocks(base.body, 'weekoverzicht zwangerschap'),
+  };
+}
+
+/** Alles voor één weekpagina: de week zelf, vorige/volgende, afspraken in deze periode en het trimesterblok. */
+export async function getPregnancyWeekPage(slug: string) {
+  const [w, weeks, milestones, trimesters] = await Promise.all([
+    fetchContent<PregnancyWeek | null>(Q.PREGNANCY_WEEK_QUERY, { slug }),
+    getPregnancyWeeks(),
+    fetchContent<PregnancyMilestone[]>(Q.PREGNANCY_MILESTONES_QUERY),
+    getTrimesters(),
+  ]);
+  if (!w) return null;
+  const where = `zwangerschapsweek ${slug}`;
+  const [babyDevelopment, bodyChanges, tips] = await Promise.all([
+    resolveFactsInBlocks(w.babyDevelopment, where),
+    resolveFactsInBlocks(w.bodyChanges, where),
+    resolveFactsInBlocks(w.tips, where),
+  ]);
+  const faq = w.faq ? await Promise.all(w.faq.map(async (f) => ({ ...f, answer: (await resolveFactTokens(f.answer, `${where} FAQ`)) ?? f.answer }))) : w.faq;
+  const from = w.weekStart ?? w.week;
+  const i = weeks.findIndex((x) => x._id === w._id);
+  const trimester = trimesterOf(w.week);
+  return {
+    week: { ...w, babyDevelopment, bodyChanges, tips, faq },
+    prev: i > 0 ? weeks[i - 1] : null,
+    next: i >= 0 && i < weeks.length - 1 ? weeks[i + 1] : null,
+    milestones: milestones.filter((m) => m.weekFrom <= w.week && m.weekTo >= from),
+    trimester,
+    trimesterInfo: trimesters.find((t) => t.trimester === trimester) ?? null,
+  };
+}
+
 /** Canoniek pad voor een artikel. Eén plek, overal hergebruikt. */
 export const articlePath = (a: { pillar: { slug: string }; slug: string }) => `/${a.pillar.slug}/${a.slug}/`;
 export const pillarPath = (p: { slug: string }) => `/${p.slug}/`;
@@ -125,6 +184,10 @@ export function getAllRoutes(): Promise<RouteEntry[]> {
     for (const o of overdue) {
       warnings.push(`artikel /${o.pillar}/${o.slug}/ moest vóór ${o.reviewDueAt} opnieuw gecontroleerd worden${o.reviewNote ? ` (${o.reviewNote.split('\n')[0].slice(0, 120)})` : ''}`);
     }
+    for (const u of await fetchContent<{ _id: string; week?: number; slug?: string; reviewStatus?: string; sourceCount?: number }[]>(Q.UNROUTABLE_WEEKS_QUERY)) {
+      const why = !u.slug || u.week == null ? 'week of slug ontbreekt' : u.reviewStatus !== 'approved' ? `reviewstatus is "${u.reviewStatus ?? 'leeg'}"` : `${u.sourceCount ?? 0} bron(nen), minimaal 2 nodig`;
+      warnings.push(`zwangerschapsweek ${u._id} (week ${u.week ?? '?'}) wordt NIET gepubliceerd: ${why}`);
+    }
     for (const w of await factWarnings()) warnings.push(w);
     warnings.forEach((w) => console.warn(`[content] waarschuwing: ${w}`));
     if (problems.length) {
@@ -155,6 +218,31 @@ export function getAllRoutes(): Promise<RouteEntry[]> {
         path: pagePath(pg), kind: 'page', id: pg._id, params: { slug: pg.slug },
         noIndex: pg.noIndex, canonical: pg.canonicalOverride, lastmod: pg.lastmod,
       });
+    }
+
+    // Zwangerschap week voor week: /zwanger/12-weken-zwanger/ + overzicht /zwanger/week-voor-week/.
+    const weeks = await getPregnancyWeeks();
+    if (weeks.length) {
+      const preg = pillars.find((p) => p._id === Q.PREGNANCY_PILLAR_ID);
+      if (!preg) {
+        console.warn(`[content] waarschuwing: ${weeks.length} zwangerschapsweek/weken niet gepubliceerd: pijler ${Q.PREGNANCY_PILLAR_ID} ontbreekt`);
+      } else {
+        for (const w of weeks) {
+          if (!slugOk(w.slug)) { problems.push(`zwangerschapsweek ${w._id}: ongeldige slug "${w.slug}"`); continue; }
+          routes.push({
+            path: `/${preg.slug}/${w.slug}/`, kind: 'pregnancyWeek', id: w._id, params: { pillar: preg.slug, slug: w.slug },
+            noIndex: w.noIndex, canonical: w.canonicalOverride, lastmod: w.lastmod,
+          });
+        }
+        const hub = await getPregnancyHub();
+        const indexable = weeks.filter((w) => !w.noIndex).length;
+        routes.push({
+          path: `/${preg.slug}/${PREGNANCY_HUB_SLUG}/`, kind: 'pregnancyHub', id: 'pregnancyHub', params: { pillar: preg.slug, slug: PREGNANCY_HUB_SLUG },
+          noIndex: Boolean(hub.seo?.noIndex) || indexable < PREGNANCY_HUB_MIN_INDEXABLE,
+          canonical: hub.seo?.canonicalOverride, lastmod: weeks.map((w) => w.lastmod).filter(Boolean).sort().at(-1) ?? hub._updatedAt ?? null,
+        });
+        if (problems.length) throw new Error(`[content] ${problems.length} contentfout(en):\n - ${problems.join('\n - ')}`);
+      }
     }
 
     // Levensfasepagina's (/peuter/, /kleuter/, …): alleen met minimaal één artikel, en alleen als de URL

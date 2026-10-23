@@ -452,6 +452,31 @@
       "marks": []
      }
     ]
+   },
+   {
+    "_type": "block",
+    "_key": "b2",
+    "style": "normal",
+    "markDefs": [
+     {
+      "_key": "wl1",
+      "_type": "internalLink",
+      "reference": {
+       "_type": "reference",
+       "_ref": "week-12"
+      }
+     }
+    ],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "b2s",
+      "text": "[TEST] Lees week twaalf.",
+      "marks": [
+       "wl1"
+      ]
+     }
+    ]
    }
   ]
  },
@@ -658,5 +683,453 @@
    }
   ],
   "lastReviewedAt": "2026-10-13"
+ },
+ {
+  "_id": "pillar-zwanger",
+  "_type": "topic",
+  "_updatedAt": "2026-09-01T10:00:00Z",
+  "kind": "pillar",
+  "name": "Testzwanger",
+  "slug": {
+   "current": "testzwanger"
+  },
+  "navOrder": 4,
+  "description": "[TEST] Zwangerschapspijler."
+ },
+ {
+  "_id": "week-1-3",
+  "_type": "pregnancyWeek",
+  "_updatedAt": "2026-10-20T10:00:00Z",
+  "week": 3,
+  "title": "[TEST] 1 2 3 weken zwanger",
+  "slug": {
+   "current": "1-2-3-weken-zwanger"
+  },
+  "excerpt": "[TEST] Kort antwoord week 3.",
+  "babyDevelopment": [
+   {
+    "_type": "block",
+    "_key": "bd1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bd1s",
+      "text": "[TEST] Baby in week 3.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "bodyChanges": [
+   {
+    "_type": "block",
+    "_key": "bc1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bc1s",
+      "text": "[TEST] Lichaam in week 3.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   },
+   {
+    "_key": "s2",
+    "sourceName": "[TEST] Bron twee",
+    "sourceUrl": "https://example.com/bron-2"
+   }
+  ],
+  "reviewStatus": "approved",
+  "origin": "ai-assisted",
+  "lastReviewedAt": "2026-10-20",
+  "publishedAt": "2026-10-20T10:00:00Z",
+  "seo": {
+   "description": "[TEST] Meta week 3."
+  },
+  "weekStart": 1
+ },
+ {
+  "_id": "week-12",
+  "_type": "pregnancyWeek",
+  "_updatedAt": "2026-10-20T10:00:00Z",
+  "week": 12,
+  "title": "[TEST] 12 weken zwanger",
+  "slug": {
+   "current": "12-weken-zwanger"
+  },
+  "excerpt": "[TEST] Kort antwoord week 12.",
+  "babyDevelopment": [
+   {
+    "_type": "block",
+    "_key": "bd1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bd1s",
+      "text": "[TEST] Baby in week 12.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "bodyChanges": [
+   {
+    "_type": "block",
+    "_key": "bc1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bc1s",
+      "text": "[TEST] Lichaam in week 12.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   },
+   {
+    "_key": "s2",
+    "sourceName": "[TEST] Bron twee",
+    "sourceUrl": "https://example.com/bron-2"
+   }
+  ],
+  "reviewStatus": "approved",
+  "origin": "ai-assisted",
+  "lastReviewedAt": "2026-10-20",
+  "publishedAt": "2026-10-20T10:00:00Z",
+  "seo": {
+   "description": "[TEST] Meta week 12."
+  },
+  "babySize": {
+   "lengthCm": 6.1,
+   "lengthNote": "kruin-stuit",
+   "weightGram": 14,
+   "sourceName": "[TEST] Groeibron",
+   "sourceUrl": "https://example.com/groei"
+  },
+  "tips": [
+   {
+    "_type": "block",
+    "_key": "t1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "t1s",
+      "text": "[TEST] Tip voor week 12.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "faq": [
+   {
+    "_key": "q1",
+    "question": "[TEST] Vraag week 12?",
+    "answer": "[TEST] Antwoord week 12."
+   }
+  ],
+  "complaintArticles": [
+   {
+    "_key": "c1",
+    "_type": "reference",
+    "_ref": "art-2",
+    "_weak": true
+   }
+  ]
+ },
+ {
+  "_id": "week-13",
+  "_type": "pregnancyWeek",
+  "_updatedAt": "2026-10-20T10:00:00Z",
+  "week": 13,
+  "title": "[TEST] 13 weken zwanger",
+  "slug": {
+   "current": "13-weken-zwanger"
+  },
+  "excerpt": "[TEST] Kort antwoord week 13.",
+  "babyDevelopment": [
+   {
+    "_type": "block",
+    "_key": "bd1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bd1s",
+      "text": "[TEST] Baby in week 13.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "bodyChanges": [
+   {
+    "_type": "block",
+    "_key": "bc1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bc1s",
+      "text": "[TEST] Lichaam in week 13.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   },
+   {
+    "_key": "s2",
+    "sourceName": "[TEST] Bron twee",
+    "sourceUrl": "https://example.com/bron-2"
+   }
+  ],
+  "reviewStatus": "needs_review",
+  "origin": "ai-assisted",
+  "lastReviewedAt": "2026-10-20",
+  "publishedAt": "2026-10-20T10:00:00Z",
+  "seo": {
+   "description": "[TEST] Meta week 13."
+  }
+ },
+ {
+  "_id": "week-14",
+  "_type": "pregnancyWeek",
+  "_updatedAt": "2026-10-20T10:00:00Z",
+  "week": 14,
+  "title": "[TEST] 14 weken zwanger",
+  "slug": {
+   "current": "14-weken-zwanger"
+  },
+  "excerpt": "[TEST] Kort antwoord week 14.",
+  "babyDevelopment": [
+   {
+    "_type": "block",
+    "_key": "bd1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bd1s",
+      "text": "[TEST] Baby in week 14.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "bodyChanges": [
+   {
+    "_type": "block",
+    "_key": "bc1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bc1s",
+      "text": "[TEST] Lichaam in week 14.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   }
+  ],
+  "reviewStatus": "approved",
+  "origin": "ai-assisted",
+  "lastReviewedAt": "2026-10-20",
+  "publishedAt": "2026-10-20T10:00:00Z",
+  "seo": {
+   "description": "[TEST] Meta week 14."
+  }
+ },
+ {
+  "_id": "week-20",
+  "_type": "pregnancyWeek",
+  "_updatedAt": "2026-10-20T10:00:00Z",
+  "week": 20,
+  "title": "[TEST] 20 weken zwanger",
+  "slug": {
+   "current": "20-weken-zwanger"
+  },
+  "excerpt": "[TEST] Kort antwoord week 20.",
+  "babyDevelopment": [
+   {
+    "_type": "block",
+    "_key": "bd1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bd1s",
+      "text": "[TEST] Baby in week 20.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "bodyChanges": [
+   {
+    "_type": "block",
+    "_key": "bc1",
+    "style": "normal",
+    "markDefs": [],
+    "children": [
+     {
+      "_type": "span",
+      "_key": "bc1s",
+      "text": "[TEST] Lichaam in week 20.",
+      "marks": []
+     }
+    ]
+   }
+  ],
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   },
+   {
+    "_key": "s2",
+    "sourceName": "[TEST] Bron twee",
+    "sourceUrl": "https://example.com/bron-2"
+   }
+  ],
+  "reviewStatus": "approved",
+  "origin": "ai-assisted",
+  "lastReviewedAt": "2026-10-20",
+  "publishedAt": "2099-01-01T10:00:00Z",
+  "seo": {
+   "description": "[TEST] Meta week 20."
+  }
+ },
+ {
+  "_id": "ms-termijn",
+  "_type": "pregnancyMilestone",
+  "title": "[TEST] Termijnecho",
+  "kind": "controle",
+  "weekFrom": 10,
+  "weekTo": 12,
+  "summary": "[TEST] Uitleg termijnecho.",
+  "article": {
+   "_type": "reference",
+   "_ref": "art-1",
+   "_weak": true
+  },
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   }
+  ],
+  "lastReviewedAt": "2026-10-20"
+ },
+ {
+  "_id": "ms-kinkhoest",
+  "_type": "pregnancyMilestone",
+  "title": "[TEST] Kinkhoestprik",
+  "kind": "vaccinatie",
+  "weekFrom": 22,
+  "weekTo": 24,
+  "summary": "[TEST] Uitleg prik.",
+  "externalUrl": "https://example.com/prik",
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   }
+  ],
+  "lastReviewedAt": "2026-10-20"
+ },
+ {
+  "_id": "tri-1",
+  "_type": "trimesterInfo",
+  "trimester": 1,
+  "title": "[TEST] Eerste trimester",
+  "intro": "[TEST] Intro trimester 1.",
+  "callIntro": "[TEST] Bel direct bij:",
+  "warningSigns": [
+   "[TEST] Signaal een",
+   "[TEST] Signaal twee"
+  ],
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   }
+  ],
+  "lastReviewedAt": "2026-10-20"
+ },
+ {
+  "_id": "pregnancyHub",
+  "_type": "pregnancyHub",
+  "_updatedAt": "2026-10-20T10:00:00Z",
+  "title": "[TEST] Zwangerschap week voor week",
+  "intro": "[TEST] Intro weekoverzicht.",
+  "seo": {
+   "description": "[TEST] Meta weekoverzicht."
+  }
+ },
+ {
+  "_id": "drafts.week-15",
+  "_type": "pregnancyWeek",
+  "week": 15,
+  "title": "DRAFT mag nooit",
+  "slug": {
+   "current": "15-weken-zwanger"
+  },
+  "reviewStatus": "approved",
+  "sources": [
+   {
+    "_key": "s1",
+    "sourceName": "[TEST] Bron een",
+    "sourceUrl": "https://example.com/bron-1"
+   },
+   {
+    "_key": "s2",
+    "sourceName": "[TEST] Bron twee",
+    "sourceUrl": "https://example.com/bron-2"
+   }
+  ]
  }
 ]

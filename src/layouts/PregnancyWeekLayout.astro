@@ -1,0 +1,143 @@
+---
+/**
+ * Zwangerschapsweek (/zwanger/12-weken-zwanger/). Eén template voor alle weken; inhoud uit Sanity.
+ * Volgorde: hero (trimester, kort antwoord) · weeknavigatie · baby · lichaam · afspraken (pregnancyMilestone) ·
+ * klachten (links) · tips · wanneer bel je de verloskundige (trimesterInfo) · FAQ · bronnen + disclaimer ·
+ * netwerk · weeknavigatie.
+ * Geen medische review (besluit 23-10-2026): nergens "medisch gecontroleerd"; wel bronnen, controledatum en disclaimer.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Hero from '@/components/content/Hero.astro';
+import ArticleMeta from '@/components/content/ArticleMeta.astro';
+import PortableBody from '@/components/content/PortableBody.astro';
+import NetworkBlock from '@/components/network/NetworkBlock.astro';
+import FAQ from '@/components/content/FAQ.astro';
+import WeekNav from '@/components/pregnancy/WeekNav.astro';
+import { articlePath, TRIMESTER_LABELS, weekLabel } from '@/lib/content';
+import type { PregnancyMilestone, PregnancyWeek, PregnancyWeekCard, TrimesterInfo } from '@/lib/content/types';
+import type { PageMeta } from '@/lib/seo/meta';
+import type { Crumb } from '@/lib/schema/jsonld';
+
+interface Props {
+  week: PregnancyWeek; prev: PregnancyWeekCard | null; next: PregnancyWeekCard | null;
+  milestones: PregnancyMilestone[]; trimester: 1 | 2 | 3; trimesterInfo: TrimesterInfo | null;
+  base: string; hubHref: string; meta: PageMeta; crumbs: Crumb[]; schema: (Record<string, unknown> | null)[];
+}
+const { week: w, prev, next, milestones, trimester, trimesterInfo: t, base, hubHref, meta, crumbs, schema } = Astro.props;
+
+const nl = (n: number) => n.toLocaleString('nl-NL', { maximumFractionDigits: 1 });
+const size = w.babySize?.sourceName && (w.babySize.lengthCm != null || w.babySize.weightGram != null) ? w.babySize : null;
+const lengthNote = size?.lengthNote === 'kruin-stuit' ? ' (kruin-stuitlengte)' : size?.lengthNote === 'kruin-hiel' ? ' (kruin-hiellengte)' : '';
+const sources = (w.sources ?? []).filter((s) => s.sourceUrl || s.sourceName);
+const tSources = (t?.sources ?? []).filter((s) => s.sourceUrl || s.sourceName);
+const complaints = w.complaintArticles ?? [];
+const signs = (t?.warningSigns ?? []).filter(Boolean);
+const KIND: Record<string, string> = { controle: 'Controle', vaccinatie: 'Vaccinatie', regelzaak: 'Regelen' };
+const span = (m: PregnancyMilestone) => (m.weekFrom === m.weekTo ? `week ${m.weekFrom}` : `week ${m.weekFrom}–${m.weekTo}`);
+---
+<BaseLayout meta={meta} crumbs={crumbs} schema={schema}>
+  <article>
+    <Hero variant="plain" eyebrow={`${t?.title || TRIMESTER_LABELS[trimester]} · ${weekLabel(w)}`} title={w.title} intro={w.excerpt} image={w.heroImage} crumbs={crumbs}>
+      <ArticleMeta article={w} reviewedLabel="Bronnen gecontroleerd" />
+    </Hero>
+    <div class="container--narrow week">
+      <WeekNav base={base} hubHref={hubHref} prev={prev} next={next} label="Weeknavigatie boven" />
+
+      <section aria-labelledby="baby-titel">
+        <h2 id="baby-titel">Je baby deze week</h2>
+        {size && (
+          <p class="maat">
+            {size.lengthCm != null && <span>Lengte: ongeveer {nl(size.lengthCm)} cm{lengthNote}</span>}
+            {size.weightGram != null && <span>Gewicht: ongeveer {nl(size.weightGram)} gram</span>}
+            <span class="maat__bron">Bron: {size.sourceUrl ? <a href={size.sourceUrl} rel="noopener">{size.sourceName}</a> : size.sourceName}</span>
+          </p>
+        )}
+        <PortableBody value={w.babyDevelopment} />
+      </section>
+
+      <section aria-labelledby="lichaam-titel">
+        <h2 id="lichaam-titel">Je lichaam deze week</h2>
+        <PortableBody value={w.bodyChanges} />
+      </section>
+
+      {milestones.length > 0 && (
+        <section aria-labelledby="afspraken-titel">
+          <h2 id="afspraken-titel">Afspraken en regelzaken in deze periode</h2>
+          <ul class="mijlpalen">
+            {milestones.map((m) => (
+              <li>
+                <span class="mijlpalen__label">{KIND[m.kind] ?? 'Let op'} · {span(m)}</span>
+                <h3>{m.href ? <a href={m.href} rel={m.href.startsWith('http') ? 'noopener' : undefined}>{m.title}</a> : m.title}</h3>
+                {m.summary && <p>{m.summary}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {complaints.length > 0 && (
+        <section aria-labelledby="klachten-titel">
+          <h2 id="klachten-titel">Klachten die nu vaak voorkomen</h2>
+          <ul class="klachten">
+            {complaints.map((a) => <li><a href={articlePath(a)}>{a.title}</a>{a.excerpt && <span>{a.excerpt}</span>}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {w.tips && w.tips.length > 0 && (
+        <section aria-labelledby="tips-titel">
+          <h2 id="tips-titel">Tips voor deze week</h2>
+          <PortableBody value={w.tips} />
+        </section>
+      )}
+
+      {signs.length > 0 && (
+        <section class="alarm" aria-labelledby="alarm-titel">
+          <h2 id="alarm-titel">Wanneer bel je de verloskundige?</h2>
+          {t?.callIntro && <p>{t.callIntro}</p>}
+          <ul>{signs.map((s) => <li>{s}</li>)}</ul>
+          {tSources.length > 0 && (
+            <p class="alarm__bron">Bron: {tSources.map((s, i) => <>{i > 0 && ', '}{s.sourceUrl ? <a href={s.sourceUrl} rel="noopener">{s.sourceName || s.sourceUrl}</a> : s.sourceName}</>)}</p>
+          )}
+        </section>
+      )}
+
+      <FAQ items={w.faq} />
+
+      <aside class="bronnen" aria-labelledby="bronnen-titel">
+        <h2 id="bronnen-titel" class="h4">Bronnen</h2>
+        {sources.length > 0 && <ul>{sources.map((s) => <li>{s.sourceUrl ? <a href={s.sourceUrl} rel="noopener">{s.sourceName || s.sourceUrl}</a> : s.sourceName}</li>)}</ul>}
+        <p class="disclaimer">
+          Deze pagina geeft algemene informatie op basis van de bronnen hierboven. Het is geen medisch advies en vervangt
+          geen gesprek met je verloskundige, huisarts of gynaecoloog. Twijfel je of maak je je zorgen? Bel je verloskundige.
+        </p>
+      </aside>
+
+      <NetworkBlock destinations={w.networkDestinations} />
+      <WeekNav base={base} hubHref={hubHref} prev={prev} next={next} label="Weeknavigatie onder" />
+    </div>
+  </article>
+</BaseLayout>
+<style>
+  .week { padding-top: var(--space-md); padding-bottom: var(--space-section); }
+  .week section { margin-top: var(--space-2xl); }
+  .week section > h2 { margin-bottom: var(--space-sm); }
+  .maat { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-md); background: var(--color-cream); border-radius: var(--radius-md); padding: 14px 18px; font-family: var(--font-heading); font-weight: var(--weight-heading); }
+  .maat__bron { font-family: var(--font-body); font-weight: 400; font-size: var(--text-sm); color: var(--color-text-muted); width: 100%; }
+  .maat a, .alarm a, .bronnen a { text-decoration: underline; }
+  .mijlpalen { display: grid; gap: 12px; }
+  .mijlpalen li { background: var(--color-cream); border-radius: var(--radius-md); padding: 16px 18px; }
+  .mijlpalen__label { font-size: var(--text-sm); color: var(--color-text-muted); }
+  .mijlpalen h3 { margin: 4px 0; }
+  .mijlpalen h3 a { text-decoration: underline; text-underline-offset: 3px; }
+  .mijlpalen p { margin: 0; color: var(--color-text-muted); }
+  .klachten { display: grid; gap: 10px; }
+  .klachten a { font-family: var(--font-heading); font-weight: var(--weight-heading); text-decoration: underline; text-underline-offset: 3px; }
+  .klachten span { display: block; color: var(--color-text-muted); font-size: var(--text-small); }
+  .alarm { background: var(--color-pink-soft); border-radius: var(--radius-lg); padding: 20px 22px; }
+  .alarm ul { list-style: disc; padding-left: 1.2em; }
+  .alarm__bron { font-size: var(--text-sm); margin: 8px 0 0; }
+  .bronnen { margin-top: var(--space-2xl); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .bronnen ul { list-style: disc; padding-left: 1.2em; margin-top: 8px; }
+  .disclaimer { margin-top: var(--space-sm); }
+</style>

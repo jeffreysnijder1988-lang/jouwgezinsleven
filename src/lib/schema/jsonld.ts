@@ -79,7 +79,11 @@ export function breadcrumbSchema(crumbs: Crumb[], site?: URL): Json | null {
   };
 }
 
-export function articleSchema(a: Article, canonical: string, site?: URL): Json {
+/** Article-schema. Ook voor zwangerschapsweken (bewust geen MedicalWebPage: geen medische review). */
+export function articleSchema(
+  a: Pick<Article, 'title' | 'excerpt' | 'publishedAt' | 'updatedAt' | 'heroImage' | 'author'> & { pillar?: { name?: string } | null },
+  canonical: string, site?: URL,
+): Json {
   const schema: Json = {
     '@type': 'Article',
     headline: a.title,

@@ -189,3 +189,11 @@ Voorkom:
 ## Architectuurwijzigingen
 
 Een fundamentele wijziging aan stack, routing, datamodel of source-of-truth moet eerst worden beschreven voordat deze wordt geïmplementeerd.
+
+## Zwangerschap week voor week (23-10-2026)
+
+- Sanity-typen: `pregnancyWeek` (één per week; week 1–3 samen via `weekStart`), `pregnancyMilestone` (afspraken/regelzaken met weekFrom–weekTo), `trimesterInfo` (3x, alarmsignalen) en singleton `pregnancyHub` (tekst weekoverzicht).
+- Routes via de route-registry onder de pijler met ID `pillar-zwanger` (`PREGNANCY_PILLAR_ID` in `lib/sanity/queries.ts`): `/zwanger/<n>-weken-zwanger/` en `/zwanger/week-voor-week/`. Gerenderd door `pages/[pillar]/[slug].astro` met `PregnancyWeekLayout` en `PregnancyHubLayout`.
+- Een week komt alleen online met `reviewStatus = approved`, minimaal 2 bronnen en een publicatiedatum die niet in de toekomst ligt; anders een buildwaarschuwing.
+- Weekoverzicht is noindex tot er 6 indexeerbare weken zijn (`PREGNANCY_HUB_MIN_INDEXABLE`).
+- Geen medische review (besluit 23-10-2026): Article-schema, geen MedicalWebPage, vaste disclaimer in de template. CI controleert dit.

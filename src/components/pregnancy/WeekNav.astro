@@ -1,0 +1,22 @@
+---
+/**
+ * Navigatie tussen zwangerschapsweken: vorige · overzicht · volgende.
+ * Alleen gepubliceerde weken; ontbrekende weken worden overgeslagen.
+ */
+import type { PregnancyWeekCard } from '@/lib/content/types';
+import { weekLabel } from '@/lib/content';
+interface Props { base: string; hubHref: string; prev?: PregnancyWeekCard | null; next?: PregnancyWeekCard | null; label?: string }
+const { base, hubHref, prev, next, label = 'Andere weken' } = Astro.props;
+---
+<nav class="weeknav" aria-label={label}>
+  {prev ? <a class="weeknav__prev" href={`${base}${prev.slug}/`}><span aria-hidden="true">←</span> {weekLabel(prev)}</a> : <span />}
+  <a class="weeknav__hub" href={hubHref}>Alle weken</a>
+  {next ? <a class="weeknav__next" href={`${base}${next.slug}/`}>{weekLabel(next)} <span aria-hidden="true">→</span></a> : <span />}
+</nav>
+<style>
+  .weeknav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-sm); margin-block: var(--space-lg); font-family: var(--font-heading); font-weight: var(--weight-heading); }
+  .weeknav a { display: inline-block; padding: 10px 16px; border-radius: var(--radius-pill); background: var(--color-cream); text-decoration: none; }
+  .weeknav a:hover { background: var(--color-pink-soft); }
+  .weeknav__next { justify-self: end; }
+  .weeknav__hub { justify-self: center; background: transparent !important; text-decoration: underline !important; text-underline-offset: 3px; }
+</style>

@@ -1,42 +1,90 @@
 ---
 /**
- * Generiek artikel-template: /[pijler]/[slug]/. Geen code per artikel nodig.
+ * Tweede URL-niveau: /[pijler]/[slug]/. Geen code per pagina nodig.
+ *  - artikelen (generiek artikeltemplate);
+ *  - zwangerschapsweken (/zwanger/12-weken-zwanger/) en het weekoverzicht (/zwanger/week-voor-week/).
+ * Welke URL wat is, bepaalt de centrale route-registry (botsingen laten de build falen).
  */
 import ArticleLayout from '@/layouts/ArticleLayout.astro';
-import { getAllRoutes, getArticle, getRelatedFallback, getSiteSettings, articlePath } from '@/lib/content';
+import PregnancyWeekLayout from '@/layouts/PregnancyWeekLayout.astro';
+import PregnancyHubLayout from '@/layouts/PregnancyHubLayout.astro';
+import {
+  getAllRoutes, getArticle, getRelatedFallback, getSiteSettings, articlePath, getPillars,
+  getPregnancyWeekPage, getPregnancyWeeks, getPregnancyHub, getTrimesters, PREGNANCY_HUB_SLUG,
+} from '@/lib/content';
 import { buildMeta } from '@/lib/seo/meta';
-import { articleSchema, faqSchema } from '@/lib/schema/jsonld';
+import { articleSchema, collectionPageSchema, faqSchema } from '@/lib/schema/jsonld';
 
 export async function getStaticPaths() {
   const routes = await getAllRoutes();
   return routes
-    .filter((r) => r.kind === 'article')
+    .filter((r) => r.kind === 'article' || r.kind === 'pregnancyWeek' || r.kind === 'pregnancyHub')
     .map((r) => ({ params: { pillar: r.params!.pillar, slug: r.params!.slug }, props: { route: r } }));
 }
 
 const { route } = Astro.props;
 const { pillar, slug } = Astro.params as { pillar: string; slug: string };
-const [settings, article] = await Promise.all([getSiteSettings(), getArticle(pillar, slug)]);
-if (!article) throw new Error(`[article] ${pillar}/${slug} niet gevonden`);
+const settings = await getSiteSettings();
 
-const related = article.relatedArticles?.length
-  ? article.relatedArticles.filter((r) => r._id !== article._id).slice(0, 3)
-  : await getRelatedFallback(article.pillar._id, article._id);
+let view:
+  | { kind: 'article'; props: Parameters<typeof ArticleLayout>[0] }
+  | { kind: 'week'; props: Parameters<typeof PregnancyWeekLayout>[0] }
+  | { kind: 'hub'; props: Parameters<typeof PregnancyHubLayout>[0] };
 
-const path = articlePath(article);
-const crumbs = [
-  { name: 'Home', path: '/' },
-  { name: article.pillar.name, path: `/${article.pillar.slug}/` },
-  { name: article.title, path },
-];
-const meta = buildMeta({
-  path, site: Astro.site, settings, title: article.title, seo: article.seo,
-  fallbackDescription: article.excerpt, image: article.heroImage, noIndex: route.noIndex,
-  ogType: 'article', publishedTime: article.publishedAt, modifiedTime: article.updatedAt,
-});
-const schema = [
-  articleSchema(article, meta.canonical, Astro.site),
-  article.faq?.length ? faqSchema(article.faq) : null,
-];
+if (route.kind === 'article') {
+  const article = await getArticle(pillar, slug);
+  if (!article) throw new Error(`[article] ${pillar}/${slug} niet gevonden`);
+  const related = article.relatedArticles?.length
+    ? article.relatedArticles.filter((r) => r._id !== article._id).slice(0, 3)
+    : await getRelatedFallback(article.pillar._id, article._id);
+  const path = articlePath(article);
+  const crumbs = [
+    { name: 'Home', path: '/' },
+    { name: article.pillar.name, path: `/${article.pillar.slug}/` },
+    { name: article.title, path },
+  ];
+  const meta = buildMeta({
+    path, site: Astro.site, settings, title: article.title, seo: article.seo,
+    fallbackDescription: article.excerpt, image: article.heroImage, noIndex: route.noIndex,
+    ogType: 'article', publishedTime: article.publishedAt, modifiedTime: article.updatedAt,
+  });
+  const schema = [articleSchema(article, meta.canonical, Astro.site), article.faq?.length ? faqSchema(article.faq) : null];
+  view = { kind: 'article', props: { article, related, meta, crumbs, schema } };
+} else {
+  const p = (await getPillars()).find((x) => x.slug === pillar);
+  if (!p) throw new Error(`[pregnancy] pijler ${pillar} niet gevonden`);
+  const base = `/${p.slug}/`;
+  const hubHref = `${base}${PREGNANCY_HUB_SLUG}/`;
+  const hub = await getPregnancyHub();
+  const crumbsBase = [{ name: 'Home', path: '/' }, { name: p.name, path: base }, { name: hub.title, path: hubHref }];
+
+  if (route.kind === 'pregnancyWeek') {
+    const data = await getPregnancyWeekPage(slug);
+    if (!data) throw new Error(`[pregnancy] week ${slug} niet gevonden`);
+    const w = data.week;
+    const crumbs = [...crumbsBase, { name: w.title, path: route.path }];
+    const meta = buildMeta({
+      path: route.path, site: Astro.site, settings, title: w.title, seo: w.seo,
+      fallbackDescription: w.excerpt, image: w.heroImage, noIndex: route.noIndex,
+      ogType: 'article', publishedTime: w.publishedAt, modifiedTime: w.updatedAt,
+    });
+    const schema = [articleSchema({ ...w, author: null, pillar: p }, meta.canonical, Astro.site), w.faq?.length ? faqSchema(w.faq) : null];
+    view = { kind: 'week', props: { ...data, base, hubHref, meta, crumbs, schema } };
+  } else {
+    const [weeks, trimesters] = await Promise.all([getPregnancyWeeks(), getTrimesters()]);
+    const meta = buildMeta({
+      path: route.path, site: Astro.site, settings, title: hub.title, seo: hub.seo,
+      fallbackDescription: hub.intro ?? `${hub.title}: wat er per week gebeurt met je baby en je lichaam.`,
+      noIndex: route.noIndex,
+    });
+    const schema = [
+      collectionPageSchema(hub.title, meta.description, meta.canonical, weeks.map((w) => ({ name: w.title, url: `${base}${w.slug}/` })), Astro.site),
+      hub.faq?.length ? faqSchema(hub.faq) : null,
+    ];
+    view = { kind: 'hub', props: { hub, weeks, trimesters, base, pillarSlug: p.slug, meta, crumbs: crumbsBase, schema } };
+  }
+}
 ---
-<ArticleLayout article={article} related={related} meta={meta} crumbs={crumbs} schema={schema} />
+{view.kind === 'article' && <ArticleLayout {...view.props} />}
+{view.kind === 'week' && <PregnancyWeekLayout {...view.props} />}
+{view.kind === 'hub' && <PregnancyHubLayout {...view.props} />}

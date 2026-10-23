@@ -13,12 +13,17 @@ import {page} from './documents/page'
 import {siteSettings} from './documents/siteSettings'
 import {homePage} from './documents/homePage'
 import {factSet} from './documents/factSet'
+import {pregnancyWeek} from './documents/pregnancyWeek'
+import {pregnancyMilestone} from './documents/pregnancyMilestone'
+import {trimesterInfo} from './documents/trimesterInfo'
+import {pregnancyHub} from './documents/pregnancyHub'
 
 export const schemaTypes = [
   // documents
   article, topic, lifeStage, author, page, siteSettings, homePage, factSet,
+  pregnancyWeek, pregnancyMilestone, trimesterInfo, pregnancyHub,
   // objects
   seo, networkDestination, faqItem, sourceRef, location, ctaLink, footerLink, blockContent,
 ]
 
-export const SINGLETONS = ['siteSettings', 'homePage']
+export const SINGLETONS = ['siteSettings', 'homePage', 'pregnancyHub']

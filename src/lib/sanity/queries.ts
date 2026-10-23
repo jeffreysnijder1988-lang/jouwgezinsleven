@@ -27,6 +27,27 @@ const ctaHref = /* groq */ `"href": select(
 )`;
 const cta = /* groq */ `{ title, text, label, ${ctaHref} }`;
 
+/** Pijler waaronder de reeks "zwangerschap week voor week" valt (vaste document-ID in Sanity). */
+export const PREGNANCY_PILLAR_ID = 'pillar-zwanger';
+
+/** Portable Text-projectie: afbeeldingen en interne links (href centraal opgebouwd). Gebruik: veld[]${richText}. */
+const richText = /* groq */ `{
+  ...,
+  _type == "image" => ${image},
+  markDefs[]{
+    ...,
+    _type == "internalLink" => {
+      ...,
+      "href": select(
+        reference->_type == "article" => "/" + reference->pillar->slug.current + "/" + reference->slug.current + "/",
+        reference->_type == "topic" && reference->kind == "pillar" => "/" + reference->slug.current + "/",
+        reference->_type == "page" => "/" + reference->slug.current + "/",
+        reference->_type == "pregnancyWeek" => "/" + *[_id == "${PREGNANCY_PILLAR_ID}"][0].slug.current + "/" + reference->slug.current + "/"
+      )
+    }
+  }
+}`;
+
 export const articleCard = /* groq */ `{
   _id,
   title,
@@ -146,21 +167,7 @@ export const ARTICLE_QUERY = /* groq */ `*[${routableArticle} && slug.current ==
   maximumAgeMonths,
   searchIntent,
   season,
-  body[]{
-    ...,
-    _type == "image" => ${image},
-    markDefs[]{
-      ...,
-      _type == "internalLink" => {
-        ...,
-        "href": select(
-          reference->_type == "article" => "/" + reference->pillar->slug.current + "/" + reference->slug.current + "/",
-          reference->_type == "topic" && reference->kind == "pillar" => "/" + reference->slug.current + "/",
-          reference->_type == "page" => "/" + reference->slug.current + "/"
-        )
-      }
-    }
-  },
+  body[]${richText},
   faq[]{ _key, question, answer },
   "relatedArticles": relatedArticles[${routableArticleRef}]->${articleCard},
   networkDestinations[]{ _key, platform, externalId, externalUrl, relationType, priority, title, description },
@@ -190,21 +197,7 @@ export const PAGE_QUERY = /* groq */ `*[_type == "page" && slug.current == $slug
   title,
   "slug": slug.current,
   intro,
-  body[]{
-    ...,
-    _type == "image" => ${image},
-    markDefs[]{
-      ...,
-      _type == "internalLink" => {
-        ...,
-        "href": select(
-          reference->_type == "article" => "/" + reference->pillar->slug.current + "/" + reference->slug.current + "/",
-          reference->_type == "topic" && reference->kind == "pillar" => "/" + reference->slug.current + "/",
-          reference->_type == "page" => "/" + reference->slug.current + "/"
-        )
-      }
-    }
-  },
+  body[]${richText},
   faq[]{ _key, question, answer },
   ${seo},
   "_updatedAt": _updatedAt
@@ -218,3 +211,49 @@ export const FACT_SETS_QUERY = /* groq */ `*[_type == "factSet" && !(_id in path
 export const REVIEW_OVERDUE_QUERY = /* groq */ `*[_type == "article" && !(_id in path("drafts.**")) && defined(reviewDueAt) && reviewDueAt < $today] | order(reviewDueAt asc){ _id, title, "slug": slug.current, "pillar": pillar->slug.current, reviewDueAt, reviewNote }`;
 
 export const UNROUTABLE_ARTICLES_QUERY = /* groq */ `*[_type == "article" && !(${routableArticle}) && !(defined(publishedAt) && dateTime(publishedAt) > dateTime(now()))]{ _id, title, "slug": slug.current, "pillar": pillar->slug.current, "pillarKind": pillar->kind }`;
+
+// --- Zwangerschap week voor week -------------------------------------------------------------
+
+/** Weken die publiek mogen: goedgekeurd, minimaal twee bronnen, publicatiedatum niet in de toekomst. */
+const routableWeek = /* groq */ `_type == "pregnancyWeek" && defined(slug.current) && defined(week) && reviewStatus == "approved" && count(sources) >= 2 && (!defined(publishedAt) || dateTime(publishedAt) <= dateTime(now()))`;
+
+export const PREGNANCY_WEEKS_QUERY = /* groq */ `*[${routableWeek}] | order(week asc){
+  _id, title, "slug": slug.current, week, weekStart, excerpt,
+  "noIndex": seo.noIndex == true,
+  "canonicalOverride": seo.canonicalOverride,
+  "lastmod": coalesce(updatedAt, publishedAt, _updatedAt)
+}`;
+
+export const PREGNANCY_WEEK_QUERY = /* groq */ `*[${routableWeek} && slug.current == $slug][0]{
+  _id, title, "slug": slug.current, week, weekStart, excerpt,
+  heroImage${image},
+  babyDevelopment[]${richText},
+  bodyChanges[]${richText},
+  tips[]${richText},
+  babySize{ lengthCm, lengthNote, weightGram, sourceName, sourceUrl },
+  faq[]{ _key, question, answer },
+  "complaintArticles": complaintArticles[${routableArticleRef}]->${articleCard},
+  networkDestinations[]{ _key, platform, externalId, externalUrl, relationType, priority, title, description },
+  sources[]{ _key, sourceName, sourceUrl, lastCheckedAt },
+  publishedAt, updatedAt, lastReviewedAt,
+  ${seo},
+  "_updatedAt": _updatedAt
+}`;
+
+export const PREGNANCY_MILESTONES_QUERY = /* groq */ `*[_type == "pregnancyMilestone" && !(_id in path("drafts.**")) && defined(weekFrom) && defined(weekTo)] | order(weekFrom asc, title asc){
+  _id, title, kind, weekFrom, weekTo, summary,
+  "href": coalesce(*[_id == ^.article._ref && ${routableArticle}][0]{ "h": "/" + pillar->slug.current + "/" + slug.current + "/" }.h, externalUrl)
+}`;
+
+export const TRIMESTERS_QUERY = /* groq */ `*[_type == "trimesterInfo" && !(_id in path("drafts.**"))] | order(trimester asc){
+  trimester, title, intro, callIntro, warningSigns, sources[]{ _key, sourceName, sourceUrl }
+}`;
+
+export const PREGNANCY_HUB_QUERY = /* groq */ `*[_type == "pregnancyHub" && _id == "pregnancyHub"][0]{
+  title, intro, body[]${richText}, faq[]{ _key, question, answer }, ${seo}, "_updatedAt": _updatedAt
+}`;
+
+/** Gepubliceerde weken die (nog) niet op de site komen, voor duidelijke buildmeldingen. */
+export const UNROUTABLE_WEEKS_QUERY = /* groq */ `*[_type == "pregnancyWeek" && !(_id in path("drafts.**")) && !(${routableWeek}) && !(defined(publishedAt) && dateTime(publishedAt) > dateTime(now()))]{
+  _id, week, "slug": slug.current, reviewStatus, "sourceCount": count(sources)
+}`;

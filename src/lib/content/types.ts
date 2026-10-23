@@ -152,10 +152,68 @@ export interface HomePage {
 
 export interface RouteEntry {
   path: string;
-  kind: 'home' | 'pillar' | 'article' | 'page' | 'lifeStage';
+  kind: 'home' | 'pillar' | 'article' | 'page' | 'lifeStage' | 'pregnancyWeek' | 'pregnancyHub';
   id?: string;
   params?: Record<string, string>;
   noIndex: boolean;
   canonical?: string | null;
   lastmod?: string | null;
+}
+
+// --- Zwangerschap week voor week ---
+
+export interface SourceRef { _key?: string; sourceName?: string; sourceUrl?: string; lastCheckedAt?: string }
+
+export interface PregnancyWeekCard {
+  _id: string;
+  title: string;
+  slug: string;
+  week: number;
+  weekStart?: number | null;
+  excerpt?: string | null;
+}
+
+export interface PregnancyWeek extends PregnancyWeekCard {
+  heroImage?: SanityImage | null;
+  babyDevelopment?: PortableTextBlock[] | null;
+  bodyChanges?: PortableTextBlock[] | null;
+  tips?: PortableTextBlock[] | null;
+  babySize?: { lengthCm?: number | null; lengthNote?: string | null; weightGram?: number | null; sourceName?: string | null; sourceUrl?: string | null } | null;
+  faq?: FaqItem[] | null;
+  complaintArticles?: ArticleCardData[] | null;
+  networkDestinations?: NetworkDestination[] | null;
+  sources?: SourceRef[] | null;
+  publishedAt?: string | null;
+  updatedAt?: string | null;
+  lastReviewedAt?: string | null;
+  seo: Seo;
+  _updatedAt: string;
+}
+
+export interface PregnancyMilestone {
+  _id: string;
+  title: string;
+  kind: 'controle' | 'vaccinatie' | 'regelzaak' | string;
+  weekFrom: number;
+  weekTo: number;
+  summary?: string | null;
+  href?: string | null;
+}
+
+export interface TrimesterInfo {
+  trimester: 1 | 2 | 3;
+  title: string;
+  intro?: string | null;
+  callIntro?: string | null;
+  warningSigns?: string[] | null;
+  sources?: SourceRef[] | null;
+}
+
+export interface PregnancyHub {
+  title: string;
+  intro?: string | null;
+  body?: PortableTextBlock[] | null;
+  faq?: FaqItem[] | null;
+  seo: Seo;
+  _updatedAt?: string;
 }

@@ -1,0 +1,53 @@
+---
+/**
+ * Weekoverzicht /zwanger/week-voor-week/: redactionele intro (pregnancyHub) + alle gepubliceerde weken per trimester.
+ * Een trimester zonder gepubliceerde weken wordt niet getoond.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Hero from '@/components/content/Hero.astro';
+import PortableBody from '@/components/content/PortableBody.astro';
+import FAQ from '@/components/content/FAQ.astro';
+import { TRIMESTER_LABELS, trimesterOf, weekLabel } from '@/lib/content';
+import { pillarTheme } from '@/lib/helpers/theme';
+import type { PregnancyHub, PregnancyWeekCard, TrimesterInfo } from '@/lib/content/types';
+import type { PageMeta } from '@/lib/seo/meta';
+import type { Crumb } from '@/lib/schema/jsonld';
+
+interface Props {
+  hub: PregnancyHub; weeks: PregnancyWeekCard[]; trimesters: TrimesterInfo[]; base: string; pillarSlug: string;
+  meta: PageMeta; crumbs: Crumb[]; schema: (Record<string, unknown> | null)[];
+}
+const { hub, weeks, trimesters, base, pillarSlug, meta, crumbs, schema } = Astro.props;
+const groups = ([1, 2, 3] as const)
+  .map((n) => ({ n, info: trimesters.find((t) => t.trimester === n) ?? null, weeks: weeks.filter((w) => trimesterOf(w.week) === n) }))
+  .filter((g) => g.weeks.length > 0);
+---
+<BaseLayout meta={meta} crumbs={crumbs} schema={schema}>
+  <Hero variant="hub" theme={pillarTheme(pillarSlug)} title={hub.title} intro={hub.intro} crumbs={crumbs} />
+  <div class="container--narrow hub-weken">
+    <PortableBody value={hub.body} />
+    {groups.map((g) => (
+      <section aria-labelledby={`trimester-${g.n}`}>
+        <h2 id={`trimester-${g.n}`}>{g.info?.title || TRIMESTER_LABELS[g.n]}</h2>
+        {g.info?.intro && <p class="hub-weken__intro">{g.info.intro}</p>}
+        <ul class="weken">
+          {g.weeks.map((w) => (
+            <li><a href={`${base}${w.slug}/`}><strong>{weekLabel(w)}</strong><span>{w.title}</span></a></li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+  <FAQ items={hub.faq} tone="section" />
+</BaseLayout>
+<style>
+  .hub-weken { padding-block: var(--space-md) var(--space-section); }
+  .hub-weken section { margin-top: var(--space-2xl); }
+  .hub-weken__intro { color: var(--color-text-muted); }
+  .weken { display: grid; gap: 12px; margin-top: var(--space-sm); }
+  @media (min-width: 640px) { .weken { grid-template-columns: repeat(2, 1fr); } }
+  .weken a { display: block; height: 100%; background: var(--color-cream); border-radius: var(--radius-md); padding: 14px 18px; text-decoration: none; }
+  .weken a:hover { background: var(--color-pink-soft); }
+  .weken strong { display: block; font-family: var(--font-heading); font-size: var(--text-lg); }
+  .weken span { color: var(--color-text-muted); font-size: var(--text-small); }
+</style>

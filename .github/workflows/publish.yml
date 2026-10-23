@@ -143,6 +143,21 @@ jobs:
           node scripts/qa-dist.mjs dist-fixture
           if grep -rq "DRAFT mag nooit" dist-fixture; then echo "::error::draft-content in output"; exit 1; fi
           if test -e dist-fixture/testpijler-a/toekomstig-artikel/index.html; then echo "::error::ingepland artikel te vroeg gepubliceerd"; exit 1; fi
+      - name: Testscenario's zwangerschap week voor week
+        run: |
+          Z=dist-fixture/testzwanger
+          test -e $Z/12-weken-zwanger/index.html || { echo "::error::goedgekeurde week niet gebouwd"; exit 1; }
+          test -e $Z/1-2-3-weken-zwanger/index.html || { echo "::error::samengevoegde week 1-3 niet gebouwd"; exit 1; }
+          test -e $Z/13-weken-zwanger/index.html && { echo "::error::week zonder goedkeuring gepubliceerd"; exit 1; }
+          test -e $Z/14-weken-zwanger/index.html && { echo "::error::week met minder dan 2 bronnen gepubliceerd"; exit 1; }
+          test -e $Z/20-weken-zwanger/index.html && { echo "::error::ingeplande week te vroeg gepubliceerd"; exit 1; }
+          grep -q "noindex" $Z/week-voor-week/index.html || { echo "::error::weekoverzicht met < 6 weken moet noindex zijn"; exit 1; }
+          W=$Z/12-weken-zwanger/index.html
+          grep -q 'href="/testpijler-a/artikel-een/"' $W || { echo "::error::afspraak (milestone) niet getoond of link fout"; exit 1; }
+          grep -q 'href="/testzwanger/1-2-3-weken-zwanger/"' $W || { echo "::error::weeknavigatie vorige week ontbreekt"; exit 1; }
+          grep -q "Wanneer bel je de verloskundige" $W || { echo "::error::trimesterblok ontbreekt"; exit 1; }
+          grep -q 'href="/testzwanger/12-weken-zwanger/"' dist-fixture/testpijler-a/artikel-twee/index.html || { echo "::error::interne link naar week niet opgelost"; exit 1; }
+          if grep -qi "MedicalWebPage\|medisch gecontroleerd" $W; then echo "::error::claim medische controle zonder medische review"; exit 1; fi
       - name: Testscenario's cijfers en regels (factSet, jaarwissel, ontbrekende sleutel)
         run: |
           A=dist-fixture/testpijler-a/artikel-een/index.html

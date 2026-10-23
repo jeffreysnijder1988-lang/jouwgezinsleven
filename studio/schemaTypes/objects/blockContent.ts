@@ -79,7 +79,7 @@ export const blockContent = defineType({
                 name: 'reference',
                 title: 'Verwijst naar',
                 type: 'reference',
-                to: [{type: 'article'}, {type: 'page'}, {type: 'topic'}],
+                to: [{type: 'article'}, {type: 'page'}, {type: 'topic'}, {type: 'pregnancyWeek'}],
                 validation: (r) => r.required(),
               }),
             ],
