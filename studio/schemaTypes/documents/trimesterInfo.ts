@@ -14,7 +14,7 @@ export const trimesterInfo = defineType({
   fields: [
     defineField({
       name: 'trimester', title: 'Trimester', type: 'number',
-      options: {list: [{title: 'Eerste (week 1–13)', value: 1}, {title: 'Tweede (week 14–27)', value: 2}, {title: 'Derde (week 28–42)', value: 3}], layout: 'radio'},
+      options: {list: [{title: 'Eerste (week 1–12)', value: 1}, {title: 'Tweede (week 13–26)', value: 2}, {title: 'Derde (vanaf week 27)', value: 3}], layout: 'radio'},
       validation: (r) => r.required().custom(async (v, ctx) => {
         if (!v) return true
         const id = (ctx.document?._id ?? '').replace(/^drafts\./, '')

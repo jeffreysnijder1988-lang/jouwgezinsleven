@@ -91,7 +91,7 @@ const cycles = Array.from({ length: 26 }, (_, i) => i + 20); // 20..45
         <span class="ddc__stip" data-dot></span>
       </div>
       <ol class="ddc__trimesters" aria-hidden="true">
-        <li style="flex: 13">1e trimester</li><li style="flex: 14">2e trimester</li><li style="flex: 13">3e trimester</li>
+        <li style="flex: 12">1e trimester</li><li style="flex: 14">2e trimester</li><li style="flex: 14">3e trimester</li>
       </ol>
     </div>
 
@@ -199,7 +199,7 @@ const cycles = Array.from({ length: 26 }, (_, i) => i + 20); // 20..45
         q<HTMLElement>('[data-ga]').textContent = notation;
         q<HTMLElement>('[data-ga-long]').textContent = `${plural(r.weeks, 'week', 'weken')}, ${plural(r.days, 'dag', 'dagen')}`;
         q<HTMLElement>('[data-tri]').textContent = r.trimester ? `${r.trimester}e` : '–';
-        q<HTMLElement>('[data-tri-long]').textContent = r.trimester === 1 ? 't/m week 13' : r.trimester === 2 ? 'week 14 t/m 27' : 'vanaf week 28';
+        q<HTMLElement>('[data-tri-long]').textContent = r.trimester === 1 ? 't/m week 12' : r.trimester === 2 ? 'week 13 t/m 26' : 'vanaf week 27';
         const togo = Math.max(r.daysToGo, 0);
         q<HTMLElement>('[data-togo]').textContent = String(togo);
         q<HTMLElement>('[data-togo-long]').textContent = togo === 1 ? 'dag' : togo >= 14 ? `dagen (± ${Math.round(togo / 7)} weken)` : 'dagen';

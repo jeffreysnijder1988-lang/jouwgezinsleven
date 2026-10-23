@@ -103,8 +103,8 @@ export function calculate(input: DueDateInput, today = todayUTC()): DueDateResul
     weeks: Math.floor(Math.max(ga, 0) / 7),
     days: Math.max(ga, 0) % 7,
     daysToGo: Math.round((due - today) / DAY),
-    // Gangbare indeling: t/m week 13 · week 14–27 · vanaf week 28
-    trimester: status !== 'pregnant' ? null : ga < 14 * 7 ? 1 : ga < 28 * 7 ? 2 : 3,
+    // Indeling deverloskundige.nl (KNOV), gelijk aan de weekpagina's: t/m week 12 · week 13–26 · vanaf week 27
+    trimester: status !== 'pregnant' ? null : ga < 13 * 7 ? 1 : ga < 27 * 7 ? 2 : 3,
     status,
   };
 }

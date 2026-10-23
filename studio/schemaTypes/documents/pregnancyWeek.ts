@@ -9,7 +9,7 @@ import {CalendarIcon} from '@sanity/icons/Calendar'
  * naar een Nederlandse, gezaghebbende bron. De build publiceert een week alleen met
  * reviewStatus "Goedgekeurd" en minimaal twee bronnen.
  *
- * Trimester wordt afgeleid uit `week` (1–13, 14–27, 28–42) en niet opgeslagen.
+ * Trimester wordt afgeleid uit `week` (1–12, 13–26, 27+; indeling deverloskundige.nl/KNOV) en niet opgeslagen.
  * Controles/regelzaken komen uit pregnancyMilestone, alarmsignalen uit trimesterInfo.
  */
 export const expectedWeekSlug = (week?: number, weekStart?: number) => {

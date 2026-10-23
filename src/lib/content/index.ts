@@ -77,8 +77,8 @@ export const PREGNANCY_HUB_SLUG = 'week-voor-week';
 /** Weekoverzicht is indexeerbaar vanaf dit aantal gepubliceerde weken (dunne content daaronder). */
 export const PREGNANCY_HUB_MIN_INDEXABLE = 6;
 
-/** Trimester afgeleid uit de week (1–13, 14–27, 28–42); niet opgeslagen. */
-export const trimesterOf = (week: number): 1 | 2 | 3 => (week <= 13 ? 1 : week <= 27 ? 2 : 3);
+/** Trimester afgeleid uit de week, indeling deverloskundige.nl (KNOV): 1–12, 13–26, 27+. Niet opgeslagen. */
+export const trimesterOf = (week: number): 1 | 2 | 3 => (week <= 12 ? 1 : week <= 26 ? 2 : 3);
 export const TRIMESTER_LABELS: Record<1 | 2 | 3, string> = { 1: 'Eerste trimester', 2: 'Tweede trimester', 3: 'Derde trimester' };
 /** "Week 12" of "Week 1–3". */
 export const weekLabel = (w: { week: number; weekStart?: number | null }) =>
