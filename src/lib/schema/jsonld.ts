@@ -29,15 +29,7 @@ export function organizationSchema(settings: SiteSettings, site?: URL): Json {
     schema.email = o.email;
     schema.contactPoint = { '@type': 'ContactPoint', contactType: 'customer support', email: o.email, availableLanguage: 'nl' };
   }
-  // Uitgever (Studio Cutter) als parentOrganization — alleen ingevulde velden.
-  if (o.legalName) {
-    const parent: Json = { '@type': 'Organization', name: o.legalName };
-    if (o.url) parent.url = o.url;
-    if (o.vatNumber) parent.vatID = o.vatNumber;
-    if (o.phone) parent.telephone = o.phone.replace(/[^\d+]/g, '').replace(/^0/, '+31');
-    if (o.city) parent.address = { '@type': 'PostalAddress', addressLocality: o.city, addressCountry: 'NL' };
-    schema.parentOrganization = parent;
-  }
+  // Studio Cutter is de bouwer, niet de moederorganisatie → geen parentOrganization (besluit 24-10-2026).
   return schema;
 }
 

@@ -24,7 +24,7 @@ const host = org.url ? new URL(org.url).host.replace(/^www\./, '') : null;
         {(org.legalName || org.kvkNumber || org.vatNumber || org.phone) && (
           <p class="bedrijf">
             {(host || org.legalName) && (
-              <>Een uitgave van {host ? <a href={org.url} rel="noopener">{host}</a> : org.legalName}{org.city && `, ${org.city}`}<br /></>
+              <>Website: {host ? <a href={org.url} rel="noopener">{host}</a> : org.legalName}{org.city && `, ${org.city}`}<br /></>
             )}
             {org.kvkNumber && `KvK ${org.kvkNumber}`}{org.kvkNumber && org.vatNumber && ' · '}{org.vatNumber && `BTW ${org.vatNumber}`}
             {org.phone && (<><br /><a href={tel}>{org.phone}</a></>)}

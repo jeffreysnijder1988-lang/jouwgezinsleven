@@ -13,7 +13,7 @@
 import type { NetworkDestination } from '../content/types';
 
 export type PlatformKey =
-  | 'lomamo' | 'opvangkiezer' | 'welkespeeltuin' | 'welkespeeltuin-be' | 'rustmetkids'
+  | 'lomamo' | 'opvangkiezer' | 'welkespeeltuin' | 'welkespeeltuin-be' | 'vakantiemetjongekinderen' | 'rustmetkids'
   | 'rustigzwanger' | 'bevallingschecklist' | 'aanstaandevader' | 'jouwkraamtijd' | 'streaq';
 
 /** live: false = site nog niet online → nergens naartoe linken (geen dode doorverwijzingen). */
@@ -25,7 +25,9 @@ export const PLATFORMS: Record<PlatformKey, Platform> = {
   opvangkiezer: { key: 'opvangkiezer', name: 'Opvangkiezer', url: 'https://www.opvangkiezer.nl' },
   welkespeeltuin: { key: 'welkespeeltuin', name: 'WelkeSpeeltuin', url: 'https://welkespeeltuin.nl', live: false },
   'welkespeeltuin-be': { key: 'welkespeeltuin-be', name: 'WelkeSpeeltuin.be', url: 'https://welkespeeltuin.be', live: false },
-  rustmetkids: { key: 'rustmetkids', name: 'Rustmetkids', url: 'https://rustmetkids.nl' },
+  vakantiemetjongekinderen: { key: 'vakantiemetjongekinderen', name: 'Vakantiemetjongekinderen.nl', url: 'https://vakantiemetjongekinderen.nl' },
+  /** Vervallen (24-10-2026): vervangen door vakantiemetjongekinderen. Oude references linken nergens meer heen. */
+  rustmetkids: { key: 'rustmetkids', name: 'Rustmetkids', url: 'https://rustmetkids.nl', live: false },
   rustigzwanger: { key: 'rustigzwanger', name: 'RustigZwanger' },
   bevallingschecklist: { key: 'bevallingschecklist', name: 'Bevallingschecklist', url: 'https://bevallingschecklist.nl' },
   aanstaandevader: { key: 'aanstaandevader', name: 'Aanstaandevader', url: 'https://aanstaandevader.nl' },

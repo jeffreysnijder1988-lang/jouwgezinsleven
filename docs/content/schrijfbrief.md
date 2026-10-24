@@ -1,6 +1,6 @@
 # Schrijfbrief JouwGezinsleven.nl — batch 3 (13 oktober 2026)
 
-JouwGezinsleven.nl is een Nederlandse informatiesite voor gezinnen (zwangerschap t/m tiener), uitgegeven door StudioCutter (Arnhem). Doel: concrete vragen van ouders beantwoorden, organisch zoekverkeer, en waar het inhoudelijk past doorverwijzen naar eigen platforms (vooral Lomamo.nl).
+JouwGezinsleven.nl is een Nederlandse informatiesite voor gezinnen (zwangerschap t/m tiener), gebouwd door StudioCutter (Arnhem). Doel: concrete vragen van ouders beantwoorden, organisch zoekverkeer, en waar het inhoudelijk past doorverwijzen naar eigen platforms (vooral Lomamo.nl).
 
 ## Schrijfregels (verplicht)
 - Nederlands, natuurlijk, praktisch, rustig, warm, concreet. Spreek de lezer aan met "je".
@@ -50,7 +50,7 @@ Officiële, jaarlijks wisselende gegevens staan op één plek in Sanity ("Cijfer
 - Speelgoed 1 jaar … 6 jaar — https://lomamo.nl/collections/speelgoed-1-jaar (t/m speelgoed-6-jaar)
 - Kinderkamer inrichting — https://lomamo.nl/collections/slaapkamer-inrichting
 
-Andere netwerksites (alleen homepage, alleen waar logisch): https://opvangkiezer.nl (kinderopvang vergelijken), https://rustmetkids.nl (rustige gezinsvakanties/vakantieparken).
+Andere netwerksites (alleen homepage, alleen waar logisch): https://www.opvangkiezer.nl/ (kinderopvang vergelijken), https://vakantiemetjongekinderen.nl/ (rustige vakantieparken en huisjes voor gezinnen met jonge kinderen). NIET meer naar rustmetkids.nl linken (vervangen).
 
 ## Al live — hier mag je naar linken (alleen deze URL's)
 - Zwanger: /zwanger/zwangerschapsverlof/ · /zwanger/kraampakket/ · /zwanger/babykamer-inrichten/ · /zwanger/geboorteverlof-partner/ · /zwanger/eerste-symptomen-zwangerschap/ · /zwanger/uitgerekende-datum-berekenen/
@@ -109,7 +109,7 @@ sources:                   # alle geraadpleegde bronnen die feiten onderbouwen (
   - name: "UWV – Zwangerschapsverlof"
     url: "https://…"
 network:                   # mag leeg []
-  - platform: lomamo       # lomamo | opvangkiezer | rustmetkids
+  - platform: lomamo       # lomamo | opvangkiezer | vakantiemetjongekinderen
     url: "https://lomamo.nl/collections/speelmatten"
     relationType: collection   # collection | platform
     title: "Speelmatten bij Lomamo"
