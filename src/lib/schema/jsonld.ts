@@ -20,9 +20,15 @@ export function organizationSchema(settings: SiteSettings, site?: URL): Json {
     '@id': orgId(site),
     name: settings.siteName,
     url: absoluteUrl('/', site),
-    logo: hasImage(settings.logo) ? imageUrl(settings.logo, 512) : absoluteUrl('/img/logo.png', site),
+    logo: hasImage(settings.logo)
+      ? { '@type': 'ImageObject', url: imageUrl(settings.logo, 512, undefined, 'png') }
+      : { '@type': 'ImageObject', url: absoluteUrl('/img/logo.png', site), width: 291, height: 259 },
   };
-  if (o.email) schema.email = o.email;
+  if (settings.tagline) schema.description = settings.tagline;
+  if (o.email) {
+    schema.email = o.email;
+    schema.contactPoint = { '@type': 'ContactPoint', contactType: 'customer support', email: o.email, availableLanguage: 'nl' };
+  }
   // Uitgever (Studio Cutter) als parentOrganization — alleen ingevulde velden.
   if (o.legalName) {
     const parent: Json = { '@type': 'Organization', name: o.legalName };

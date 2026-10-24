@@ -232,6 +232,13 @@ do_deploy() {
   release_lock
   log "✓ deploy voltooid: release $REL"
   verify_live "$REL"
+  # Lijst met gewijzigde/verwijderde pagina's bewaren voor IndexNow (scripts/indexnow.mjs)
+  if [[ -n "${INDEXNOW_DIR:-}" ]]; then
+    mkdir -p "$INDEXNOW_DIR"
+    cp "$WORK/pages" "$INDEXNOW_DIR/changed"
+    cp "$WORK/delete" "$INDEXNOW_DIR/deleted" 2>/dev/null || : > "$INDEXNOW_DIR/deleted"
+    log "IndexNow-lijsten: $(wc -l < "$INDEXNOW_DIR/changed") gewijzigd, $(wc -l < "$INDEXNOW_DIR/deleted") verwijderd"
+  fi
 }
 
 # ---------- snapshot: live versie van alles wat de volgende deploy overschrijft/verwijdert ----------

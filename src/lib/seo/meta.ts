@@ -27,6 +27,9 @@ export function absoluteUrl(path: string, site: URL | undefined): string {
   return new URL(path, site ?? 'https://jouwgezinsleven.nl').toString();
 }
 
+/** Maximale title-lengte (tekens) voordat de merknaam-suffix wordt weggelaten. */
+export const TITLE_MAX = 60;
+
 const clean = (s?: string | null) => (s ?? '').replace(/\s+/g, ' ').trim();
 
 /** Beperkt een description tot ~160 tekens op een woordgrens. */
@@ -55,11 +58,14 @@ interface BuildMetaInput {
 export function buildMeta(i: BuildMetaInput): PageMeta {
   const siteName = i.settings.siteName;
   const baseTitle = clean(i.seo?.title) || clean(i.title);
+  const withSuffix = `${baseTitle} | ${siteName}`;
+  // Merknaam alleen toevoegen als de title dan nog binnen ~60 tekens blijft; anders wordt
+  // het zoekwoorddeel in Google afgekapt. og:title volgt dezelfde waarde.
   const title = i.isHome
     ? baseTitle || siteName
-    : baseTitle.toLowerCase().includes(siteName.toLowerCase())
+    : baseTitle.toLowerCase().includes(siteName.toLowerCase()) || withSuffix.length > TITLE_MAX
       ? baseTitle
-      : `${baseTitle} | ${siteName}`;
+      : withSuffix;
 
   const description = trimDescription(i.seo?.description || i.fallbackDescription || i.settings.tagline);
   const noIndex = siteNoIndex || Boolean(i.noIndex) || Boolean(i.seo?.noIndex);
@@ -67,7 +73,7 @@ export function buildMeta(i: BuildMetaInput): PageMeta {
 
   const img = [i.seo?.image, i.image, i.settings.defaultOgImage].find(hasImage);
   const ogImage = img
-    ? { url: imageUrl(img, 1200, 630), width: 1200, height: 630, alt: clean(img.alt) || baseTitle }
+    ? { url: imageUrl(img, 1200, 630, 'jpg'), width: 1200, height: 630, alt: clean(img.alt) || baseTitle }
     : undefined;
 
   return {

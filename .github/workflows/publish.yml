@@ -266,7 +266,13 @@ jobs:
           retention-days: 30
           if-no-files-found: ignore
       - name: Deploy (gefaseerd, incrementeel) + live verificatie
+        env:
+          INDEXNOW_DIR: ${{ runner.temp }}/indexnow
         run: scripts/deploy.sh deploy release
+      - name: IndexNow (gewijzigde pagina's melden aan Bing e.a.)
+        if: needs.plan.outputs.target == 'production'
+        continue-on-error: true
+        run: node scripts/indexnow.mjs release "$RUNNER_TEMP/indexnow/changed" "$RUNNER_TEMP/indexnow/deleted"
       - name: Samenvatting
         if: always()
         env:

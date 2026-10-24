@@ -9,8 +9,10 @@ export function hasImage(image?: SanityImage | null): image is SanityImage {
 }
 
 /** Bouwt een geoptimaliseerde URL (auto-format → WebP/AVIF waar ondersteund). */
-export function imageUrl(image: SanityImage, width: number, height?: number): string {
-  let b = builder.image(image as never).width(width).auto('format').quality(78).fit('crop');
+export function imageUrl(image: SanityImage, width: number, height?: number, format?: 'jpg' | 'png'): string {
+  let b = builder.image(image as never).width(width).quality(78).fit('crop');
+  // Vast formaat voor social crawlers (og:image), die niet altijd WebP/AVIF ondersteunen.
+  b = format ? b.format(format) : b.auto('format');
   if (height) b = b.height(height);
   return b.url();
 }
