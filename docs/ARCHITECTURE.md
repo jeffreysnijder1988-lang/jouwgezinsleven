@@ -133,7 +133,7 @@ Voorbeeld:
 src/lib/network/lomamo.ts
 src/lib/network/welkespeeltuin.ts
 src/lib/network/opvangkiezer.ts
-src/lib/network/rustmetkids.ts
+src/lib/network/vakantiemetjongekinderen.ts
 
 Publieke componenten mogen niet rechtstreeks allerlei externe API-structuren kennen.
 

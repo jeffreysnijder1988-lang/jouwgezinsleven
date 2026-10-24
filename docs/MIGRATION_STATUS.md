@@ -45,7 +45,7 @@ Overgenomen zonder herschrijven. Bron toevoegen of aanpassen vóór livegang:
 - Baby & Peuter-FAQ: slaapuren en vaste voeding vanaf 4–6 maanden.
 - Home en Eropuit: "Meer dan 4.000 speeltuinen" (moet kloppen met WelkeSpeeltuin).
 - Kinderopvang-CTA: "vergelijk op beoordelingen" (heeft Opvangkiezer die functie?).
-- Gezinsvakantie-CTA: "eerlijke reviews" (heeft Rustmetkids die functie?).
+- Gezinsvakantie-CTA: "eerlijke reviews" (heeft Vakantiemetjongekinderen.nl die functie? Vervangt Rustmetkids sinds 24-10-2026).
 
 ## Vóór productie-deploy
 
