@@ -55,7 +55,7 @@ Configuratie: `deploy/sanity-webhook.json`. Aanmaken met `node scripts/sanity-we
 | Dataset | production |
 | Trigger | create, update, delete (depubliceren = delete) |
 | Drafts / versies | uit |
-| Filter | `_type in ["article","topic","lifeStage","page","siteSettings","homePage","author"] && !(delta::operation() == "update" && delta::changedOnly((sourceNotes, reviewStatus, origin, legacyUrl)))` |
+| Filter | `_type in ["article","topic","lifeStage","page","siteSettings","homePage","author","factSet","pregnancyWeek","pregnancyMilestone","trimesterInfo","pregnancyHub"] && !(delta::operation() == "update" && delta::changedOnly((sourceNotes, reviewStatus, origin, legacyUrl)))` |
 | Projection | `{"event_type":"sanity-publish","client_payload":{"id":_id,"type":_type,"operation":delta::operation(),"slug":…}}` |
 | URL | `https://api.github.com/repos/<owner>/<repo>/dispatches` (POST) |
 | Headers | `Authorization: Bearer <GITHUB_DISPATCH_TOKEN>`, `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28` |

@@ -10,7 +10,7 @@
   "includeAllVersions": false,
   "rule": {
     "on": ["create", "update", "delete"],
-    "filter": "_type in [\"article\", \"topic\", \"lifeStage\", \"page\", \"siteSettings\", \"homePage\", \"author\"] && !(delta::operation() == \"update\" && delta::changedOnly((sourceNotes, reviewStatus, origin, legacyUrl)))",
+    "filter": "_type in [\"article\", \"topic\", \"lifeStage\", \"page\", \"siteSettings\", \"homePage\", \"author\", \"factSet\", \"pregnancyWeek\", \"pregnancyMilestone\", \"trimesterInfo\", \"pregnancyHub\"] && !(delta::operation() == \"update\" && delta::changedOnly((sourceNotes, reviewStatus, origin, legacyUrl)))",
     "projection": "{\"event_type\": \"sanity-publish\", \"client_payload\": {\"id\": _id, \"type\": _type, \"operation\": delta::operation(), \"slug\": coalesce(after().slug.current, before().slug.current)}}"
   },
   "headers": {
