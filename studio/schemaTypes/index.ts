@@ -17,11 +17,13 @@ import {pregnancyWeek} from './documents/pregnancyWeek'
 import {pregnancyMilestone} from './documents/pregnancyMilestone'
 import {trimesterInfo} from './documents/trimesterInfo'
 import {pregnancyHub} from './documents/pregnancyHub'
+import {contentBrief} from './documents/contentBrief'
 
 export const schemaTypes = [
   // documents
   article, topic, lifeStage, author, page, siteSettings, homePage, factSet,
   pregnancyWeek, pregnancyMilestone, trimesterInfo, pregnancyHub,
+  contentBrief,
   // objects
   seo, networkDestination, faqItem, sourceRef, location, ctaLink, footerLink, blockContent,
 ]

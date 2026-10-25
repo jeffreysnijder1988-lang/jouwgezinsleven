@@ -3,6 +3,7 @@ import {CogIcon} from '@sanity/icons/Cog'
 import {HomeIcon} from '@sanity/icons/Home'
 import {NumberIcon} from '@sanity/icons/Number'
 import {CalendarIcon} from '@sanity/icons/Calendar'
+import {ClipboardIcon} from '@sanity/icons/Clipboard'
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -36,6 +37,28 @@ export const structure: StructureResolver = (S) =>
           ),
           S.documentTypeListItem('pregnancyMilestone').title('Afspraken en regelzaken'),
           S.documentTypeListItem('trimesterInfo').title('Trimesters (alarmsignalen)'),
+        ]),
+      ),
+      S.divider(),
+      S.listItem().title('Contentplan').icon(ClipboardIcon).child(
+        S.list().title('Contentplan').items([
+          ...[
+            ['Wachtrij (akkoord)', 'akkoord'],
+            ['Ideeën', 'idee'],
+            ['Besluit nodig', 'besluit-nodig'],
+            ['In productie', 'in-productie'],
+            ['Concept (ter review)', 'concept'],
+            ['Live', 'live'],
+            ['Afgewezen', 'afgewezen'],
+          ].map(([title, status]) =>
+            S.listItem().id(`brief-${status}`).title(title).child(
+              S.documentList().title(title).schemaType('contentBrief')
+                .filter('_type == "contentBrief" && status == $status').params({status})
+                .defaultOrdering([{field: 'priority', direction: 'asc'}, {field: 'publishBefore', direction: 'asc'}]),
+            ),
+          ),
+          S.divider(),
+          S.documentTypeListItem('contentBrief').title('Alle onderwerpen'),
         ]),
       ),
       S.divider(),
