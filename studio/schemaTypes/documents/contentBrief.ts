@@ -8,6 +8,7 @@ import {NETWORK_PLATFORMS} from '../objects/networkDestination'
  *
  * Statusroute: idee → akkoord → in productie → concept → live, of afgewezen / besluit nodig.
  * - De artikeltaak pakt alleen briefs met status "akkoord" en type "artikel".
+ * - De onderhoudstaak pakt briefs met status "akkoord" en type "optimalisatie" (bestaand artikel verbeteren).
  * - De contentcheck zet nieuwe kansen neer als "idee"; Jeffrey zet ze op "akkoord".
  * - Briefs worden nooit gepubliceerd naar de site: dit type staat niet in het webhookfilter
  *   en wordt niet door de Astro-build gelezen.
@@ -55,7 +56,12 @@ export const contentBrief = defineType({
     }),
     defineField({
       name: 'briefType', title: 'Soort', type: 'string', group: 'plan', initialValue: 'artikel',
-      options: {list: [{title: 'Artikel', value: 'artikel'}, {title: 'Reeks (eigen contenttype, niet door de artikeltaak)', value: 'reeks'}], layout: 'radio'},
+      options: {list: [
+        {title: 'Artikel (nieuw)', value: 'artikel'},
+        {title: 'Optimalisatie (bestaand artikel verbeteren)', value: 'optimalisatie'},
+        {title: 'Reeks (eigen contenttype, niet door de artikeltaak)', value: 'reeks'},
+      ], layout: 'radio'},
+      description: 'Artikel = de artikeltaak (ma/wo/vr). Optimalisatie = de onderhoudstaak (di), op het gekoppelde artikel.',
       validation: (r) => r.required(),
     }),
     defineField({
@@ -111,7 +117,8 @@ export const contentBrief = defineType({
 
     defineField({
       name: 'article', title: 'Artikel', type: 'reference', group: 'result', to: [{type: 'article'}], weak: true,
-      description: 'Wordt gezet zodra er een concept of live artikel is.',
+      description: 'Bij een nieuw artikel: wordt gezet zodra er een concept of live artikel is. Bij een optimalisatie: het artikel dat verbeterd moet worden (verplicht).',
+      validation: (r) => r.custom((v, ctx) => ((ctx.document as {briefType?: string})?.briefType === 'optimalisatie' && !v ? 'Kies het artikel dat geoptimaliseerd wordt.' : true)),
     }),
     defineField({name: 'statusNote', title: 'Toelichting status', type: 'text', rows: 3, group: 'result', description: 'Waarom afgewezen, welk besluit nodig is, of wat er in productie misging.'}),
     defineField({name: 'statusChangedAt', title: 'Status gewijzigd op', type: 'datetime', group: 'result'}),
