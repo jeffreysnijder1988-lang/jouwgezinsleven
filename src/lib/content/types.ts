@@ -130,6 +130,24 @@ export interface SiteSettings {
 
 export interface CtaData { label?: string | null; href?: string | null; title?: string | null; text?: string | null }
 
+export interface SeasonalBlock {
+  _key: string;
+  title: string;
+  intro?: string | null;
+  from: string;
+  until: string;
+  articles?: ArticleCardData[] | null;
+}
+
+/** Minimale artikeldata voor tekstlinks (homepage-blokken). */
+export interface ArticleLink {
+  _id: string;
+  title: string;
+  slug: string;
+  pillar: PillarRef;
+  lifeStageIds?: string[] | null;
+}
+
 export interface HomePage {
   heroTitle?: string | null;
   heroIntro?: string | null;
@@ -144,6 +162,13 @@ export interface HomePage {
   featuredTitle?: string | null;
   featuredIntro?: string | null;
   latestTitle?: string | null;
+  seasonal?: SeasonalBlock[] | null;
+  weekPickerTitle?: string | null;
+  weekPickerIntro?: string | null;
+  weekPickerCta?: CtaData | null;
+  trustTitle?: string | null;
+  trustItems?: { _key: string; title: string; text: string }[] | null;
+  trustLink?: CtaData | null;
   feature?: CtaData | null;
   closingCta?: CtaData | null;
   seo: Seo;

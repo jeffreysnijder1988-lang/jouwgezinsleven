@@ -41,3 +41,20 @@ export function firstSentence(text?: string | null): string {
   const i = text.indexOf('. ');
   return i === -1 ? text : text.slice(0, i + 1);
 }
+
+/**
+ * Korte linktekst uit een artikeltitel: het deel vóór de dubbele punt, of t/m het eerste vraagteken.
+ * "Wakkertijden van je baby: hoe lang …" → "Wakkertijden van je baby"; "Wat kost kinderopvang? …" → "Wat kost kinderopvang?".
+ */
+export function shortTitle(title: string): string {
+  const colon = title.indexOf(': ');
+  const question = title.indexOf('? ');
+  if (question > 0 && (colon < 0 || question < colon)) return title.slice(0, question + 1);
+  if (colon > 0) return title.slice(0, colon);
+  return title;
+}
+
+/** Datum van vandaag (Europe/Amsterdam) als JJJJ-MM-DD, voor datumvensters op buildtijd. */
+export function todayAmsterdam(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+}

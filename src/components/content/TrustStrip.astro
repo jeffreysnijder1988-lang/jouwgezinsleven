@@ -1,0 +1,23 @@
+---
+/** Korte rij met punten over de werkwijze ("Zo werken we"). Inhoud uit Sanity; leeg = niets tonen. */
+interface Item { _key: string; title: string; text: string }
+interface Props { items?: Item[] | null }
+const { items } = Astro.props;
+---
+{items && items.length > 0 && (
+  <ul class="werkwijze">
+    {items.map((i) => (
+      <li>
+        <h3>{i.title}</h3>
+        <p>{i.text}</p>
+      </li>
+    ))}
+  </ul>
+)}
+<style>
+  .werkwijze { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); }
+  @media (min-width: 760px) { .werkwijze { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-lg); } }
+  li { border-top: 3px solid var(--color-coral); padding-top: var(--space-sm); }
+  h3 { font-size: var(--text-lg); margin: 0 0 var(--space-2xs); }
+  p { margin: 0; color: var(--color-text-muted); font-size: var(--text-small); }
+</style>

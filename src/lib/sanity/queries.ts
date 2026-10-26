@@ -97,6 +97,19 @@ export const HOME_QUERY = /* groq */ `*[_type == "homePage" && _id == "homePage"
   featuredTitle,
   featuredIntro,
   latestTitle,
+  "seasonal": seasonal[]{
+    _key, title, intro, from, until,
+    "articles": select(
+      count(articles[${routableArticleRef}]) > 0 => articles[${routableArticleRef}]->${articleCard},
+      *[${routableArticle} && seo.noIndex != true && primaryTopic._ref == ^.topic._ref] | order(coalesce(publishedAt, _createdAt) desc)[0...6]${articleCard}
+    )
+  },
+  weekPickerTitle,
+  weekPickerIntro,
+  weekPickerCta${cta},
+  trustTitle,
+  "trustItems": trustItems[]{ _key, title, text },
+  trustLink${cta},
   feature${cta},
   closingCta${cta},
   ${seo},
@@ -150,6 +163,15 @@ export const ARTICLE_ROUTES_QUERY = /* groq */ `*[${routableArticle}]{
 export const ARTICLES_BY_PILLAR_QUERY = /* groq */ `*[${routableArticle} && pillar._ref == $pillarId] | order(coalesce(publishedAt, _createdAt) desc)${articleCard}`;
 
 export const ARTICLES_BY_LIFESTAGE_QUERY = /* groq */ `*[${routableArticle} && $id in lifeStages[]._ref] | order(coalesce(publishedAt, _createdAt) desc)${articleCard}`;
+
+/** Lichte lijst voor linkblokken op de homepage (levensfasen, pijlers). */
+export const ARTICLE_LINKS_QUERY = /* groq */ `*[${routableArticle} && seo.noIndex != true] | order(coalesce(publishedAt, _createdAt) desc){
+  _id,
+  title,
+  "slug": slug.current,
+  "pillar": pillar->${pillarRef},
+  "lifeStageIds": lifeStages[]._ref
+}`;
 
 export const LATEST_ARTICLES_QUERY = /* groq */ `*[${routableArticle} && seo.noIndex != true] | order(coalesce(publishedAt, _createdAt) desc)[0...$limit]${articleCard}`;
 

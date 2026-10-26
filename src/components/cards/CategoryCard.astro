@@ -4,22 +4,38 @@
  *  variant "phase":   levensfasekaart homepage (bestaande site ".fase"). Zonder href → "Binnenkort meer",
  *                     niet klikbaar (geen links naar pagina's die niet bestaan).
  *  variant "related": "Ook interessant"-kaart op hubs (bestaande site ".anderelijst a").
+ *
+ * Met `links` wordt de kaart een blok met een titellink en een korte lijst artikellinks
+ * (geen geneste links). `moreLabel` toont onderaan een link naar `href`.
  */
 import type { PhaseTone } from '@/lib/helpers/theme';
-interface Props { title: string; href?: string | null; description?: string | null; meta?: string | null; tone?: PhaseTone; variant?: 'phase' | 'related' }
-const { title, href, description, meta, tone = 'cream', variant = 'phase' } = Astro.props;
-const Tag = href ? 'a' : 'div';
+interface CardLink { href: string; label: string }
+interface Props {
+  title: string; href?: string | null; description?: string | null; meta?: string | null;
+  tone?: PhaseTone; variant?: 'phase' | 'related'; links?: CardLink[]; moreLabel?: string | null;
+}
+const { title, href, description, meta, tone = 'cream', variant = 'phase', links = [], moreLabel } = Astro.props;
+const withLinks = links.length > 0;
+const Tag = href && !withLinks ? 'a' : 'div';
 ---
 {variant === 'phase' ? (
-  <Tag class:list={['fase', `fase--${tone}`, { 'fase--leeg': !href }]} href={href ?? undefined}>
+  <Tag class:list={['fase', `fase--${tone}`, { 'fase--leeg': !href, 'fase--links': withLinks }]} href={Tag === 'a' ? href : undefined}>
     {!href && <span class="binnenkort">Binnenkort meer</span>}
-    <strong>{title}</strong>
+    {withLinks && href ? <a class="titel" href={href}><strong>{title}</strong></a> : <strong>{title}</strong>}
     {meta && <small>{meta}</small>}
+    {withLinks && (
+      <ul class="links">{links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    )}
+    {withLinks && href && moreLabel && <a class="meer" href={href}>{moreLabel}</a>}
   </Tag>
 ) : (
-  <Tag class="andere" href={href ?? undefined}>
-    <strong>{title}</strong>
-    {description && <span>{description}</span>}
+  <Tag class:list={['andere', { 'andere--links': withLinks }]} href={Tag === 'a' ? href : undefined}>
+    {withLinks && href ? <a class="titel" href={href}><strong>{title}</strong></a> : <strong>{title}</strong>}
+    {description && <span class="omschrijving">{description}</span>}
+    {withLinks && (
+      <ul class="links">{links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    )}
+    {withLinks && href && moreLabel && <a class="meer" href={href}>{moreLabel}</a>}
   </Tag>
 )}
 <style>
@@ -39,5 +55,16 @@ const Tag = href ? 'a' : 'div';
   .andere { display: block; border-radius: var(--radius-lg); padding: 20px 22px; background: var(--color-cream); height: 100%; }
   a.andere:hover { background: var(--color-pink-soft); text-decoration: none; }
   .andere strong { font-family: var(--font-heading); font-size: var(--text-lg); display: block; margin-bottom: 4px; }
-  .andere span { color: var(--color-text-muted); font-size: var(--text-small); }
+  .andere .omschrijving { display: block; color: var(--color-text-muted); font-size: var(--text-small); }
+
+  /* Met linklijst */
+  .fase--links, .andere--links { display: flex; flex-direction: column; }
+  .titel { color: inherit; }
+  .titel:hover { text-decoration: underline; }
+  .links { list-style: none; margin: var(--space-sm) 0 0; padding: 0; display: grid; gap: var(--space-xs); }
+  .links li { line-height: 1.35; }
+  .links a { font-size: var(--text-small); color: var(--color-text); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .links a:hover { text-decoration-thickness: 2px; }
+  .meer { align-self: flex-start; margin-top: auto; padding-top: var(--space-md); font-family: var(--font-heading); font-weight: var(--weight-heading); font-size: var(--text-small); color: var(--color-text); }
+  .meer::after { content: ' →'; }
 </style>
