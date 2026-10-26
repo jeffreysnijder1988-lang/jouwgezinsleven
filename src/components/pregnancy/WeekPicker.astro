@@ -1,0 +1,40 @@
+---
+/**
+ * Weekkiezer: alle gepubliceerde weekpagina's als klikbare weken, per trimester.
+ * Puur links (geen JavaScript); data uit de routes van de reeks.
+ */
+import { trimesterOf, TRIMESTER_LABELS } from '@/lib/content';
+interface WeekLink { week: number; weekStart?: number | null; href: string }
+interface Props { weeks: WeekLink[]; hubHref?: string | null }
+const { weeks, hubHref } = Astro.props;
+const groups = ([1, 2, 3] as const)
+  .map((t) => ({ t, label: TRIMESTER_LABELS[t], weeks: weeks.filter((w) => trimesterOf(w.week) === t) }))
+  .filter((g) => g.weeks.length > 0);
+const label = (w: WeekLink) => (w.weekStart && w.weekStart < w.week ? `${w.weekStart}–${w.week}` : String(w.week));
+---
+<div class="weekkiezer">
+  {groups.map((g) => (
+    <div class="trimester">
+      <h3>{g.label}</h3>
+      <ul>
+        {g.weeks.map((w) => (
+          <li><a href={w.href} aria-label={`${label(w)} weken zwanger`}>{label(w)}</a></li>
+        ))}
+      </ul>
+    </div>
+  ))}
+  {hubHref && <a class="overzicht" href={hubHref}>Alle weken op een rij</a>}
+</div>
+<style>
+  .weekkiezer { display: grid; gap: var(--space-lg); }
+  .trimester h3 { font-size: var(--text-md); margin: 0 0 var(--space-xs); }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  li a {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 44px; padding: 0 12px;
+    border-radius: var(--radius-pill); background: var(--color-white); color: var(--color-text);
+    font-family: var(--font-heading); font-weight: var(--weight-heading); font-size: var(--text-small);
+  }
+  li a:hover { background: var(--color-pink-soft); text-decoration: none; }
+  .overzicht { font-family: var(--font-heading); font-weight: var(--weight-heading); color: var(--color-text); justify-self: start; }
+  .overzicht::after { content: ' →'; }
+</style>

@@ -5,6 +5,7 @@ import { fetchContent } from './source';
 import { resolveFactsInBlocks, resolveFactTokens, factWarnings } from './facts';
 import * as Q from '../sanity/queries';
 import type {
+  ArticleLink,
   Article, ArticleCardData, HomePage, LifeStage, Page, Pillar, PregnancyHub, PregnancyMilestone,
   PregnancyWeek, PregnancyWeekCard, RouteEntry, SiteSettings, TrimesterInfo,
 } from './types';
@@ -46,6 +47,7 @@ export const getArticlesByPillar = (pillarId: string) =>
 
 export const getArticlesByLifeStage = (id: string) =>
   fetchContent<ArticleCardData[]>(Q.ARTICLES_BY_LIFESTAGE_QUERY, { id });
+export const getArticleLinks = () => fetchContent<ArticleLink[]>(Q.ARTICLE_LINKS_QUERY);
 export const getLatestArticles = (limit = 6) =>
   fetchContent<ArticleCardData[]>(Q.LATEST_ARTICLES_QUERY, { limit });
 

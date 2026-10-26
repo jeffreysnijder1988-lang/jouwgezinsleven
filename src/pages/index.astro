@@ -1,7 +1,11 @@
 ---
 /**
- * Homepage — opbouw van de bestaande site; inhoud uit Sanity (homePage, siteSettings, lifeStage, article).
+ * Homepage — opbouw ligt hier vast; inhoud uit Sanity (homePage, siteSettings, lifeStage, topic, article, pregnancyWeek).
  * Secties met artikelen verschijnen alleen als er echte gepubliceerde artikelen zijn.
+ *
+ * Volgorde: hero · levensfasen (met links) · nu actueel (datumvenster) · uitgelicht · weekkiezer zwangerschap ·
+ * onderwerpen (met links) · zo werken we · nieuw op de site · featureblok · afsluitende CTA.
+ * Een artikel staat zo min mogelijk twee keer in de blokken bovenaan: elk blok slaat over wat eerder al getoond is.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/content/Hero.astro';
@@ -11,15 +15,24 @@ import ArticleCard from '@/components/cards/ArticleCard.astro';
 import CardGrid from '@/components/cards/CardGrid.astro';
 import RecentList from '@/components/content/RecentList.astro';
 import FeatureBlock from '@/components/content/FeatureBlock.astro';
+import TrustStrip from '@/components/content/TrustStrip.astro';
+import WeekPicker from '@/components/pregnancy/WeekPicker.astro';
 import CTA from '@/components/content/CTA.astro';
 import Button from '@/components/ui/Button.astro';
-import { getHomePage, getSiteSettings, getLifeStages, getPillars, getLatestArticles, getAllRoutes, pillarPath } from '@/lib/content';
+import {
+  getHomePage, getSiteSettings, getLifeStages, getPillars, getLatestArticles, getArticleLinks, getPregnancyWeeks,
+  getAllRoutes, pillarPath, articlePath, PREGNANCY_HUB_MIN_INDEXABLE,
+} from '@/lib/content';
+import type { ArticleLink } from '@/lib/content';
 import { buildMeta } from '@/lib/seo/meta';
-import { formatAgeRange } from '@/lib/helpers/format';
-import { PHASE_TONES } from '@/lib/helpers/theme';
+import { formatAgeRange, shortTitle, todayAmsterdam } from '@/lib/helpers/format';
+import { PHASE_TONES, type PhaseTone } from '@/lib/helpers/theme';
 
-const [settings, home, lifeStages, pillars, latest, routes] = await Promise.all([
-  getSiteSettings(), getHomePage(), getLifeStages(), getPillars(), getLatestArticles(12), getAllRoutes(),
+const LINKS_PER_CARD = 3;
+
+const [settings, home, lifeStages, pillars, latest, articleLinks, weeks, routes] = await Promise.all([
+  getSiteSettings(), getHomePage(), getLifeStages(), getPillars(), getLatestArticles(12), getArticleLinks(),
+  getPregnancyWeeks(), getAllRoutes(),
 ]);
 const homeRoute = routes.find((r) => r.kind === 'home')!;
 const meta = buildMeta({
@@ -27,10 +40,63 @@ const meta = buildMeta({
   title: home.heroTitle || settings.siteName, seo: home.seo,
   fallbackDescription: home.heroIntro, image: home.heroImage, noIndex: homeRoute.noIndex,
 });
+
+/** Artikelen die al ergens bovenaan staan; latere blokken slaan ze over. */
+const used = new Set<string>();
+const take = (pool: ArticleLink[], n = LINKS_PER_CARD, skip: Set<string> = used) => {
+  const picked = pool.filter((a) => !skip.has(a._id)).slice(0, n);
+  picked.forEach((a) => used.add(a._id));
+  return picked.map((a) => ({ href: articlePath(a), label: shortTitle(a.title) }));
+};
+
+// Uitgelicht: 1 grote kaart alleen als de rij daarmee precies vol raakt (3 kolommen, groot = 2).
 const featured = home.featuredArticles ?? [];
-const featuredIds = new Set(featured.map((a) => a._id));
-const recent = latest.filter((a) => !featuredIds.has(a._id));
+featured.forEach((a) => used.add(a._id));
+const featuredLarge = featured.length >= 2 && (featured.length + 1) % 3 === 0;
+
+// Nu actueel: het blok binnen het datumvenster dat het eerst afloopt.
+const today = todayAmsterdam();
+const season = (home.seasonal ?? [])
+  .filter((b) => b.from <= today && today <= b.until)
+  .sort((a, b) => a.until.localeCompare(b.until))
+  .map((b) => ({ ...b, articles: (b.articles ?? []).filter((a) => !used.has(a._id)).slice(0, 3) }))
+  .find((b) => b.articles.length > 0);
+season?.articles.forEach((a) => used.add(a._id));
+/** Wat in de grote blokken (uitgelicht, actueel) staat; de pijlerkaarten slaan alleen dat over. */
+const inBigBlocks = new Set(used);
+
+// Levensfasen: per fase de meest specifieke artikelen (minst aantal levensfasen eerst, dan nieuwste).
 let linked = 0;
+const phases = lifeStages.map((ls) => {
+  const href = routes.find((r) => r.kind === 'lifeStage' && r.id === ls._id)?.path
+    ?? (ls.primaryPillar ? pillarPath(ls.primaryPillar) : null);
+  const tone: PhaseTone = href ? PHASE_TONES[linked++ % PHASE_TONES.length] : 'cream';
+  const pool = articleLinks
+    .filter((a) => a.lifeStageIds?.includes(ls._id))
+    .map((a, i) => ({ a, i }))
+    .sort((x, y) => (x.a.lifeStageIds?.length ?? 9) - (y.a.lifeStageIds?.length ?? 9) || x.i - y.i)
+    .map((x) => x.a);
+  return { ls, href, tone, links: href ? take(pool) : [] };
+});
+
+// Weekkiezer zwangerschap: alleen als het weekoverzicht indexeerbaar is.
+const hubRoute = routes.find((r) => r.kind === 'pregnancyHub');
+const weekLinks = weeks
+  .map((w) => ({ week: w.week, weekStart: w.weekStart, href: routes.find((r) => r.kind === 'pregnancyWeek' && r.id === w._id)?.path }))
+  .filter((w): w is { week: number; weekStart: number | null | undefined; href: string } => Boolean(w.href));
+const showWeekPicker = weekLinks.length >= PREGNANCY_HUB_MIN_INDEXABLE;
+
+// Onderwerpen: per pijler de nieuwste artikelen; liefst nog niet getoond, anders alles behalve de grote blokken.
+const pillarCards = pillars.map((p) => {
+  const pool = articleLinks.filter((a) => a.pillar._id === p._id);
+  const fresh = pool.filter((a) => !used.has(a._id));
+  const links = fresh.length >= 2 ? take(pool) : take(pool, LINKS_PER_CARD, inBigBlocks);
+  return { p, links,
+    more: p.articleCount > LINKS_PER_CARD ? `Alle ${p.articleCount} artikelen` : `Naar ${p.navLabel || p.name}`,
+  };
+});
+
+const recent = latest.filter((a) => !featured.some((f) => f._id === a._id) && !season?.articles.some((s) => s._id === a._id));
 ---
 <BaseLayout meta={meta}>
   <Hero variant="home" title={home.heroTitle || settings.siteName} intro={home.heroIntro ?? settings.tagline} image={home.heroImage}>
@@ -42,37 +108,54 @@ let linked = 0;
     )}
   </Hero>
 
-  {lifeStages.length > 0 && (
+  {phases.length > 0 && (
     <ContentSection title={home.lifeStagesTitle || 'In welke fase zit jouw gezin?'} intro={home.lifeStagesIntro} id="levensfasen">
       <ul class="fasenlijst">
-        {lifeStages.map((ls) => {
-          const href = routes.find((r) => r.kind === 'lifeStage' && r.id === ls._id)?.path
-            ?? (ls.primaryPillar ? pillarPath(ls.primaryPillar) : null);
-          const tone = href ? PHASE_TONES[linked++ % PHASE_TONES.length] : 'cream';
-          return (
-            <li>
-              <CategoryCard variant="phase" title={ls.name} href={href} tone={tone}
-                meta={formatAgeRange(ls.minimumAgeMonths, ls.maximumAgeMonths) || ls.description} />
-            </li>
-          );
-        })}
-      </ul>
-    </ContentSection>
-  )}
-
-  {pillars.length > 0 && (
-    <ContentSection title={home.pillarsTitle || 'Waar ben je naar op zoek?'} intro={home.pillarsIntro} id="onderwerpen">
-      <ul class="onderwerpenlijst">
-        {pillars.map((p) => (
-          <li><CategoryCard variant="related" title={p.navLabel || p.name} href={pillarPath(p)} description={p.description} /></li>
+        {phases.map(({ ls, href, tone, links }) => (
+          <li>
+            <CategoryCard variant="phase" title={ls.name} href={href} tone={tone} links={links} moreLabel="Alles voor deze fase"
+              meta={formatAgeRange(ls.minimumAgeMonths, ls.maximumAgeMonths) || ls.description} />
+          </li>
         ))}
       </ul>
     </ContentSection>
   )}
 
+  {season && (
+    <ContentSection title={season.title} intro={season.intro} id="actueel">
+      <CardGrid>{season.articles.map((a) => <ArticleCard article={a} tone="cream" />)}</CardGrid>
+    </ContentSection>
+  )}
+
   {featured.length > 0 && (
     <ContentSection title={home.featuredTitle || 'Uitgelicht'} intro={home.featuredIntro} tone="soft" id="uitgelicht">
-      <CardGrid>{featured.map((a, i) => <ArticleCard article={a} size={i === 0 && featured.length >= 3 ? 'lg' : 'md'} />)}</CardGrid>
+      <CardGrid>{featured.map((a, i) => <ArticleCard article={a} size={i === 0 && featuredLarge ? 'lg' : 'md'} />)}</CardGrid>
+    </ContentSection>
+  )}
+
+  {showWeekPicker && (
+    <ContentSection title={home.weekPickerTitle || 'Zwanger? Kies je week'} intro={home.weekPickerIntro} tone="pink" id="zwanger-per-week">
+      <WeekPicker weeks={weekLinks} hubHref={hubRoute?.path} />
+      {home.weekPickerCta?.label && home.weekPickerCta.href && (
+        <p class="week-cta">{home.weekPickerCta.text && <span>{home.weekPickerCta.text} </span>}<a href={home.weekPickerCta.href}>{home.weekPickerCta.label}</a></p>
+      )}
+    </ContentSection>
+  )}
+
+  {pillarCards.length > 0 && (
+    <ContentSection title={home.pillarsTitle || 'Waar ben je naar op zoek?'} intro={home.pillarsIntro} id="onderwerpen">
+      <ul class="onderwerpenlijst">
+        {pillarCards.map(({ p, links, more }) => (
+          <li><CategoryCard variant="related" title={p.navLabel || p.name} href={pillarPath(p)} description={p.description} links={links} moreLabel={more} /></li>
+        ))}
+      </ul>
+    </ContentSection>
+  )}
+
+  {home.trustItems && home.trustItems.length > 0 && (
+    <ContentSection title={home.trustTitle || 'Zo werken we'} tone="soft" id="werkwijze"
+      moreHref={home.trustLink?.href} moreLabel={home.trustLink?.label}>
+      <TrustStrip items={home.trustItems} />
     </ContentSection>
   )}
 
@@ -88,10 +171,12 @@ let linked = 0;
 </BaseLayout>
 <style>
   .hero-knoppen { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 36px; align-items: center; }
-  .fasenlijst { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  @media (min-width: 700px) { .fasenlijst { grid-template-columns: repeat(3, 1fr); } }
+  .fasenlijst { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 560px) { .fasenlijst { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .fasenlijst { grid-template-columns: repeat(3, 1fr); } }
   .onderwerpenlijst { display: grid; gap: 14px; }
   @media (min-width: 700px) { .onderwerpenlijst { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 1000px) { .onderwerpenlijst { grid-template-columns: repeat(3, 1fr); } }
-  @media (min-width: 1000px) { .fasenlijst { grid-template-columns: repeat(6, 1fr); } }
+  @media (min-width: 1000px) { .onderwerpenlijst { grid-template-columns: repeat(4, 1fr); } }
+  .week-cta { margin: var(--space-lg) 0 0; font-size: var(--text-small); }
+  .week-cta a { font-family: var(--font-heading); font-weight: var(--weight-heading); color: var(--color-text); }
 </style>
