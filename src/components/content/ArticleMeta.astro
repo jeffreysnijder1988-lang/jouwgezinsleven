@@ -2,20 +2,21 @@
 /** Artikelmeta: alleen echte, vastgelegde gegevens tonen. */
 import type { Article } from '@/lib/content/types';
 import { formatDate, isoDate, formatAgeRange } from '@/lib/helpers/format';
-import { getAllRoutes } from '@/lib/content';
+import { getAllRoutes, getPublishingPrinciplesPath } from '@/lib/content';
 /** Ook gebruikt voor zwangerschapsweken: alleen deze velden zijn nodig. */
 interface Props { article: Pick<Article, 'author' | 'publishedAt' | 'updatedAt' | 'lastReviewedAt' | 'minimumAgeMonths' | 'maximumAgeMonths' | 'lifeStages'>; reviewedLabel?: string }
 const { article: a, reviewedLabel = 'Gecontroleerd' } = Astro.props;
 const age = formatAgeRange(a.minimumAgeMonths, a.maximumAgeMonths);
 const stagePaths = new Set((await getAllRoutes()).filter((r) => r.kind === 'lifeStage').map((r) => r.path));
 const stages = (a.lifeStages ?? []).filter((l) => l?.slug && l.name);
+const principles = await getPublishingPrinciplesPath();
 const updated = a.updatedAt && a.updatedAt !== a.publishedAt ? a.updatedAt : null;
 ---
 <div class="article-meta meta">
   {a.author?.name && <span>Door {a.author.name}</span>}
   {a.publishedAt && <span>Gepubliceerd <time datetime={isoDate(a.publishedAt)}>{formatDate(a.publishedAt)}</time></span>}
   {updated && <span>Bijgewerkt <time datetime={isoDate(updated)}>{formatDate(updated)}</time></span>}
-  {a.lastReviewedAt && <span>{reviewedLabel} <time datetime={isoDate(a.lastReviewedAt)}>{formatDate(a.lastReviewedAt)}</time></span>}
+  {a.lastReviewedAt && <span>{reviewedLabel} <time datetime={isoDate(a.lastReviewedAt)}>{formatDate(a.lastReviewedAt)}</time>{principles && <> · <a href={principles}>zo werken we</a></>}</span>}
   {age && <span>Leeftijd: {age}</span>}
   {stages.length > 0 && (
     <span>Fase: {stages.map((l, i) => (

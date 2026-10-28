@@ -69,6 +69,26 @@ for (const f of html) {
   if (rel !== '404.html' && !canon) fail(`${rel}: geen canonical`);
 }
 
+// Legacy-redirects (docs/legacy-redirects.csv → sectie 0 van .htaccess)
+// Een oude URL mag geen live pagina zijn (anders overschrijft de redirect die pagina),
+// en een 301-doel moet een live pagina zijn. .htaccess moet actueel zijn t.o.v. de CSV.
+{
+  const csvPath = new URL('../docs/legacy-redirects.csv', import.meta.url);
+  if (existsSync(csvPath)) {
+    const rows = readFileSync(csvPath, 'utf8').trim().split(/\r?\n/).slice(1).filter(Boolean).map((l) => l.split(','));
+    const live = (p) => existsSync(join(DIST, p.replace(/^\//, ''), 'index.html')) || (p === '/' && existsSync(join(DIST, 'index.html')));
+    for (const [from, action, to] of rows) {
+      if (live(from)) fail(`legacy-redirect ${from} bestaat nu als live pagina — haal de regel uit docs/legacy-redirects.csv`);
+      if (action === '301' && !live(to)) fail(`legacy-redirect ${from} → ${to}: doel is geen live pagina`);
+    }
+    if (existsSync(join(DIST, '.htaccess'))) {
+      const ht = readFileSync(join(DIST, '.htaccess'), 'utf8');
+      const missing = rows.filter(([from]) => !ht.includes(`^${from.slice(1, -1)}/?$`));
+      if (missing.length) fail(`.htaccess mist ${missing.length} legacy-regel(s), bijv. ${missing[0][0]}. Draai node scripts/build-legacy-redirects.mjs`);
+    }
+  }
+}
+
 // Content-drop guard
 const prev = Number(env.PREVIOUS_PAGE_COUNT || 0);
 if (prev > 0 && pages.length < prev * 0.5 && env.ALLOW_CONTENT_DROP !== '1') {

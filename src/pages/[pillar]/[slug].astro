@@ -9,7 +9,7 @@ import ArticleLayout from '@/layouts/ArticleLayout.astro';
 import PregnancyWeekLayout from '@/layouts/PregnancyWeekLayout.astro';
 import PregnancyHubLayout from '@/layouts/PregnancyHubLayout.astro';
 import {
-  getAllRoutes, getArticle, getRelatedFallback, getSiteSettings, articlePath, getPillars,
+  getAllRoutes, getArticle, getRelatedFallback, getSiteSettings, articlePath, getPillars, getPublishingPrinciplesPath,
   getPregnancyWeekPage, getPregnancyWeeks, getPregnancyHub, getTrimesters, PREGNANCY_HUB_SLUG,
 } from '@/lib/content';
 import { buildMeta } from '@/lib/seo/meta';
@@ -25,6 +25,7 @@ export async function getStaticPaths() {
 const { route } = Astro.props;
 const { pillar, slug } = Astro.params as { pillar: string; slug: string };
 const settings = await getSiteSettings();
+const principlesPath = await getPublishingPrinciplesPath();
 
 let view:
   | { kind: 'article'; props: Parameters<typeof ArticleLayout>[0] }
@@ -48,7 +49,7 @@ if (route.kind === 'article') {
     fallbackDescription: article.excerpt, image: article.heroImage, noIndex: route.noIndex,
     ogType: 'article', publishedTime: article.publishedAt, modifiedTime: article.updatedAt,
   });
-  const schema = [articleSchema(article, meta.canonical, Astro.site), article.faq?.length ? faqSchema(article.faq) : null];
+  const schema = [articleSchema(article, meta.canonical, Astro.site, principlesPath), article.faq?.length ? faqSchema(article.faq) : null];
   view = { kind: 'article', props: { article, related, meta, crumbs, schema } };
 } else {
   const p = (await getPillars()).find((x) => x.slug === pillar);
@@ -68,7 +69,7 @@ if (route.kind === 'article') {
       fallbackDescription: w.excerpt, image: w.heroImage, noIndex: route.noIndex,
       ogType: 'article', publishedTime: w.publishedAt, modifiedTime: w.updatedAt,
     });
-    const schema = [articleSchema({ ...w, author: null, pillar: p }, meta.canonical, Astro.site), w.faq?.length ? faqSchema(w.faq) : null];
+    const schema = [articleSchema({ ...w, author: null, pillar: p }, meta.canonical, Astro.site, principlesPath), w.faq?.length ? faqSchema(w.faq) : null];
     view = { kind: 'week', props: { ...data, base, hubHref, meta, crumbs, schema } };
   } else {
     const [weeks, trimesters] = await Promise.all([getPregnancyWeeks(), getTrimesters()]);

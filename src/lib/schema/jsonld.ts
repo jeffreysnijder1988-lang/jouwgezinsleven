@@ -13,7 +13,11 @@ type Json = Record<string, unknown>;
 const orgId = (site?: URL) => absoluteUrl('/#organization', site);
 const siteId = (site?: URL) => absoluteUrl('/#website', site);
 
-export function organizationSchema(settings: SiteSettings, site?: URL): Json {
+/**
+ * @param principlesPath pad van de pagina die beschrijft hoe de redactie werkt ("Hoe we werken" op /over/).
+ *        Alleen meegeven als die pagina live is.
+ */
+export function organizationSchema(settings: SiteSettings, site?: URL, principlesPath?: string | null): Json {
   const o = settings.organization ?? {};
   const schema: Json = {
     '@type': 'Organization',
@@ -29,6 +33,8 @@ export function organizationSchema(settings: SiteSettings, site?: URL): Json {
     schema.email = o.email;
     schema.contactPoint = { '@type': 'ContactPoint', contactType: 'customer support', email: o.email, availableLanguage: 'nl' };
   }
+  if (principlesPath) schema.publishingPrinciples = absoluteUrl(principlesPath, site);
+  // Geen sameAs: siteSettings bevat geen social-/profiel-URL's (niets verzinnen).
   // Studio Cutter is de bouwer, niet de moederorganisatie → geen parentOrganization (besluit 24-10-2026).
   return schema;
 }
@@ -80,7 +86,7 @@ export function breadcrumbSchema(crumbs: Crumb[], site?: URL): Json | null {
 /** Article-schema. Ook voor zwangerschapsweken (bewust geen MedicalWebPage: geen medische review). */
 export function articleSchema(
   a: Pick<Article, 'title' | 'excerpt' | 'publishedAt' | 'updatedAt' | 'heroImage' | 'author'> & { pillar?: { name?: string } | null },
-  canonical: string, site?: URL,
+  canonical: string, site?: URL, principlesPath?: string | null,
 ): Json {
   const schema: Json = {
     '@type': 'Article',
@@ -100,6 +106,8 @@ export function articleSchema(
     ? { '@type': 'Person', name: a.author.name }
     : { '@id': orgId(site) };
   if (a.pillar?.name) schema.articleSection = a.pillar.name;
+  // Geen persoonlijke auteur (besluit 29-10-2026): transparantie via de redactionele werkwijze.
+  if (principlesPath) schema.publishingPrinciples = absoluteUrl(principlesPath, site);
   return schema;
 }
 

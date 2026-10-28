@@ -9,7 +9,7 @@ import SeoHead from '@/components/seo/SeoHead.astro';
 import JsonLd from '@/components/seo/JsonLd.astro';
 import SiteHeader from '@/components/global/SiteHeader.astro';
 import SiteFooter from '@/components/global/SiteFooter.astro';
-import { getSiteSettings, isFixtureBuild } from '@/lib/content';
+import { getSiteSettings, isFixtureBuild, getPublishingPrinciplesPath } from '@/lib/content';
 import type { PageMeta } from '@/lib/seo/meta';
 import { breadcrumbSchema, graph, organizationSchema, websiteSchema, type Crumb } from '@/lib/schema/jsonld';
 
@@ -22,7 +22,8 @@ interface Props {
 const { meta, crumbs = [], schema = [], bare = false } = Astro.props;
 const settings = await getSiteSettings();
 const site = Astro.site;
-const ld = graph(organizationSchema(settings, site), websiteSchema(settings, site), breadcrumbSchema(crumbs, site), ...schema);
+const principlesPath = await getPublishingPrinciplesPath();
+const ld = graph(organizationSchema(settings, site, principlesPath), websiteSchema(settings, site), breadcrumbSchema(crumbs, site), ...schema);
 ---
 <!doctype html>
 <html lang="nl">
@@ -31,7 +32,10 @@ const ld = graph(organizationSchema(settings, site), websiteSchema(settings, sit
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#F7EDE2" />
     <SeoHead meta={meta} siteName={settings.siteName} />
-    <link rel="icon" type="image/png" href="/img/logo.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
     <link rel="sitemap" href="/sitemap.xml" />
     <JsonLd data={ld} />
   </head>

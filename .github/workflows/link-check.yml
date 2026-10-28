@@ -1,0 +1,57 @@
+# =============================================================================
+#  JouwGezinsleven — maandelijkse controle van externe links (bronnen, netwerk)
+#
+#  Leest de live site via sitemap.xml en controleert alle externe links.
+#  Wijzigt niets in Git of Sanity. Bij kapotte links (404/410, twee keer
+#  gecontroleerd) wordt één issue geopend of bijgewerkt met label "dode-links".
+#  403/429/timeouts zijn waarschuwingen (vaak botblokkades) en openen geen issue.
+# =============================================================================
+name: Link check
+
+on:
+  schedule:
+    - cron: '23 5 1 * *'   # eerste van de maand, 05:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: link-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Externe links controleren
+        id: check
+        env:
+          REPORT_FILE: ${{ runner.temp }}/links.md
+        run: |
+          set +e
+          node scripts/check-external-links.mjs > /dev/null
+          code=$?
+          set -e
+          echo "exit=$code" >> "$GITHUB_OUTPUT"
+          cat "$REPORT_FILE" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$code" != 0 ] && [ "$code" != 2 ]; then exit "$code"; fi
+      - name: Issue openen of bijwerken
+        if: steps.check.outputs.exit == '2'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT_FILE: ${{ runner.temp }}/links.md
+        run: |
+          gh label create dode-links --color B60205 --description "Kapotte externe links" 2>/dev/null || true
+          nr=$(gh issue list --label dode-links --state open --json number --jq '.[0].number')
+          if [ -n "$nr" ]; then
+            gh issue comment "$nr" --body-file "$REPORT_FILE"
+          else
+            gh issue create --title "Dode externe links gevonden" --label dode-links --body-file "$REPORT_FILE"
+          fi

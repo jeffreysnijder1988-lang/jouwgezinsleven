@@ -137,6 +137,13 @@ export const lifeStagePath = (l: { slug: string }) => `/${l.slug}/`;
 /** Levensfasepagina is indexeerbaar vanaf dit aantal artikelen; daaronder noindex (dunne content, SEO_RULES). */
 export const LIFESTAGE_MIN_INDEXABLE = 6;
 
+/** Pagina die de redactionele werkwijze beschrijft (sectie "Hoe we werken"). Alleen als die live en indexeerbaar is. */
+export const PUBLISHING_PRINCIPLES_PATH = '/over/';
+export async function getPublishingPrinciplesPath(): Promise<string | null> {
+  const r = (await getAllRoutes()).find((x) => x.path === PUBLISHING_PRINCIPLES_PATH);
+  return r && !r.noIndex ? r.path : null;
+}
+
 /** Slugs die niet door redactionele pagina's gebruikt mogen worden. */
 const RESERVED = new Set(['sitemap.xml', 'robots.txt', '404', 'admin', 'studio', 'api', 'blog', 'category', 'categorie']);
 

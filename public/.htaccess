@@ -4,7 +4,8 @@
 #  aangepast: Google Fonts en inline scripts uit de CSP (fonts zelf gehost,
 #  geen inline JS), Sanity CDN toegestaan voor afbeeldingen, zoek-/nieuwsbrief-
 #  endpoints verwijderd (bestaan niet).
-#  GEEN nieuwe redirects van oude URL's: die pas na akkoord op url-inventory.csv.
+#  Redirects van oude URL's: sectie 0, gegenereerd uit docs/legacy-redirects.csv
+#  (akkoord Jeffrey 29-10-2026). Wijzig de CSV en draai scripts/build-legacy-redirects.mjs.
 # =====================================================================
 
 Options -Indexes -MultiViews +FollowSymLinks
@@ -12,6 +13,93 @@ DirectoryIndex index.html
 AddDefaultCharset UTF-8
 ServerSignature Off
 ErrorDocument 404 /404.html
+ErrorDocument 410 /404.html
+
+# ---------------------------------------------------------------------
+# 0. Oude URL's van de vorige site → 301 (gelijkwaardige pagina) of 410
+#    Vóór sectie 1, zodat http/www/zonder-slash in één hop eindigen.
+# ---------------------------------------------------------------------
+# BEGIN legacy-redirects (gegenereerd uit docs/legacy-redirects.csv — niet handmatig wijzigen)
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^affiliate-disclosure/?$ https://jouwgezinsleven.nl/disclaimer/ [R=301,L,NC]
+RewriteRule ^baby-peuter/baby-eerste-hapjes/?$ - [G,L,NC]
+RewriteRule ^baby-peuter/baby/?$ https://jouwgezinsleven.nl/baby/ [R=301,L,NC]
+RewriteRule ^baby-peuter/beste-speelgoed-2-jaar/?$ - [G,L,NC]
+RewriteRule ^baby-peuter/box-of-speelkleed/?$ - [G,L,NC]
+RewriteRule ^baby-peuter/peuter-slaapt-niet-door/?$ - [G,L,NC]
+RewriteRule ^baby-peuter/peuter-wil-niet-eten/?$ - [G,L,NC]
+RewriteRule ^baby-peuter/peuter/?$ https://jouwgezinsleven.nl/peuter/ [R=301,L,NC]
+RewriteRule ^baby-peuter/speelgoed-1-jaar-dat-blijft-boeien/?$ - [G,L,NC]
+RewriteRule ^eropuit/belgie/?$ - [G,L,NC]
+RewriteRule ^eropuit/binnenspeeltuinen-noord-brabant/?$ - [G,L,NC]
+RewriteRule ^eropuit/dagje-uit-peuter/?$ https://jouwgezinsleven.nl/eropuit/uitjes-met-peuter/ [R=301,L,NC]
+RewriteRule ^eropuit/gratis-uitjes-gezin/?$ https://jouwgezinsleven.nl/eropuit/gratis-uitjes-met-kinderen/ [R=301,L,NC]
+RewriteRule ^eropuit/per-provincie/?$ - [G,L,NC]
+RewriteRule ^eropuit/pretparken-kleine-kinderen/?$ - [G,L,NC]
+RewriteRule ^eropuit/speeltuin-in-de-buurt/?$ - [G,L,NC]
+RewriteRule ^eropuit/speeltuinen-antwerpen/?$ - [G,L,NC]
+RewriteRule ^eropuit/speeltuinen/?$ - [G,L,NC]
+RewriteRule ^eropuit/waterspeeltuinen-gelderland/?$ - [G,L,NC]
+RewriteRule ^feestjes/budget/?$ - [G,L,NC]
+RewriteRule ^feestjes/buiten/?$ - [G,L,NC]
+RewriteRule ^feestjes/cadeau-kind-3-jaar/?$ - [G,L,NC]
+RewriteRule ^feestjes/cadeaus/?$ - [G,L,NC]
+RewriteRule ^feestjes/kinderfeestje-4-jaar/?$ https://jouwgezinsleven.nl/feestjes/kinderfeestje-ideeen/ [R=301,L,NC]
+RewriteRule ^feestjes/kinderfeestje-budget-25-euro/?$ - [G,L,NC]
+RewriteRule ^feestjes/kinderfeestje-speeltuin/?$ - [G,L,NC]
+RewriteRule ^feestjes/kinderfeestje-thuis-ideeen/?$ https://jouwgezinsleven.nl/feestjes/kinderfeestje-thuis/ [R=301,L,NC]
+RewriteRule ^feestjes/per-leeftijd/?$ https://jouwgezinsleven.nl/feestjes/kinderfeestje-ideeen/ [R=301,L,NC]
+RewriteRule ^feestjes/thuis/?$ https://jouwgezinsleven.nl/feestjes/kinderfeestje-thuis/ [R=301,L,NC]
+RewriteRule ^feestjes/traktaties/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/autorit-met-peuter-tips/?$ https://jouwgezinsleven.nl/gezinsvakantie/autorit-met-kinderen/ [R=301,L,NC]
+RewriteRule ^gezinsvakantie/belgie-duitsland/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/eifel-met-kinderen/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/kamperen-met-kinderen-eerste-keer/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/kamperen/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/met-baby/?$ https://jouwgezinsleven.nl/gezinsvakantie/vakantie-met-baby/ [R=301,L,NC]
+RewriteRule ^gezinsvakantie/met-peuter/?$ https://jouwgezinsleven.nl/gezinsvakantie/vakantie-met-peuter/ [R=301,L,NC]
+RewriteRule ^gezinsvakantie/nederland/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/vakantie-met-baby-checklist/?$ https://jouwgezinsleven.nl/gezinsvakantie/vakantie-met-baby/ [R=301,L,NC]
+RewriteRule ^gezinsvakantie/vakantie-met-kinderen-limburg/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/vakantiepark-met-peuter-nederland/?$ - [G,L,NC]
+RewriteRule ^gezinsvakantie/vakantieparken/?$ - [G,L,NC]
+RewriteRule ^kinderopvang/kiezen/?$ - [G,L,NC]
+RewriteRule ^kinderopvang/kinderopvang-amsterdam/?$ - [G,L,NC]
+RewriteRule ^kinderopvang/kinderopvang-rotterdam/?$ - [G,L,NC]
+RewriteRule ^kinderopvang/kinderopvang-utrecht/?$ - [G,L,NC]
+RewriteRule ^kinderopvang/kinderopvangtoeslag-2026/?$ https://jouwgezinsleven.nl/kinderopvang/kinderopvangtoeslag/ [R=301,L,NC]
+RewriteRule ^kinderopvang/kosten/?$ https://jouwgezinsleven.nl/kinderopvang/kosten-kinderopvang/ [R=301,L,NC]
+RewriteRule ^kinderopvang/per-stad/?$ - [G,L,NC]
+RewriteRule ^kinderopvang/wachtlijsten/?$ - [G,L,NC]
+RewriteRule ^kinderopvang/wat-kost-kinderopvang-3-dagen/?$ https://jouwgezinsleven.nl/kinderopvang/kosten-kinderopvang/ [R=301,L,NC]
+RewriteRule ^nieuwsbrief/?$ - [G,L,NC]
+RewriteRule ^thema/buitenspelen/?$ - [G,L,NC]
+RewriteRule ^thema/eten-en-drinken/?$ - [G,L,NC]
+RewriteRule ^thema/geld-en-regelingen/?$ https://jouwgezinsleven.nl/geld-en-regels/ [R=301,L,NC]
+RewriteRule ^thema/kleine-woning/?$ - [G,L,NC]
+RewriteRule ^thema/regendag/?$ https://jouwgezinsleven.nl/eropuit/uitjes-bij-regen/ [R=301,L,NC]
+RewriteRule ^thema/reizen-met-kinderen/?$ - [G,L,NC]
+RewriteRule ^thema/rust-voor-ouders/?$ - [G,L,NC]
+RewriteRule ^thema/slapen/?$ - [G,L,NC]
+RewriteRule ^thema/speelgoed/?$ - [G,L,NC]
+RewriteRule ^thema/verjaardagen/?$ - [G,L,NC]
+RewriteRule ^thema/warme-dag/?$ - [G,L,NC]
+RewriteRule ^thema/werk-en-opvang/?$ - [G,L,NC]
+RewriteRule ^zwanger/bevalling/?$ - [G,L,NC]
+RewriteRule ^zwanger/bevaltas-inpakken/?$ - [G,L,NC]
+RewriteRule ^zwanger/derde-trimester/?$ https://jouwgezinsleven.nl/zwanger/week-voor-week/ [R=301,L,NC]
+RewriteRule ^zwanger/eerste-trimester-vermoeidheid/?$ - [G,L,NC]
+RewriteRule ^zwanger/eerste-trimester/?$ https://jouwgezinsleven.nl/zwanger/week-voor-week/ [R=301,L,NC]
+RewriteRule ^zwanger/kraamtijd-voorbereiden-checklist/?$ - [G,L,NC]
+RewriteRule ^zwanger/kraamtijd/?$ - [G,L,NC]
+RewriteRule ^zwanger/tweede-trimester/?$ https://jouwgezinsleven.nl/zwanger/week-voor-week/ [R=301,L,NC]
+RewriteRule ^zwanger/zwanger-en-slecht-slapen/?$ - [G,L,NC]
+RewriteRule ^zwanger/zwanger-worden-tips-die-werken/?$ - [G,L,NC]
+RewriteRule ^zwanger/zwanger-worden/?$ - [G,L,NC]
+RewriteRule ^zwanger/zwangerschapskalender-week-voor-week/?$ https://jouwgezinsleven.nl/zwanger/week-voor-week/ [R=301,L,NC]
+</IfModule>
+# END legacy-redirects
 
 # ---------------------------------------------------------------------
 # 1. Canonieke URL's (ongewijzigd t.o.v. bestaande site)
