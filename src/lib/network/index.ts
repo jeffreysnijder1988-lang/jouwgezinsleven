@@ -22,7 +22,7 @@ export interface Platform { key: PlatformKey; name: string; url?: string; live?:
 /** Publieke platformgegevens uit NETWORK_MAP.md. Alleen domeinen die daar vastliggen. */
 export const PLATFORMS: Record<PlatformKey, Platform> = {
   lomamo: { key: 'lomamo', name: 'Lomamo', url: 'https://lomamo.nl' },
-  opvangkiezer: { key: 'opvangkiezer', name: 'Opvangkiezer', url: 'https://www.opvangkiezer.nl' },
+  opvangkiezer: { key: 'opvangkiezer', name: 'Opvangkiezer', url: 'https://opvangkiezer.nl' },
   welkespeeltuin: { key: 'welkespeeltuin', name: 'WelkeSpeeltuin', url: 'https://welkespeeltuin.nl', live: false },
   'welkespeeltuin-be': { key: 'welkespeeltuin-be', name: 'WelkeSpeeltuin.be', url: 'https://welkespeeltuin.be', live: false },
   vakantiemetjongekinderen: { key: 'vakantiemetjongekinderen', name: 'Vakantiemetjongekinderen.nl', url: 'https://vakantiemetjongekinderen.nl' },

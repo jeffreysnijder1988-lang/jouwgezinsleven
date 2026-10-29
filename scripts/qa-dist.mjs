@@ -134,6 +134,44 @@ for (const key of ['title', 'desc']) {
   }
 }
 
+// Tekstoverlap tussen fasepagina's onderling en met pijlerhubs (audit 28-10-2026: tot 91%).
+// 5-woord-shingles van <main> zonder nav/aside; overlap = gedeeld / kleinste set.
+// > 50% = waarschuwing. > 75% = fout zodra QA_LIFESTAGE_OVERLAP_STRICT=1 (aanzetten nadat de fase-content live is).
+{
+  const shingles = (f) => {
+    const main = parse(readFileSync(f, 'utf8')).querySelector('main');
+    if (!main) return new Set();
+    main.querySelectorAll('nav, aside').forEach((n) => n.remove());
+    const w = main.textContent.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+    const s = new Set();
+    for (let i = 0; i + 5 <= w.length; i++) s.add(w.slice(i, i + 5).join(' '));
+    return s;
+  };
+  const kindOf = (f) => {
+    const root = parse(readFileSync(f, 'utf8'));
+    if (!root.querySelector('.hero--hub')) return null;
+    return root.querySelector('#fasen-titel') ? 'fase' : 'hub';
+  };
+  const cand = [...pages.values()].filter((p) => !p.is404 && !p.robots.includes('noindex'))
+    .map((p) => ({ ...p, kind: kindOf(join(DIST, p.rel)) })).filter((p) => p.kind);
+  const sets = new Map(cand.map((p) => [p.rel, shingles(join(DIST, p.rel))]));
+  const strict = process.env.QA_LIFESTAGE_OVERLAP_STRICT === '1';
+  for (let i = 0; i < cand.length; i++) {
+    for (let j = i + 1; j < cand.length; j++) {
+      const a = cand[i], b = cand[j];
+      if (a.kind !== 'fase' && b.kind !== 'fase') continue;
+      const A = sets.get(a.rel), B = sets.get(b.rel);
+      if (!A.size || !B.size) continue;
+      let shared = 0;
+      for (const s of A) if (B.has(s)) shared++;
+      const pct = Math.round((shared / Math.min(A.size, B.size)) * 100);
+      const msg = `tekstoverlap ${pct}% met ${b.rel} (fasepagina's moeten eigen inhoud hebben)`;
+      if (pct > 75 && strict) err(a.rel, msg);
+      else if (pct > 50) warn(a.rel, msg);
+    }
+  }
+}
+
 console.log(`QA ${DIST}: ${htmlFiles.length} HTML-pagina's, ${sitemapPaths.size} URL's in sitemap, ${idx.length} indexeerbaar.`);
 warnings.forEach((w) => console.log('  ⚠ ' + w));
 errors.forEach((e) => console.log('  ✗ ' + e));

@@ -1,22 +1,28 @@
 ---
 /**
  * LifeStageLayout — levensfasepagina's (/baby/, /peuter/, /kleuter/, …).
- * Verzamelt alle artikelen die aan de fase gekoppeld zijn, gegroepeerd per pijler
- * (volgorde = menuvolgorde), met per groep een link naar de pijlerhub en onderaan de andere fasen.
- * Geen eigen data: alles komt uit lifeStage + article.lifeStages in Sanity.
+ * Volgorde (PAGE_TEMPLATES): hero · redactionele uitleg · "Wat speelt er nu" · artikelen die specifiek
+ * bij deze fase horen (per pijler) · FAQ · netwerkblok · "Geldt voor elke leeftijd" (algemene artikelen
+ * als compacte linklijst) · andere fasen.
+ * Specifiek = artikel hangt aan hooguit LIFESTAGE_SPECIFIC_MAX_STAGES fasen. Zo herhalen fasepagina's
+ * niet allemaal dezelfde kaarten met excerpt (audit 28-10-2026: 67–91% tekstoverlap).
+ * Geen eigen data: alles komt uit lifeStage + article.lifeStages in Sanity. Lege onderdelen verdwijnen.
  */
 import BaseLayout from './BaseLayout.astro';
 import Hero from '@/components/content/Hero.astro';
 import ContentSection from '@/components/content/ContentSection.astro';
+import PortableBody from '@/components/content/PortableBody.astro';
+import FAQ from '@/components/content/FAQ.astro';
 import ArticleCard from '@/components/cards/ArticleCard.astro';
 import CardGrid from '@/components/cards/CardGrid.astro';
 import CategoryCard from '@/components/cards/CategoryCard.astro';
+import NetworkBlock from '@/components/network/NetworkBlock.astro';
 import type { ArticleCardData, LifeStage, Pillar } from '@/lib/content/types';
 import type { PageMeta } from '@/lib/seo/meta';
 import type { Crumb } from '@/lib/schema/jsonld';
 import { lifeStageTheme } from '@/lib/helpers/theme';
 import { formatAgeRange } from '@/lib/helpers/format';
-import { pillarPath } from '@/lib/content';
+import { pillarPath, articlePath, LIFESTAGE_SPECIFIC_MAX_STAGES } from '@/lib/content';
 
 interface Props {
   stage: LifeStage; intro: string; articles: ArticleCardData[]; pillars: Pillar[];
@@ -24,13 +30,34 @@ interface Props {
   meta: PageMeta; crumbs: Crumb[]; schema?: (Record<string, unknown> | null)[];
 }
 const { stage, intro, articles, pillars, otherStages, meta, crumbs, schema = [] } = Astro.props;
+const isSpecific = (a: ArticleCardData) => (a.stageCount ?? 1) <= LIFESTAGE_SPECIFIC_MAX_STAGES;
+const specific = articles.filter(isSpecific);
+const general = articles.filter((a) => !isSpecific(a));
 const groups = pillars
-  .map((p) => ({ pillar: p, items: articles.filter((a) => a.pillar?._id === p._id) }))
+  .map((p) => ({ pillar: p, items: specific.filter((a) => a.pillar?._id === p._id) }))
   .filter((g) => g.items.length > 0);
+const focus = (stage.focusItems ?? []).filter((f) => f.title && f.text);
 const age = formatAgeRange(stage.minimumAgeMonths, stage.maximumAgeMonths);
+const lower = stage.name.toLowerCase();
 ---
 <BaseLayout meta={meta} crumbs={crumbs} schema={schema}>
   <Hero variant="hub" theme={lifeStageTheme(stage.slug)} title={age ? `${stage.name} (${age})` : stage.name} intro={intro} crumbs={crumbs} />
+
+  {stage.editorialBody && stage.editorialBody.length > 0 && (
+    <div class="container--narrow section fase-uitleg"><PortableBody value={stage.editorialBody} /></div>
+  )}
+
+  {focus.length > 0 && (
+    <ContentSection title="Wat speelt er nu" id="nu" tone="soft">
+      <ul class="focuslijst">
+        {focus.map((f) => (
+          <li>
+            <CategoryCard variant="related" title={f.title} href={f.href ?? undefined} description={f.text} />
+          </li>
+        ))}
+      </ul>
+    </ContentSection>
+  )}
 
   {groups.map((g, i) => (
     <ContentSection title={g.pillar.navLabel || g.pillar.name} id={`fase-${g.pillar.slug}`} tone={i % 2 ? 'soft' : 'default'}
@@ -38,6 +65,20 @@ const age = formatAgeRange(stage.minimumAgeMonths, stage.maximumAgeMonths);
       <CardGrid>{g.items.map((a) => <ArticleCard article={a} showPillar={false} tone={i % 2 ? 'white' : 'cream'} />)}</CardGrid>
     </ContentSection>
   ))}
+
+  <FAQ items={stage.faq} title={`Vragen over de fase ${lower}`} tone="section" />
+
+  {(stage.networkDestinations?.length ?? 0) > 0 && (
+    <div class="container"><NetworkBlock destinations={stage.networkDestinations} /></div>
+  )}
+
+  {general.length > 0 && (
+    <ContentSection title="Geldt voor elke leeftijd" id="algemeen">
+      <ul class="algemeen">
+        {general.map((a) => <li><a href={articlePath(a)}>{a.title}</a></li>)}
+      </ul>
+    </ContentSection>
+  )}
 
   {otherStages.length > 0 && (
     <section class="section andere-sectie" aria-labelledby="fasen-titel">
@@ -51,6 +92,16 @@ const age = formatAgeRange(stage.minimumAgeMonths, stage.maximumAgeMonths);
   )}
 </BaseLayout>
 <style>
+  .fase-uitleg { padding-bottom: var(--space-md); }
+  .focuslijst { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  @media (min-width: 640px) { .focuslijst { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .focuslijst { grid-template-columns: repeat(3, 1fr); } }
+  .algemeen { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2xs) var(--space-xl); }
+  @media (min-width: 640px) { .algemeen { grid-template-columns: repeat(2, 1fr); } }
+  .algemeen a {
+    display: inline-block; min-height: 24px; padding-block: var(--space-2xs);
+    color: var(--color-text); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+  }
   .andere-sectie { padding-top: 0; }
   .anderelijst { display: grid; gap: 14px; }
   @media (min-width: 640px) { .anderelijst { grid-template-columns: repeat(2, 1fr); } }

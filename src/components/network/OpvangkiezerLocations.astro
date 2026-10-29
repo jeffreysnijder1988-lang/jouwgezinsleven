@@ -1,0 +1,43 @@
+---
+/**
+ * NetworkBlock-variant "OpvangkiezerLocations" (PAGE_TEMPLATES → NetworkBlock).
+ * Toont waar ouders opvang zoeken in hun provincie of plaats. Data via de adapter
+ * (src/lib/network/opvangkiezer.ts), nooit hardcoded locaties. Geen provincies → alleen de opvangvormen.
+ * Woordkeuze: Opvangkiezer koppelt ouders aan opvang; het is geen vergelijkingssite.
+ */
+import { getOpvangkiezerStructure } from '@/lib/network/opvangkiezer';
+interface Props { title?: string; intro?: string }
+const {
+  title = 'Kinderopvang zoeken in jouw provincie',
+  intro = 'Opvang zoeken in je eigen plaats doe je via Opvangkiezer. Vertel wat je zoekt, dan koppelt Opvangkiezer je aan opvang in je buurt waar kans is op een plek.',
+} = Astro.props;
+const ok = await getOpvangkiezerStructure();
+---
+{(ok.provinces.length > 0 || ok.types.length > 0) && (
+  <section class="section ok-loc" aria-labelledby="ok-loc-titel">
+    <div class="container">
+      <div class="kop"><div><h2 id="ok-loc-titel">{title}</h2><p>{intro}</p></div></div>
+      {ok.provinces.length > 0 && (
+        <ul class="chips" aria-label="Provincies">
+          {ok.provinces.map((p) => <li><a href={p.url} rel="noopener">{p.name}</a></li>)}
+        </ul>
+      )}
+      <p class="ok-loc__sub">Of zoek op soort opvang:</p>
+      <ul class="chips" aria-label="Soorten opvang">
+        {ok.types.map((t) => <li><a href={t.url} rel="noopener">{t.name}</a></li>)}
+        <li><a href={ok.searchUrl} rel="noopener">Zoek op plaats →</a></li>
+      </ul>
+    </div>
+  </section>
+)}
+<style>
+  .ok-loc { padding-top: 0; }
+  .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .chips a {
+    display: inline-flex; align-items: center; min-height: 40px; padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-pill); background: var(--color-cream); color: var(--color-text);
+    font-size: var(--text-small); text-decoration: none;
+  }
+  .chips a:hover { background: var(--color-pink-soft); }
+  .ok-loc__sub { margin: var(--space-md) 0 var(--space-xs); font-size: var(--text-small); color: var(--color-text-muted); }
+</style>

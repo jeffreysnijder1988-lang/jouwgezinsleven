@@ -136,6 +136,8 @@ export const lifeStagePath = (l: { slug: string }) => `/${l.slug}/`;
 
 /** Levensfasepagina is indexeerbaar vanaf dit aantal artikelen; daaronder noindex (dunne content, SEO_RULES). */
 export const LIFESTAGE_MIN_INDEXABLE = 6;
+/** Een artikel dat aan meer dan zoveel fasen hangt, telt op een fasepagina als "algemeen" (compacte lijst onderaan). */
+export const LIFESTAGE_SPECIFIC_MAX_STAGES = 2;
 
 /** Pagina die de redactionele werkwijze beschrijft (sectie "Hoe we werken"). Alleen als die live en indexeerbaar is. */
 export const PUBLISHING_PRINCIPLES_PATH = '/over/';

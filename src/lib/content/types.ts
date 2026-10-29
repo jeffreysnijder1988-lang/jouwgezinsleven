@@ -55,6 +55,12 @@ export interface LifeStage {
   maximumAgeMonths?: number | null;
   primaryPillar?: PillarRef | null;
   pageIntro?: string | null;
+  editorialBody?: PortableTextBlock[] | null;
+  focusItems?: { _key: string; title: string; text: string; href?: string | null; external?: boolean }[] | null;
+  faq?: FaqItem[] | null;
+  networkDestinations?: NetworkDestination[] | null;
+  sources?: { _key: string; sourceName?: string | null; sourceUrl?: string | null }[] | null;
+  lastReviewedAt?: string | null;
   seo?: Seo | null;
   _updatedAt?: string;
   articleCount: number;
@@ -70,6 +76,8 @@ export interface ArticleCardData {
   publishedAt?: string | null;
   updatedAt?: string | null;
   _updatedAt: string;
+  /** Alleen bij fasepagina's: aan hoeveel levensfasen het artikel hangt. */
+  stageCount?: number;
 }
 
 export interface FaqItem { _key: string; question: string; answer: string }

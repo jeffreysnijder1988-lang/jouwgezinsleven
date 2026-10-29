@@ -145,6 +145,22 @@ export const LIFE_STAGES_QUERY = /* groq */ `*[_type == "lifeStage" && defined(s
   maximumAgeMonths,
   "primaryPillar": select(primaryPillar->kind == "pillar" && defined(primaryPillar->slug.current) => primaryPillar->${pillarRef}),
   pageIntro,
+  editorialBody[]${richText},
+  "focusItems": focusItems[]{
+    _key, title, text,
+    "external": !defined(internal) && defined(external),
+    "href": select(
+      internal->_type == "article" && defined(internal->pillar->slug.current) => "/" + internal->pillar->slug.current + "/" + internal->slug.current + "/",
+      internal->_type == "topic" && internal->kind == "pillar" => "/" + internal->slug.current + "/",
+      internal->_type == "page" => "/" + internal->slug.current + "/",
+      internal->_type == "pregnancyWeek" => "/" + *[_id == "${PREGNANCY_PILLAR_ID}"][0].slug.current + "/" + internal->slug.current + "/",
+      defined(external) => external
+    )
+  },
+  faq[]{ _key, question, answer },
+  networkDestinations[]{ _key, platform, externalId, externalUrl, relationType, priority, title, description },
+  sources[]{ _key, sourceName, sourceUrl },
+  lastReviewedAt,
   ${seo},
   "_updatedAt": _updatedAt,
   "articleCount": count(*[${routableArticle} && references(^._id)])
@@ -162,7 +178,11 @@ export const ARTICLE_ROUTES_QUERY = /* groq */ `*[${routableArticle}]{
 
 export const ARTICLES_BY_PILLAR_QUERY = /* groq */ `*[${routableArticle} && pillar._ref == $pillarId] | order(coalesce(publishedAt, _createdAt) desc)${articleCard}`;
 
-export const ARTICLES_BY_LIFESTAGE_QUERY = /* groq */ `*[${routableArticle} && $id in lifeStages[]._ref] | order(coalesce(publishedAt, _createdAt) desc)${articleCard}`;
+/** Artikelen per fase, met het aantal fasen waaraan het artikel hangt (stageCount) voor specifiek/algemeen. */
+export const ARTICLES_BY_LIFESTAGE_QUERY = /* groq */ `*[${routableArticle} && $id in lifeStages[]._ref] | order(coalesce(publishedAt, _createdAt) desc){
+  ...${articleCard},
+  "stageCount": count(lifeStages)
+}`;
 
 /** Lichte lijst voor linkblokken op de homepage (levensfasen, pijlers). */
 export const ARTICLE_LINKS_QUERY = /* groq */ `*[${routableArticle} && seo.noIndex != true] | order(coalesce(publishedAt, _createdAt) desc){

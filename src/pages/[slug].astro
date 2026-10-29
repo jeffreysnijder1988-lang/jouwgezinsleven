@@ -61,7 +61,8 @@ const meta = buildMeta({
 });
 const stageSchema = stage
   ? [collectionPageSchema(stage.stage.name, meta.description, meta.canonical,
-      stage.articles.map((a) => ({ name: a.title, url: articlePath(a) })), Astro.site)]
+      stage.articles.map((a) => ({ name: a.title, url: articlePath(a) })), Astro.site),
+     stage.stage.faq?.length ? faqSchema(stage.stage.faq) : null]
   : [];
 const hubSchema = hub
   ? [
