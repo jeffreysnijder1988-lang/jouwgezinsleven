@@ -182,6 +182,8 @@ jobs:
       - name: Production build (alleen gepubliceerde Sanity-content)
         run: npm run build
       - name: QA op build-output
+        env:
+          QA_LIFESTAGE_OVERLAP_STRICT: '1'   # fase-content live sinds 29-10-2026: > 75% overlap = fout
         run: npm run qa
       - name: Deploy-poort (essentiële bestanden, sitemap, robots, canonicals, content-drop)
         env:
